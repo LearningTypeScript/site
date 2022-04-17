@@ -1,0 +1,7 @@
+{
+  "eslint.rules.customizations": [{ "rule": "*", "severity": "warn" }],
+  "files.exclude": {
+    ".docusaurus/": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

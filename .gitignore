@@ -1,0 +1,8 @@
+.cache-loader
+.docusaurus
+.DS_Store
+.env.*
+/build
+/node_modules
+yarn-debug.log*
+yarn-error.log*
