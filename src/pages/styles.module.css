@@ -1,17 +1,82 @@
 .heroBanner {
   overflow: hidden;
-  padding: 4rem 0;
+  padding: 2rem;
   position: relative;
   text-align: center;
 }
 
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
-  }
+.main {
+  margin: 5rem auto;
+  text-align: center;
 }
 
-.main {
-  margin: 10rem auto;
-  text-align: center;
+.features {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.feature {
+  list-style-type: none;
+  max-width: 75vw;
+  width: 100%;
+}
+
+.featureHeading {
+  font-size: 2rem;
+}
+
+.featureEmoji {
+  display: block;
+  font-size: 7rem;
+}
+
+.promo {
+  gap: 2rem;
+  padding: 0 2rem;
+  text-align: left;
+}
+
+.promoCover {
+  float: left;
+  margin-right: 2rem;
+  max-width: 200px;
+}
+
+@media screen and (min-width: 996px) {
+  .heroBanner {
+    padding: 4rem 0;
+  }
+
+  .main {
+    max-width: 1000px;
+  }
+
+  .features {
+    flex-direction: row;
+    margin: auto;
+    align-items: flex-start;
+  }
+
+  .feature {
+    margin: 0 4rem;
+  }
+
+  .featureEmoji {
+    margin-bottom: 1rem;
+  }
+
+  .split {
+    margin: 2.5rem 0 5rem;
+  }
+
+  .promo {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .promoCover {
+    float: none;
+    max-width: 400px;
+  }
 }
