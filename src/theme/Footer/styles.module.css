@@ -1,0 +1,38 @@
+.footer {
+  background: var(--ifm-background-deemphasized-color);
+  font-family: var(--ifm-heading-font-family);
+  padding-top: 3rem;
+}
+
+.links {
+  display: flex;
+  font-weight: var(--ifm-heading-font-weight);
+  justify-content: space-between;
+  margin: auto;
+  max-width: 1000px;
+}
+
+.heading {
+  font-size: var(--ifm-h3-font-size);
+}
+
+.links a {
+  color: var(--ifm-font-color-base);
+  font-size: var(--ifm-h4-font-size);
+}
+
+.column {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+}
+
+.credits {
+  margin: 3rem;
+  text-align: center;
+}
+
+.credits a {
+  color: var(--ifm-font-color-base);
+  text-decoration: underline;
+}

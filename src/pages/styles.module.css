@@ -37,12 +37,6 @@
   text-align: left;
 }
 
-.promoCover {
-  float: left;
-  margin-right: 2rem;
-  max-width: 200px;
-}
-
 @media screen and (min-width: 996px) {
   .heroBanner {
     padding: 4rem 0;
@@ -73,10 +67,5 @@
   .promo {
     display: flex;
     flex-direction: row;
-  }
-
-  .promoCover {
-    float: none;
-    max-width: 400px;
   }
 }
