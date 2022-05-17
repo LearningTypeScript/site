@@ -18,7 +18,7 @@ export default function Home(): JSX.Element {
             I'm still implementing designs and have not yet put articles or
             projects content in it.
             <br />
-            Check back the first week of June!
+            Check back the first week of June.
           </strong>
         </p>
         <hr className={styles.split} />
