@@ -1,11 +1,14 @@
 .outlineLink {
+  color: var(--ifm-font-color-base);
+  display: block;
   outline: 2px solid var(--ifm-font-color-base);
   font-family: var(--ifm-font-family-monospace);
   padding: 0.5rem 1rem;
   text-align: center;
 }
 
-.outlink:hover {
+.outlineLink:hover {
+  color: var(--ifm-font-color-base);
   text-decoration: none;
 }
 

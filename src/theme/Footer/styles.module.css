@@ -45,6 +45,11 @@
   width: 2.5rem;
 }
 
+.icon path {
+  fill: var(--ifm-font-color-base);
+  transition: fill var(--ifm-transition-fast);
+}
+
 .credits {
   margin: 1rem 0 0;
   text-align: center;

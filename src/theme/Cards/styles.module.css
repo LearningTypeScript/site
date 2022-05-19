@@ -1,0 +1,42 @@
+.cards {
+  margin: 0 2rem;
+  text-align: left;
+}
+
+.heading {
+  font-family: var(--ifm-font-family-monospace);
+  font-weight: 500;
+}
+
+.cardsList {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.seeAll {
+  margin-top: 2rem;
+}
+
+/* Todo: use var(--lt-media-query-width-medium)? */
+@media (min-width: 768px) {
+  .cards {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .heading {
+    margin-right: 2rem;
+  }
+
+  .cardsList {
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .card {
+    width: calc(50% - 2rem);
+  }
+}

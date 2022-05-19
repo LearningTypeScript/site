@@ -1,8 +1,10 @@
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
 import React from "react";
+import { ArticlesSection } from "../theme/ArticlesSection";
 
 import { HeroSection } from "../theme/HeroSection";
+import { ProjectsSection } from "../theme/ProjectsSection";
 
 import styles from "./styles.module.css";
 
@@ -22,6 +24,10 @@ export default function Home(): JSX.Element {
           </strong>
         </p>
         <hr className={styles.split} />
+
+        <ProjectsSection />
+        <ArticlesSection />
+
         <div className={styles.promo}>
           <div>
             <p>

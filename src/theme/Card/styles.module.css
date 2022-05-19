@@ -1,0 +1,30 @@
+.card {
+  background: var(--ifm-background-deemphasized-color);
+  color: var(--ifm-font-color-base);
+  display: flex;
+  flex-direction: column;
+  font-size: var(--ifm-h3-font-size);
+  text-align: left;
+  padding: 2rem;
+}
+
+.card:hover {
+  color: var(--ifm-font-color-base);
+  text-decoration: none;
+}
+
+/* TODO: fancy hover/focus animations from designs */
+
+.title {
+  font-size: var(--ifm-h1-font-size);
+  font-weight: bold;
+}
+
+.description {
+  margin: 1rem 0;
+}
+
+.meta {
+  font-family: var(--ifm-font-family-monospace);
+  font-weight: normal;
+}
