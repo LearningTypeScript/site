@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardProps } from "../Card";
-import { Cards } from "../Cards";
+import { CardsArea } from "../CardsArea";
 
 import styles from "./styles.module.css";
 
@@ -45,8 +45,7 @@ const articles: CardProps[] = [
 
 export const ArticlesSection = () => {
   return (
-    <Cards
-      cards={articles}
+    <CardsArea
       className={styles.articlesSection}
       description="Top tips and tricks for why TypeScript behaves the way it does, and how you can work effectively with it."
       heading="Articles"
@@ -54,6 +53,10 @@ export const ArticlesSection = () => {
         children: "See all XYZ articles",
         href: "/articles",
       }}
-    />
+    >
+      {articles.map((article) => (
+        <Card className={styles.card} {...article} key={article.href} />
+      ))}
+    </CardsArea>
   );
 };

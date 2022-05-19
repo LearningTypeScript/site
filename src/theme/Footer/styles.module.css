@@ -24,6 +24,7 @@
 }
 
 .links a {
+  /* TODO: do an audit of everywhere that needs transition time */
   color: var(--ifm-font-color-base);
   font-size: var(--ifm-h4-font-size);
 }

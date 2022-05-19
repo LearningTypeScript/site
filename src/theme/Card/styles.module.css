@@ -4,8 +4,9 @@
   display: flex;
   flex-direction: column;
   font-size: var(--ifm-h3-font-size);
-  text-align: left;
   padding: 2rem;
+  text-align: left;
+  user-select: none;
 }
 
 .card:hover {

@@ -1,0 +1,14 @@
+/* Todo: use var(--lt-media-query-width-medium)? */
+@media (min-width: 768px) {
+  .card {
+    max-width: calc(50% - 2rem);
+  }
+}
+
+/* Todo: use var(--lt-media-query-width-large)? */
+@media (min-width: 992px) {
+  .card {
+    /* TODO: figure this out better...? */
+    max-width: calc(33% - 1.15rem);
+  }
+}

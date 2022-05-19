@@ -1,6 +1,8 @@
 import React from "react";
-import { CardProps } from "../Card";
-import { Cards } from "../Cards";
+import { Card, CardProps } from "../Card";
+import { CardsArea } from "../CardsArea";
+
+import styles from "./styles.module.css";
 
 const projects: CardProps[] = [
   {
@@ -43,8 +45,7 @@ const projects: CardProps[] = [
 
 export const ProjectsSection = () => {
   return (
-    <Cards
-      cards={projects}
+    <CardsArea
       description="Hands on real world projects that will help you exercise your knowledge
       of TypeScript."
       heading="Projects"
@@ -52,6 +53,10 @@ export const ProjectsSection = () => {
         children: "See all XYZ projects",
         href: "/projects",
       }}
-    />
+    >
+      {projects.map((project) => (
+        <Card className={styles.card} {...project} key={project.href} />
+      ))}
+    </CardsArea>
   );
 };

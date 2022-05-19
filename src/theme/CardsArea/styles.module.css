@@ -21,22 +21,22 @@
 
 /* Todo: use var(--lt-media-query-width-medium)? */
 @media (min-width: 768px) {
+  .textArea {
+    display: flex;
+    flex-direction: row;
+    gap: 5rem;
+    max-width: 40rem;
+    text-align: left;
+  }
+
   .cards {
     display: flex;
     flex-wrap: wrap;
-  }
-
-  .heading {
-    margin-right: 2rem;
   }
 
   .cardsList {
     flex-direction: row;
     flex-wrap: wrap;
     width: 100%;
-  }
-
-  .card {
-    width: calc(50% - 2rem);
   }
 }
