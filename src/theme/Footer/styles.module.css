@@ -65,12 +65,15 @@
     flex-direction: row;
   }
 
+  .getTheBook {
+    margin-top: 2px;
+  }
+
   .icons {
     justify-content: flex-end;
   }
 
   .credits {
     margin: 3rem;
-    text-align: left;
   }
 }
