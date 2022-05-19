@@ -5,7 +5,10 @@
   --ifm-heading-font-weight: bold;
   --ifm-font-family-base: "Libre Baskerville", Helvetica, Arial, system-ui;
   --ifm-font-family-monospace: "Red Hat Mono", Monaco, Consolas, monospace;
-  --layout-width-full: 1234px;
+
+  --lt-layout-width-full: 1234px;
+  --lt-media-query-width-medium: 768px;
+  --lt-media-query-width-large: 992px;
 }
 
 [data-theme="dark"] {

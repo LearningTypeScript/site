@@ -1,7 +1,13 @@
 .footer {
   background: var(--ifm-background-deemphasized-color);
   font-family: var(--ifm-heading-font-family);
-  padding-top: 3rem;
+  padding: 3rem 2rem 1.5rem;
+}
+
+.column {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
 }
 
 .links {
@@ -10,6 +16,7 @@
   justify-content: space-between;
   margin: auto;
   max-width: 1000px;
+  flex-direction: column;
 }
 
 .heading {
@@ -21,18 +28,49 @@
   font-size: var(--ifm-h4-font-size);
 }
 
-.column {
+.getTheBook {
+  margin: 2rem 0 1rem;
+}
+
+.icons {
   display: flex;
-  gap: 1rem;
-  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.icon {
+  display: block;
+  height: 2.5rem;
+  width: 2.5rem;
 }
 
 .credits {
-  margin: 3rem;
+  margin: 1rem 0 0;
   text-align: center;
 }
 
 .credits a {
   color: var(--ifm-font-color-base);
   text-decoration: underline;
+}
+
+/* Todo: use var(--lt-media-query-width-medium)? */
+@media (min-width: 768px) {
+  .links {
+    flex-direction: row;
+  }
+
+  .link {
+    flex-direction: row;
+  }
+
+  .icons {
+    justify-content: flex-end;
+  }
+
+  .credits {
+    margin: 3rem;
+    text-align: left;
+  }
 }

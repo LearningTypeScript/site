@@ -4,9 +4,8 @@ todo: get the grid to work lol
 
 .hero {
   display: flex;
-  flex-direction: row;
-  margin: 5rem auto;
-  max-width: var(--layout-width-full);
+  flex-direction: column;
+  max-width: var(--lt-layout-width-full);
 }
 
 .left {
@@ -17,10 +16,11 @@ todo: get the grid to work lol
 }
 
 .heading {
-  font-size: 2rem;
   font-family: var(--ifm-font-family-monospace);
-  font-size: 4rem;
+  font-size: 2rem;
   font-weight: 500;
+  margin: 0 2rem 2rem;
+  text-align: center;
 }
 
 .together {
@@ -30,6 +30,7 @@ todo: get the grid to work lol
 .author {
   align-items: center;
   display: flex;
+  flex-direction: column;
   font-size: var(--ifm-h3-font-size);
   font-family: var(--ifm-heading-font-family);
 }
@@ -37,15 +38,62 @@ todo: get the grid to work lol
 .author::before {
   background: var(--ifm-hr-border-color);
   content: "";
-  display: inline-block;
+  display: block;
   height: 2px;
-  margin-right: 1rem;
+  margin-bottom: 1.5rem;
   width: 7rem;
 }
 
 .cover {
+  margin: auto;
+}
+
+.cover img {
   aspect-ratio: 400 / 525;
-  margin-left: 6rem;
-  height: 25rem;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
+  max-width: 50vw;
+}
+
+/* Todo: use var(--lt-media-query-width-medium)? */
+@media (min-width: 768px) {
+  .hero {
+    margin: 1rem auto;
+    padding: 0 2rem;
+    flex-direction: row;
+  }
+
+  .heading {
+    font-size: 4rem;
+    margin: 0 0 1rem;
+    text-align: left;
+  }
+
+  .cover {
+    margin-left: 2rem;
+  }
+
+  .author {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .author::before {
+    display: inline-block;
+    margin-right: 1rem;
+  }
+
+  .cover img {
+    height: 25rem;
+  }
+}
+
+/* Todo: use var(--lt-media-query-width-large)? */
+@media (min-width: 992px) {
+  .hero {
+    margin: 5rem auto;
+  }
+
+  .cover {
+    margin-left: 6rem;
+  }
 }

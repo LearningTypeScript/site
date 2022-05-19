@@ -1,0 +1,12 @@
+.outlineLink {
+  outline: 2px solid var(--ifm-font-color-base);
+  font-family: var(--ifm-font-family-monospace);
+  padding: 0.5rem 1rem;
+  text-align: center;
+}
+
+.outlink:hover {
+  text-decoration: none;
+}
+
+/* todo: fancy hover effects from designs */

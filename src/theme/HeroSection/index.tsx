@@ -12,17 +12,18 @@ export const HeroSection = () => {
     <section className={styles.hero}>
       <div className={styles.left}>
         <h1 className={styles.heading}>
-          <span className={styles.together}>Companion projects</span> and
+          Companion <span className={styles.together}>projects</span> and
           articles for{" "}
           <span className={styles.together}>Learning TypeScript</span>
         </h1>
         <div className={styles.author}>By Josh Goldberg</div>
       </div>
-      <img
-        alt="Book cover: Learning TypeScript: Enhance Your Web Development Skills Using Type-Safe JavaScript"
-        className={styles.cover}
-        src="/img/cover.png"
-      />
+      <div className={styles.cover}>
+        <img
+          alt="Book cover: Learning TypeScript: Enhance Your Web Development Skills Using Type-Safe JavaScript"
+          src="/img/cover.png"
+        />
+      </div>
     </section>
   );
 };
