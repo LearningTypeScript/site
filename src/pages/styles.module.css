@@ -1,13 +1,5 @@
-.heroBanner {
-  overflow: hidden;
-  padding: 2rem;
-  position: relative;
-  text-align: center;
-}
-
 .main {
-  margin: 5rem auto;
-  text-align: center;
+  margin-top: 5rem;
 }
 
 .features {
@@ -37,15 +29,7 @@
   text-align: left;
 }
 
-@media screen and (min-width: 996px) {
-  .heroBanner {
-    padding: 4rem 0;
-  }
-
-  .main {
-    max-width: 1000px;
-  }
-
+@media screen and (min-width: 992px) {
   .features {
     flex-direction: row;
     margin: auto;
@@ -58,10 +42,6 @@
 
   .featureEmoji {
     margin-bottom: 1rem;
-  }
-
-  .split {
-    margin: 2.5rem 0 5rem;
   }
 
   .promo {

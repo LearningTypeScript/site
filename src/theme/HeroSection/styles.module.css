@@ -5,7 +5,7 @@ todo: get the grid to work lol
 .hero {
   display: flex;
   flex-direction: column;
-  max-width: var(--lt-layout-width-full);
+  /* max-width: var(--lt-layout-width-full); */
 }
 
 .left {
@@ -57,13 +57,13 @@ todo: get the grid to work lol
 /* Todo: use var(--lt-media-query-width-medium)? */
 @media (min-width: 768px) {
   .hero {
+    flex-direction: row;
     margin: 1rem auto;
     padding: 0 2rem;
-    flex-direction: row;
   }
 
   .heading {
-    font-size: 4rem;
+    font-size: 3rem;
     margin: 0 0 1rem;
     text-align: left;
   }
@@ -91,9 +91,24 @@ todo: get the grid to work lol
 @media (min-width: 992px) {
   .hero {
     margin: 5rem auto;
+    padding: 0;
+  }
+
+  .left {
+    justify-content: initial;
+  }
+
+  .author {
+    align-items: center;
+    flex-direction: row;
+    margin-top: 3rem;
   }
 
   .cover {
-    margin-left: 6rem;
+    margin-left: 4rem;
+  }
+
+  .author::before {
+    margin-bottom: 0;
   }
 }

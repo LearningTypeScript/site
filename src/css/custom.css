@@ -1,6 +1,7 @@
 :root {
   --ifm-background-deemphasized-color: #f4f1f8;
   --ifm-code-font-size: 95%;
+  --ifm-color-secondary-darkest: #584e62;
   --ifm-heading-font-family: "Libre Baskerville";
   --ifm-heading-font-weight: bold;
   --ifm-font-family-base: "Libre Baskerville", Helvetica, Arial, system-ui;

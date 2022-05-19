@@ -1,6 +1,7 @@
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import clsx from "clsx";
 import React from "react";
+import { MainArea } from "../MainArea";
 
 import styles from "./styles.module.css";
 
@@ -9,7 +10,7 @@ export const HeroSection = () => {
   const { siteConfig } = useDocusaurusContext();
 
   return (
-    <section className={styles.hero}>
+    <MainArea as="header" className={styles.hero}>
       <div className={styles.left}>
         <h1 className={styles.heading}>
           Companion <span className={styles.together}>projects</span> and
@@ -24,6 +25,6 @@ export const HeroSection = () => {
           src="/img/cover.png"
         />
       </div>
-    </section>
+    </MainArea>
   );
 };

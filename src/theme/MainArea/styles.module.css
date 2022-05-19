@@ -1,0 +1,13 @@
+.mainArea {
+  margin: auto;
+}
+
+@media screen and (min-width: 992px) {
+  .normal {
+    max-width: 1000px;
+  }
+
+  .thin {
+    max-width: 900px;
+  }
+}

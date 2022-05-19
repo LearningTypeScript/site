@@ -1,4 +1,5 @@
 import React from "react";
+import { BookLink } from "../BookLink";
 import { OutlineLink } from "../OutlineLink";
 
 import styles from "./styles.module.css";
@@ -13,13 +14,9 @@ export default function Footer() {
           <a href="/projects">Projects</a>
         </div>
         <div className={styles.column}>
-          {/* Todo: arrow glyph */}
-          <OutlineLink
-            className={styles.getTheBook}
-            href="https://learning.oreilly.com/library/view/learning-typescript/9781098110321"
-          >
-            Get the Book on O'Reilly ↗
-          </OutlineLink>
+          <BookLink className={styles.getTheBook}>
+            Get the Book on O'Reilly
+          </BookLink>
           <div className={styles.icons}>
             <a
               href="https://github.com/JoshuaKGoldberg/learning-typescript"

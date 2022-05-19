@@ -1,4 +1,4 @@
-.cards {
+.cardsArea {
   margin: 0 2rem;
   text-align: left;
 }
@@ -29,7 +29,7 @@
     text-align: left;
   }
 
-  .cards {
+  .cardsArea {
     display: flex;
     flex-wrap: wrap;
   }
@@ -38,5 +38,17 @@
     flex-direction: row;
     flex-wrap: wrap;
     width: 100%;
+  }
+}
+
+/* Todo: use var(--lt-media-query-width-large)? */
+@media (min-width: 992px) {
+  .cardsArea {
+    margin: 0;
+    text-align: left;
+  }
+
+  .seeAll {
+    display: inline-block;
   }
 }
