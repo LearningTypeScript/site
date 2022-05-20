@@ -9,6 +9,6 @@
 @media (min-width: 992px) {
   .card {
     /* TODO: figure this out better...? */
-    max-width: calc(33% - 1.15rem);
+    max-width: calc(33% - 1.16rem);
   }
 }

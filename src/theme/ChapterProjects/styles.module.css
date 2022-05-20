@@ -1,0 +1,51 @@
+/* TODO: Merge with ProjectsSection styles? <Card> options? */
+
+/* TODO: reuse within OutlineLink */
+.goToHub {
+  color: var(--ifm-font-color-base);
+  display: block;
+  font-family: var(--ifm-font-family-monospace);
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.goToHub:hover {
+  color: var(--ifm-font-color-base);
+  text-decoration: none;
+}
+
+.cards {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+/* Todo: use var(--lt-media-query-width-medium)? */
+@media (min-width: 768px) {
+  .goToHub {
+    margin-bottom: 0;
+    padding: 0.5rem 1rem;
+    text-align: center;
+  }
+
+  .chapterProjects {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .card {
+    max-width: calc(50% - 2rem);
+  }
+}
+
+/* Todo: use var(--lt-media-query-width-large)? */
+@media (min-width: 992px) {
+  .card {
+    /* TODO: figure this out better...? */
+    max-width: calc(33% - 1.16rem);
+  }
+}

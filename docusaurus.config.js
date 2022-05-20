@@ -109,10 +109,9 @@ const config = {
             to: "/articles",
           },
           {
-            docId: "projects",
             label: "Projects",
             position: "right",
-            type: "doc",
+            to: "/projects",
           },
           {
             href: "https://www.oreilly.com/library/view/learning-typescript/9781098110321",
