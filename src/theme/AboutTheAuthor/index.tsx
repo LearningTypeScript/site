@@ -9,7 +9,7 @@ export const AboutTheAuthor = () => {
     <div className={styles.aboutTheAuthor}>
       <MainArea className={styles.mainArea} size="thin">
         <div className={styles.left}>
-          <img className={styles.josh} src="/img/josh.jpg" />
+          <img className={styles.josh} src="/img/josh-red-220px.jpg" />
         </div>
         <p className={styles.right}>
           <h2 className={styles.heading}>About the author</h2>

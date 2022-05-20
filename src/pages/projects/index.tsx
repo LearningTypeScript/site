@@ -63,8 +63,12 @@ export default function Projects(): JSX.Element {
           <br />
           <br />
           Each project follows a chapter in the Learning TypeScript book. Choose
-          between appetizers (bite-sized warmups), entrees (core projects), and
-          desserts (extra-credit exercises).
+          between:
+          <ul>
+            <li>🥗 Appetizers: bite-sized directed warmups</li>
+            <li>🍲 Entrees: larger, more hands-off challenges</li>
+            <li>🍰 Desserts: entrees with a fun twist</li>
+          </ul>
         </p>
         <div className={styles.chapters}>
           {chapters.map((chapter, index) => (
