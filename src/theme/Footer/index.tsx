@@ -65,7 +65,7 @@ export default function Footer() {
         Built with 💖 by <a href="https://joshuakgoldberg.com">Josh Goldberg</a>{" "}
         using Docusaurus and TypeScript, and deployed on Vercel.
         <br />
-        Site designed by <a href="https://jackieliuart.com">Jackie Liu</a>.
+        Site designed by <a href="https://jackieis.online">Jackie Liu</a>.
       </div>
     </footer>
   );
