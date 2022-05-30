@@ -39,7 +39,7 @@ export default function Footer() {
                 />
               </svg>
             </a>
-            <a href="https://twitter.com/LearningTypeScript" target="_blank">
+            <a href="https://twitter.com/LearningTSBook" target="_blank">
               <svg
                 aria-label="Twitter Icon"
                 className={styles.icon}

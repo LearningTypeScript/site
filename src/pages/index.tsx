@@ -26,12 +26,7 @@ export default function Home(): JSX.Element {
           <>
             <h2 style={{ fontSize: "3rem" }}>🛠 Site under construction! 🛠</h2>
             <p style={{ fontSize: "2rem" }}>
-              <strong>
-                I'm still implementing designs and have not yet put articles or
-                projects content in it.
-                <br />
-                Check back the first week of June.
-              </strong>
+              <strong>Check back after the book is released!</strong>
             </p>
           </>
         )}

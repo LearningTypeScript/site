@@ -8,10 +8,6 @@ body:
       description: If any of these required steps are not taken, we may not be able to review your issue. Help us to help you!
       label: Typo Report Checklist
       options:
-        - label: I have pulled the latest `main` branch of the repository.
-          required: true
-        - label: I have [searched for related issues and pull requests](https://github.com/LearningTypeScript/site/issues?q=label%3A%22type%3A+typo%22) and found none that matched my issue.
-          required: true
         - label: I have searched the word or phrase in question online to verify it's incorrect.
           required: true
         - label: This is the appropriate issue form for the typo I would like to report.
