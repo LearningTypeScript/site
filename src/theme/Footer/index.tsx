@@ -19,7 +19,7 @@ export default function Footer() {
           </BookLink>
           <div className={styles.icons}>
             <a
-              href="https://github.com/JoshuaKGoldberg/learning-typescript"
+              href="https://github.com/LearningTypeScript/site"
               target="_blank"
             >
               <svg
@@ -39,7 +39,7 @@ export default function Footer() {
                 />
               </svg>
             </a>
-            <a href="https://twitter.com/JoshuaKGoldberg" target="_blank">
+            <a href="https://twitter.com/LearningTypeScript" target="_blank">
               <svg
                 aria-label="Twitter Icon"
                 className={styles.icon}
