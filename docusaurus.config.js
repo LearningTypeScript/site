@@ -35,9 +35,9 @@ const config = {
           showReadingTime: true,
         },
         docs: {
-          editUrl:
-            "https://github.com/JoshuaKGoldberg/learning-typescript/tree/main/",
-          path: "src/content/projects",
+          editUrl: "https://github.com/LearningTypeScript/projects/tree/main/",
+          include: ["*/*.md", "*/*/*.md"],
+          path: "src/content/external/projects",
           routeBasePath: "/",
           sidebarPath: require.resolve("./sidebars.js"),
         },
