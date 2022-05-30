@@ -62,8 +62,10 @@ export default function Projects(): JSX.Element {
           knowledge of TypeScript.
           <br />
           <br />
-          Each project follows a chapter in the Learning TypeScript book. Choose
-          between:
+          Each project follows a chapter in the <em>
+            Learning TypeScript
+          </em>{" "}
+          book. Choose between:
           <ul>
             <li>🥗 Appetizers: bite-sized directed warmups</li>
             <li>🍲 Entrees: larger, more hands-off challenges</li>
