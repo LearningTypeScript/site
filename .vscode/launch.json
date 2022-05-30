@@ -1,0 +1,11 @@
+{
+  "configurations": [
+    {
+      "args": ["start"],
+      "name": "Start Docusaurus",
+      "program": "${workspaceFolder}/node_modules/.bin/docusaurus",
+      "request": "launch",
+      "type": "node"
+    }
+  ]
+}

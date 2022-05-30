@@ -1,0 +1,3 @@
+[submodule "src/content/external"]
+	path = src/content/external
+	url = https://github.com/LearningTypeScript/projects
