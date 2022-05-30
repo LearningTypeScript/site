@@ -6,7 +6,6 @@ const lightCodeTheme = require("prism-react-renderer/themes/github");
 const config = {
   baseUrl: "/",
   favicon: "img/favicon.png",
-  onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "throw",
   organizationName: "JoshuaKGoldberg",
   projectName: "learning-typescript",
@@ -17,6 +16,9 @@ const config = {
   tagline: "Companion articles and projects for the Learning TypeScript book.",
   title: "Learning TypeScript",
   url: "https://learning-typescript.com",
+
+  // TODO...
+  onBrokenLinks: "warn",
 
   presets: [
     [
