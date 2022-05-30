@@ -2,6 +2,10 @@
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 const lightCodeTheme = require("prism-react-renderer/themes/github");
 
+const {
+  externalProjectLinks,
+} = require("./src/plugins/external-project-links");
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   baseUrl: "/",
@@ -40,6 +44,7 @@ const config = {
           editUrl: "https://github.com/LearningTypeScript/projects/tree/main/",
           include: ["*/*.md", "*/*/*.md"],
           path: "src/content/external/projects",
+          remarkPlugins: [[externalProjectLinks, {}]],
           routeBasePath: "/",
           sidebarPath: require.resolve("./sidebars.js"),
         },
