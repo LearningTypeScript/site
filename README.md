@@ -7,7 +7,7 @@ This website is built using [Docusaurus 2](https://docusaurus.io), a modern stat
 This repository includes [LearningTypeScript/projects](https://github.com/LearningTypeScript/projects) via [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
 
 ```shell
-git clone --recurse-submodules https://github.com/JoshuaKGoldberg/learning-typescript learning-typescript-site
+git clone --recurse-submodules https://github.com/LearningTypeScript/learning-typescript learning-typescript-site
 cd learning-typescript-site
 yarn
 ```
