@@ -62,10 +62,10 @@ export default function Footer() {
         </div>
       </div>
       <div className={styles.credits}>
-        Built with 💖 by <a href="https://joshuakgoldberg.com">Josh Goldberg</a>{" "}
+        Built with 💖 by <a href="https://joshuakgoldberg.com" target="_blank">Josh Goldberg</a>{" "}
         using Docusaurus and TypeScript, and deployed on Vercel.
         <br />
-        Site designed by <a href="https://jackieis.online">Jackie Liu</a>.
+        Site designed by <a href="https://jackieis.online" target="_blank">Jackie Liu</a>.
       </div>
     </footer>
   );
