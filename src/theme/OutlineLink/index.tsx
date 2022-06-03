@@ -1,10 +1,11 @@
 import clsx from "clsx";
-import React from "react";
+import React, { HTMLAttributeAnchorTarget } from "react";
 
 import styles from "./styles.module.css";
 
 export interface OutlineLinkProps
   extends React.HTMLAttributes<HTMLAnchorElement> {
+  target?: HTMLAttributeAnchorTarget
   href: string;
 }
 
