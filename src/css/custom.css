@@ -16,17 +16,6 @@
   --ifm-background-deemphasized-color: #222024;
 }
 
-.docusaurus-highlight-code-line {
-  background-color: rgba(0, 0, 0, 0.1);
-  display: block;
-  margin: 0 calc(-1 * var(--ifm-pre-padding));
-  padding: 0 var(--ifm-pre-padding);
-}
-
-[data-theme="dark"] .docusaurus-highlight-code-line {
-  background-color: rgba(0, 0, 0, 0.3);
-}
-
 /* Header */
 
 .navbar__items {
@@ -40,4 +29,25 @@
 
 .navbar__title {
   margin-left: 0.75rem;
+}
+
+/* Code & Twoslash */
+
+[data-theme="dark"] .shiki.min-light {
+  display: none;
+}
+
+[data-theme="light"] .shiki.nord {
+  display: none;
+}
+
+.docusaurus-highlight-code-line {
+  background-color: rgba(0, 0, 0, 0.1);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+}
+
+[data-theme="dark"] .docusaurus-highlight-code-line {
+  background-color: rgba(0, 0, 0, 0.3);
 }
