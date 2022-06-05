@@ -43,7 +43,7 @@ const config = {
         docs: {
           editUrl: "https://github.com/LearningTypeScript/projects/tree/main/",
           include: ["*/*.md", "*/*/*.md"],
-          path: "src/content/external/projects",
+          path: "projects",
           remarkPlugins: [[externalProjectLinks, {}]],
           routeBasePath: "/",
           sidebarPath: require.resolve("./sidebars.js"),
