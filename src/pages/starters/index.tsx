@@ -56,7 +56,8 @@ export default function Starters(): JSX.Element {
         <p className={styles.ad}>Want a template not yet on this list?</p>
         <OutlineLink
           className={styles.link}
-          href="https://github.com/LearningTypeScript/site/issues/new/choose"
+          href="https://github.com/LearningTypeScript/site/issues/new?assignees=&amp;labels=type%3A+starter&amp;template=03-starter.yaml&amp;title=%F0%9F%9A%80+Starter%3A+%3Cname+of+the+starter+framework%2Ftoolchain%3E"
+          target="_blank"
         >
           Request One Here
         </OutlineLink>
