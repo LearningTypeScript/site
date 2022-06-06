@@ -1,0 +1,26 @@
+.mainArea {
+  padding: 2rem;
+}
+
+.starters {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 3rem;
+  margin-top: 3rem;
+}
+
+.ad {
+  margin-top: 2rem;
+}
+
+/* Todo: use var(--lt-media-query-width-medium)? */
+@media (min-width: 768px) {
+  .card {
+    width: calc(50% - 1.5rem);
+  }
+
+  .mainArea {
+    padding: 2rem 0;
+  }
+}

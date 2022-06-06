@@ -7,7 +7,7 @@ export interface CardProps {
   className?: string;
   description: string;
   href: string;
-  meta: string;
+  meta?: string;
   title: string;
 }
 
@@ -22,7 +22,7 @@ export const Card = ({
     <a className={clsx(styles.card, className)} href={href}>
       <div className={styles.title}>{title}</div>
       <div className={styles.description}>{description}</div>
-      <div className={styles.meta}>{meta}</div>
+      {meta && <div className={styles.meta}>{meta}</div>}
     </a>
   );
 };
