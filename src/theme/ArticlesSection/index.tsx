@@ -1,3 +1,4 @@
+import { useArticles } from "@site/src/utils/useArticles";
 import React from "react";
 import { Card, CardProps } from "../Card";
 import { CardsArea } from "../CardsArea";
@@ -45,6 +46,8 @@ const articles: CardProps[] = [
 ];
 
 export const ArticlesSection = () => {
+  const articles = useArticles();
+
   return (
     <MainArea>
       <CardsArea
@@ -52,12 +55,19 @@ export const ArticlesSection = () => {
         description="Top tips and tricks for why TypeScript behaves the way it does, and how you can work effectively with it."
         heading="Articles"
         link={{
-          children: "See all XYZ articles",
+          children: `See all ${articles.length} articles`,
           href: "/articles",
         }}
       >
         {articles.map((article) => (
-          <Card className={styles.card} {...article} key={article.href} />
+          <Card
+            className={styles.card}
+            description={article.description}
+            href={`/articles/${article.href}`}
+            key={article.href}
+            title={article.title}
+            meta={`Tags: ${article.meta}`}
+          />
         ))}
       </CardsArea>
     </MainArea>

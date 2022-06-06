@@ -12,6 +12,27 @@ const {
 const config = {
   baseUrl: "/",
   customFields: {
+    articles: (() => {
+      const articlesBaseDir = path.join(__dirname, "src/content/articles");
+
+      return fs
+        .readdirSync(articlesBaseDir)
+        .filter((file) => /\.mdx$/.test(file))
+        .map((file) => {
+          const contents = fs
+            .readFileSync(path.join(articlesBaseDir, file))
+            .toString();
+
+          return {
+            date: /date: "(.+)"/.exec(contents)[1],
+            description: /description: "(.+)"/.exec(contents)[1],
+            href: file.split(".")[0],
+            meta: /meta: (.+)/.exec(contents)[1],
+            title: /# (.+)/.exec(contents)[1],
+          };
+        })
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+    })(),
     chapters: (() => {
       const projectsBaseDir = path.join(
         __dirname,
