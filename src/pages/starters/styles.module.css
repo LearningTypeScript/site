@@ -11,7 +11,11 @@
 }
 
 .ad {
-  margin-top: 2rem;
+  margin-top: 3rem;
+}
+
+.link {
+  display: inline-block;
 }
 
 /* Todo: use var(--lt-media-query-width-medium)? */
