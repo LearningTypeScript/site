@@ -8,7 +8,6 @@ export interface CardProps {
   description: string;
   href: string;
   meta: string;
-  tags?: string[];
   title: string;
 }
 
@@ -17,7 +16,6 @@ export const Card = ({
   description,
   href,
   meta,
-  tags,
   title,
 }: CardProps) => {
   return (

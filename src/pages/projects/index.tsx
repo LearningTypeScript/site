@@ -1,57 +1,33 @@
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
+import { useChapters } from "@site/src/utils/useChapters";
 import React from "react";
+
 import { ChapterProjects } from "../../theme/ChapterProjects";
-
 import { MainArea } from "../../theme/MainArea";
-
 import styles from "./styles.module.css";
 
-const chapters = Array.from(
-  [
-    "From Javascript To Typescript",
-    "The Type System",
-    "Unions And Literals",
-    "Objects",
-    "Functions",
-    "Arrays",
-    "Interfaces",
-    "Classes",
-    "Type Modifiers",
-    "Generics",
-    "Declaration Files",
-    "Using IDE Features",
-    "Configuration Options",
-    "Syntax Extensions",
-    "Type Operations",
-  ],
-  (name) => ({
-    name,
-    projects: [
-      {
-        description: "🥗 Appetizer Project",
-        href: "/project/analyzing-dna",
-        meta: "Lorem ipsum typesum TypeScript etc. etc.",
-        title: "Analyzing DNA",
-      },
-      {
-        description: "🍲 Entree Project",
-        href: "/project/analyzing-dna",
-        meta: "Lorem ipsum typesum TypeScript etc. etc.",
-        title: "Analyzing DNA",
-      },
-      {
-        description: "🍰 Dessert Project",
-        href: "/project/analyzing-dna",
-        meta: "Lorem ipsum typesum TypeScript etc. etc.",
-        title: "Analyzing DNA",
-      },
-    ],
-  })
-);
+const chapterNames = [
+  "From Javascript To Typescript",
+  "The Type System",
+  "Unions And Literals",
+  "Objects",
+  "Functions",
+  "Arrays",
+  "Interfaces",
+  "Classes",
+  "Type Modifiers",
+  "Generics",
+  "Declaration Files",
+  "Using IDE Features",
+  "Configuration Options",
+  "Syntax Extensions",
+  "Type Operations",
+];
 
 export default function Projects(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
+  const chapters = useChapters();
 
   return (
     <Layout description={siteConfig.tagline} title="Projects">
@@ -73,13 +49,21 @@ export default function Projects(): JSX.Element {
           </ul>
         </p>
         <div className={styles.chapters}>
-          {chapters.map((chapter, index) => (
-            <ChapterProjects
-              {...chapter}
-              index={index + 1}
-              key={chapter.name}
-            />
-          ))}
+          {chapterNames.map((chapterName, index) => {
+            const slug = chapterName.toLowerCase().replace(/ /g, "-");
+            console.log("sluggy", slug, chapters[slug]);
+
+            return (
+              <ChapterProjects
+                index={index + 1}
+                key={chapterName}
+                name={chapterName}
+                projects={
+                  chapters[chapterName.toLowerCase().replace(/ /g, "-")]
+                }
+              />
+            );
+          })}
         </div>
       </MainArea>
     </Layout>
