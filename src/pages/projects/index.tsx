@@ -51,7 +51,6 @@ export default function Projects(): JSX.Element {
         <div className={styles.chapters}>
           {chapterNames.map((chapterName, index) => {
             const slug = chapterName.toLowerCase().replace(/ /g, "-");
-            console.log("sluggy", slug, chapters[slug]);
 
             return (
               <ChapterProjects

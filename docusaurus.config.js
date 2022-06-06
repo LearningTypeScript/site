@@ -18,11 +18,6 @@ const config = {
         "src/content/external/projects"
       );
       const files = readDirRecursive(projectsBaseDir);
-      const emojiKey = {
-        "🥗": "appetizer",
-        "🍲": "entree",
-        "🍰": "dessert",
-      };
 
       const chapters = {};
 
