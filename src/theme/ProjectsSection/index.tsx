@@ -1,3 +1,4 @@
+import { useChapters } from "@site/src/utils/useChapters";
 import React from "react";
 import { Card, CardProps } from "../Card";
 import { CardsArea } from "../CardsArea";
@@ -45,6 +46,12 @@ const projects: CardProps[] = [
 ];
 
 export const ProjectsSection = () => {
+  const chapters = useChapters();
+  const projectCount = Object.values(chapters).reduce(
+    (previous, chapter) => previous + chapter.length,
+    0
+  );
+
   return (
     <MainArea>
       <CardsArea
@@ -52,7 +59,7 @@ export const ProjectsSection = () => {
       of TypeScript."
         heading="Projects"
         link={{
-          children: "See all XYZ projects",
+          children: `See all ${projectCount} projects`,
           href: "/projects",
         }}
       >
