@@ -1,0 +1,29 @@
+name: "🚀 Request a Starter"
+description: "Request a new starter be added to https://learningtypescript.com/starters"
+title: "🚀 Starter: <name of the starter framework/toolchain>"
+labels:
+  - "type: starter"
+body:
+  - attributes:
+      description: If any of these required steps are not taken, we may not be able to review your issue. Help us to help you!
+      label: Starter Request Checklist
+      options:
+        - label: I have [searched for related issues](https://github.com/LearningTypeScript/site/issues?q=is%3Aissue+label%3A%22area%3A+starters%22) and found none that matched my issue.
+          required: true
+        - label: This is the appropriate issue form for the starter I would like to request.
+          required: true
+    type: checkboxes
+  - attributes:
+      description: What is the docs URL of the starter framework/toolchain you'd like to request?
+      label: Starter Docs URL
+    type: textarea
+    validations:
+      required: true
+  - attributes:
+      description: What is the starter's guide to using TypeScript, if it exists?
+      label: Starter TypeScript Guide
+    type: textarea
+  - attributes:
+      label: Additional Info
+      description: Any additional info you'd like to provide.
+    type: textarea

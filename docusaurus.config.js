@@ -139,6 +139,11 @@ const config = {
             to: "/projects",
           },
           {
+            label: "Starters",
+            position: "right",
+            to: "/starters",
+          },
+          {
             href: "https://www.oreilly.com/library/view/learning-typescript/9781098110321",
             label: "The Book",
             position: "right",
