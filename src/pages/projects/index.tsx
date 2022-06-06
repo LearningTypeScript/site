@@ -50,8 +50,6 @@ export default function Projects(): JSX.Element {
         </p>
         <div className={styles.chapters}>
           {chapterNames.map((chapterName, index) => {
-            const slug = chapterName.toLowerCase().replace(/ /g, "-");
-
             return (
               <ChapterProjects
                 index={index + 1}

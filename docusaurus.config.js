@@ -63,7 +63,7 @@ const config = {
           chapters[projectMatch[1]].push({
             level,
             name,
-            path: file,
+            path: file.replace("README.md", ""),
             slug: projectMatch[2],
           });
         }
