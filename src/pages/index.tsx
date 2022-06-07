@@ -15,22 +15,6 @@ export default function Home(): JSX.Element {
 
   return (
     <Layout description={siteConfig.tagline} title=" ">
-      <div
-        style={{
-          margin: "2rem auto 0",
-          maxWidth: "1000px",
-          textAlign: "center",
-        }}
-      >
-        {globalThis?.location?.search?.includes("preview") ? null : (
-          <>
-            <h2 style={{ fontSize: "3rem" }}>🛠 Site under construction! 🛠</h2>
-            <p style={{ fontSize: "2rem" }}>
-              <strong>Check back after the book is released!</strong>
-            </p>
-          </>
-        )}
-      </div>
       <HeroSection />
       <main className={styles.main}>
         <ProjectsSection />
