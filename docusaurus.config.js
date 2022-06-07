@@ -111,7 +111,8 @@ const config = {
           showReadingTime: true,
         },
         docs: {
-          editUrl: "https://github.com/LearningTypeScript/projects/tree/main/",
+          editUrl: ({ docPath }) =>
+            `https://github.com/LearningTypeScript/projects/tree/main/projects/${docPath}`,
           include: ["*/*.md", "*/*/*.md"],
           path: "src/content/external/projects",
           remarkPlugins: [[externalProjectLinks, {}]],
