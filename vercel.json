@@ -1,0 +1,5 @@
+{
+  "redirects": [
+    { "source": "/objects-and-interfaces", "destination": "/interfaces" }
+  ]
+}
