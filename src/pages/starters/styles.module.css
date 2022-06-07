@@ -15,7 +15,7 @@
 }
 
 .link {
-  display: inline-block;
+  display: inline-block !important;
 }
 
 /* Todo: use var(--lt-media-query-width-medium)? */
