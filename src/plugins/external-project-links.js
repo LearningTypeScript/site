@@ -12,7 +12,7 @@ module.exports.externalProjectLinks = () => {
       if (node.type === "link") {
         if (/^\.\/\d\d/.test(node.url)) {
           node.url = path.join(
-            basePath,
+            `https://${basePath}`,
             file.dirname.split("external/")[1],
             node.url
           );
