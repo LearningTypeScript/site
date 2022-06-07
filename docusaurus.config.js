@@ -34,6 +34,7 @@ const config = {
         .sort((a, b) => new Date(b.date) - new Date(a.date));
     })(),
     chapters: (() => {
+      const levelSortOrder = { appetizer: 0, entree: 1, dessert: 2 };
       const projectsBaseDir = path.join(
         __dirname,
         "src/content/external/projects"
@@ -67,6 +68,12 @@ const config = {
             slug: projectMatch[2],
           });
         }
+      }
+
+      for (const projects of Object.values(chapters)) {
+        projects.sort(
+          (a, b) => levelSortOrder[a.level] - levelSortOrder[b.level]
+        );
       }
 
       return chapters;
