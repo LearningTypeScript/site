@@ -40,18 +40,22 @@ export const ChapterProjects = ({
         Go to Chapter {label} Hub ➡
       </a>
       <div className={styles.cards}>
-        {projects.map((project) => (
-          <Card
-            className={styles.card}
-            key={project.name}
-            meta={`${label}. ${name}`}
-            description={`${levelEmojis[project.level]} ${
-              project.level[0].toUpperCase() + project.level.slice(1)
-            } Project`}
-            href={project.path}
-            title={project.name}
-          />
-        ))}
+        {projects.length ? (
+          projects.map((project) => (
+            <Card
+              className={styles.card}
+              key={project.name}
+              meta={`${label}. ${name}`}
+              description={`${levelEmojis[project.level]} ${
+                project.level[0].toUpperCase() + project.level.slice(1)
+              } Project`}
+              href={project.path}
+              title={project.name}
+            />
+          ))
+        ) : (
+          <em>Coming later this week!</em>
+        )}
       </div>
     </div>
   );
