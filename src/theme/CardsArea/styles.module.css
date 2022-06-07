@@ -50,6 +50,6 @@
 
   .seeAll {
     display: inline-block;
-    margin-bottom: 2rem;
+    margin-bottom: 3.5rem !important;
   }
 }
