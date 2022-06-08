@@ -86,7 +86,7 @@ const config = {
     {
       "data-site": "VIOSSRYT",
       defer: true,
-      src: "https://cdn.usefathom.com/script.js",
+      src: "https://fun.learningtypescript.com/script.js",
     },
   ],
   stylesheets: [
