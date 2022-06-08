@@ -142,7 +142,7 @@ const config = {
             "typescript, learning typescript, O'Reilly, josh goldberg, joshuakgoldberg",
         },
         {
-          content: "summary_large_image",
+          content: "summary",
           name: "twitter:card",
         },
         {
