@@ -135,6 +135,38 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      metadata: [
+        {
+          name: "keywords",
+          content:
+            "typescript, learning typescript, O'Reilly, josh goldberg, joshuakgoldberg",
+        },
+        {
+          content: "summary_large_image",
+          name: "twitter:card",
+        },
+        {
+          content: "@JoshuaKGoldberg",
+          name: "twitter:creator",
+        },
+        {
+          content: "@LearningTSBook",
+          name: "twitter:description",
+        },
+        {
+          content: "https://learningtypescript.com/img/cover.png",
+          name: "twitter:image",
+        },
+        {
+          content:
+            "Enhance Your Web Development Skills Using Type-Safe JavaScript",
+          name: "twitter:site",
+        },
+        {
+          content: "Learning TypeScript",
+          name: "twitter:title",
+        },
+      ],
       navbar: {
         title: "Learning TypeScript",
         logo: {
