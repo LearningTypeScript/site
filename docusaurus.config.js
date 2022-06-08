@@ -90,7 +90,7 @@ const config = {
   ],
   tagline: "Companion articles and projects for the Learning TypeScript book.",
   title: "Learning TypeScript",
-  url: "https://learning-typescript.com",
+  url: "https://www.learningtypescript.com",
 
   // TODO...
   onBrokenLinks: "warn",
@@ -132,7 +132,7 @@ const config = {
     ({
       fathomAnalytics: {
         siteId: "VIOSSRYT",
-        customDomain: "https://learningtypescript.com",
+        customDomain: "https://www.learningtypescript.com",
       },
 
       navbar: {
