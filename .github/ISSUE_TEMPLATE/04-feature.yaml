@@ -1,0 +1,25 @@
+name: "✨ Request a Feature"
+description: "Request a feature for the website"
+title: "✨ Feature: <short description of the feature>"
+labels:
+  - "type: feature"
+body:
+  - attributes:
+      description: If any of these required steps are not taken, we may not be able to review your issue. Help us to help you!
+      label: Feature Request Checklist
+      options:
+        - label: I have [searched for related issues](https://github.com/LearningTypeScript/site/issues?q=is%3Aissue+label%3A%22type%3A+feature%22) and found none that matched my issue.
+          required: true
+        - label: This is the appropriate issue form for the feature I would like to request.
+          required: true
+    type: checkboxes
+  - attributes:
+      description: What would you like to see?
+      label: Feature
+    type: textarea
+    validations:
+      required: true
+  - attributes:
+      label: Additional Info
+      description: Any additional info you'd like to provide.
+    type: textarea
