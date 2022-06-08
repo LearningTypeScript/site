@@ -1,0 +1,43 @@
+---
+date: "June 8 2022"
+description: "..."
+meta: easter eggs, meta
+---
+
+# `void` Returning Function Assignability
+
+Most popular programming languages use the `void` keyword to indicate that a function cannot return a value.
+_Learning TypeScript_ describes TypeScript's `void` keyword as indicating that the returned value from a function will be ignored.
+Those two definitions are not always the same!
+TypeScript's `void` comes with an initially surprising behavior: a function type with a non-`void` return is considered assignable to a function type with a `void` return.
+
+```ts
+let returnsVoid: () => void;
+
+returnsVoid = () => "this is fine";
+```
+
+## `void` Is More of an Idea
+
+```ts
+["a", "b"].forEach((value) => console.log(value));
+```
+
+Note that TypeScript will not allow you to
+
+```ts
+function thisIsNotFine(): void {
+  return "🔥";
+  // Error: Type 'string' is not assignable to type 'void'.
+}
+```
+
+This article was inspired by the thread on this tweet:
+https://twitter.com/haroenv/status/1534186668244230155
+
+Got your own TypeScript questions?
+Tweet @LearningTSbook and the answer might become an article too!
+
+```
+
+```
