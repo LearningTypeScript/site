@@ -154,7 +154,7 @@ const config = {
           name: "twitter:description",
         },
         {
-          content: "https://learningtypescript.com/img/cover.png",
+          content: "https://learningtypescript.com/img/promo-square.png",
           name: "twitter:image",
         },
         {
