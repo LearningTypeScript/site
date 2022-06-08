@@ -82,6 +82,7 @@ const config = {
   favicon: "img/favicon.png",
   onBrokenMarkdownLinks: "throw",
   organizationName: "JoshuaKGoldberg",
+  plugins: ["docusaurus-plugin-fathom"],
   projectName: "learning-typescript",
   stylesheets: [
     // TODO: Reduce these to just the weights I actually need
@@ -129,6 +130,11 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      fathomAnalytics: {
+        siteId: "VIOSSRYT",
+        customDomain: "https://learningtypescript.com",
+      },
+
       navbar: {
         title: "Learning TypeScript",
         logo: {
