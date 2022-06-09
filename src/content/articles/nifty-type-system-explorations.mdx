@@ -1,0 +1,42 @@
+---
+date: "June 9 2022"
+description: "Some of the most creative, wacky explorations of wha you can do in TypeScript's type system!"
+meta: easter eggs, meta
+---
+
+# Nifty Uses of TypeScript's Type System
+
+[TypeScript's type system is Turing Complete](https://github.com/microsoft/TypeScript/issues/14833): meaning it has conditional branching (conditional types) and works with an arbitrary huge amount of memory.
+Most applications try to get away with as few conditional types as possible because they can become complex pretty quickly.
+That's good advice mentioned in _Learning TypeScript_.
+
+Some wild developers on the internet have instead leaned into th type system's capabilities by implementing shockingly complex logic in it.
+This blog post is an ever-evolving list of clever applications of the type system.
+
+## 🛑 Caveat: This Is Not Normal
+
+Please don't look at the following projects list and think you need to be that familiar with TypeScript's type system.
+These projects are ridiculous.
+They're the equivalent of [code golf](https://en.wikipedia.org/wiki/Code_golf): a fun activity for a select few, but not useful for day-to-day work for almost any.
+
+<!--truncate-->
+
+## Projects List
+
+All projects in this list include helpful explanations explaining how they work:
+
+- \[November 2020\] [Number Arithmetic](https://itnext.io/implementing-arithmetic-within-typescripts-type-system-a1ef140a6f6f) _(Ryan Dabler)_
+- \[October 2020\] [Tic Tac Toe](https://blog.joshuakgoldberg.com/type-system-game-engines) _(Josh Goldberg)_
+- \[September 2020\] [SQL database engine](https://twitter.com/c_pick/status/1307433762914009090) _(Charles Pick)_
+- \[February 2020\] [Maze Solver](https://twitter.com/ronenamiel/status/1232012684268392450) and [many more meta types](https://github.com/ronami/meta-typing) _(Ronen Amiel)_
+- \[October 2019\] [Binary Arithmetic](https://blog.joshuakgoldberg.com/binary-arithmetic) _(Josh Goldberg)_
+
+## More Resources
+
+If the explanations in projects aren't working out for you, I have two resources I'd recommend:
+
+- The _Learning TypeScript_ book covers the foundations of the type system up through smaller uses of conditional and inferred types
+- [Zhenghao He](https://twitter.com/he_zhenghao)'s [An Introduction To Type Programming In TypeScript](https://www.zhenghao.io/posts/type-programming) is a gentle but comprehensive walkthrough
+
+Additionally, [type-challenges](https://github.com/type-challenges/type-challenges) contains a wonderful suite of type challenges starting with foundations and working up to gloriously complex metaprogramming.
+I'd highly recommend using them to work your way up to being able to take on
