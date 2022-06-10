@@ -73,8 +73,8 @@ const config = {
       for (const projects of Object.values(chapters)) {
         projects.sort((a, b) =>
           a.level === b.level
-            ? levelSortOrder[a.level] - levelSortOrder[b.level]
-            : a.name.localeCompare(b.name)
+            ? a.name.localeCompare(b.name)
+            : levelSortOrder[a.level] - levelSortOrder[b.level]
         );
       }
 
