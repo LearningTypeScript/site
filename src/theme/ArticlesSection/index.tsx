@@ -57,8 +57,8 @@ export const ArticlesSection = () => {
         link={{
           children:
             articles.length === 1
-              ? `See all ${articles.length} articles`
-              : "See all articles",
+              ? "See all articles"
+              : `See all ${articles.length} articles`,
           href: "/articles",
         }}
       >
