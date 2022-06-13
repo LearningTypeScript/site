@@ -5,8 +5,8 @@
 <p align="center">
 	<img alt="Code Style: Prettier" src="https://img.shields.io/badge/code_style-prettier-14cc21.svg" />
 	<img alt="TypeScript: Strict" src="https://img.shields.io/badge/typescript-strict-14cc21.svg" />
-	<a href="https://github.com/LearningTypeScript/projects/actions/workflows/solutions.yml">
-		<img alt="Build Status: Build Passing" src="https://github.com/LearningTypeScript/projects/actions/workflows/solutions.yml/badge.svg" />
+	<a href="https://github.com/LearningTypeScript/site/actions/workflows/solutions.yml">
+		<img alt="Build Status: Build Passing" src="https://github.com/LearningTypeScript/site/actions/workflows/solutions.yml/badge.svg" />
 	</a>
 </p>
 
