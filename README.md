@@ -13,7 +13,7 @@
 <img align="right" alt="Learning TypeScript title with a sun conure and O'Reilly logo" height="176px" src="./cover-conure.png" width="176px">
 
 Welcome to the repository housing the companion website for _Learning TypeScript_!
-Built using [Docusaurus 2](https://docusaurus.io).
+Built using [Docusaurus 2](https://docusaurus.io) and deployed with [Vercel](https://vercel.com).
 
 ## Setup
 
