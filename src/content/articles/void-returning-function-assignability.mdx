@@ -1,0 +1,60 @@
+---
+date: "June 21 2022"
+description: "Why functions that return a value are assignable to void-returning function types in TypeScript."
+meta: assignabiity, functions, void
+---
+
+# Void-Returning Function Assignability
+
+Most popular programming languages use the `void` keyword to indicate that a function cannot return a value.
+_Learning TypeScript_ describes TypeScript's `void` keyword as indicating that the returned value from a function will be ignored.
+Those two definitions are not always the same!
+TypeScript's `void` comes with an initially surprising behavior: a function type with a non-`void` return is considered assignable to a function type with a `void` return.
+
+```ts
+let returnsVoid: () => void;
+
+returnsVoid = () => "this is fine";
+```
+
+Why is that?
+
+<!--truncate-->
+
+## `void` Is More of an Idea
+
+It's very common for functions to be called and have their return type ignored.
+Take this code block, in which a function that returns `number` <small>(because Array's `.unshift` returns the new array length)</small> is passed to `.forEach`:
+
+```ts
+let letters = ["c", "d", "e"];
+
+["a", "b"].forEach((letter) => letters.unshift(letter)); // Ok
+```
+
+We should be allowed to write that code in TypeScript!
+`.forEach`'s function parameter's return type is correctly marked as `void` because the value returned from the function is ignored.
+**Functions that return a value can be used in locations that don't care about their returned value.**
+
+## `void` is not `any`
+
+Note that TypeScript will not allow you to return a value within a function explicitly annotated as returning `void`.
+TypeScript will report an assignability type error:
+
+```ts
+function thisIsNotFine(): void {
+  return "🔥";
+  // Error: Type 'string' is not assignable to type 'void'.
+}
+```
+
+`void` is not a free pass to return whatever you want.
+It's an explicit indication that no return value is meant to be used.
+
+---
+
+This article was inspired by the thread on this tweet:
+https://twitter.com/haroenv/status/1534186668244230155
+
+Got your own TypeScript questions?
+Tweet [@LearningTSbook](https://twitter.com/LearningTSBook) and the answer might become an article too!
