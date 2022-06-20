@@ -41,3 +41,9 @@
 .navbar__title {
   margin-left: 0.75rem;
 }
+
+/* Bodies */
+
+article .markdown a {
+  text-decoration: underline;
+}

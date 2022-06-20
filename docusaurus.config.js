@@ -71,8 +71,10 @@ const config = {
       }
 
       for (const projects of Object.values(chapters)) {
-        projects.sort(
-          (a, b) => levelSortOrder[a.level] - levelSortOrder[b.level]
+        projects.sort((a, b) =>
+          a.level === b.level
+            ? a.name.localeCompare(b.name)
+            : levelSortOrder[a.level] - levelSortOrder[b.level]
         );
       }
 
@@ -135,6 +137,38 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      metadata: [
+        {
+          name: "keywords",
+          content:
+            "typescript, learning typescript, O'Reilly, josh goldberg, joshuakgoldberg",
+        },
+        {
+          content: "summary",
+          name: "twitter:card",
+        },
+        {
+          content: "@JoshuaKGoldberg",
+          name: "twitter:creator",
+        },
+        {
+          content: "@LearningTSBook",
+          name: "twitter:description",
+        },
+        {
+          content: "https://learningtypescript.com/img/promo-square.png",
+          name: "twitter:image",
+        },
+        {
+          content:
+            "Enhance Your Web Development Skills Using Type-Safe JavaScript",
+          name: "twitter:site",
+        },
+        {
+          content: "Learning TypeScript",
+          name: "twitter:title",
+        },
+      ],
       navbar: {
         title: "Learning TypeScript",
         logo: {
