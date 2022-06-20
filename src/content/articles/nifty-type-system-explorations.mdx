@@ -7,13 +7,13 @@ meta: easter eggs, meta
 # Nifty Type System Explorations
 
 [TypeScript's type system is Turing Complete](https://github.com/microsoft/TypeScript/issues/14833): meaning it has conditional branching (conditional types) and works with an arbitrary huge amount of memory.
-Most applications try to get away with as few conditional types as possible because they can become complex pretty quickly.
-That's good advice mentioned in _Learning TypeScript_.
-
-Some wild developers on the internet have instead leaned into th type system's capabilities by implementing shockingly complex logic in it.
+You can write some incredible things in the type system: from binary arithmetic and rudimentary virtual machines to maze solvers and full programming languages!
 This blog post is an ever-evolving list of clever applications of the type system.
 
-## 🛑 Caveat: This Is Not Normal
+## ✋ This Is Not Normal
+
+Most applications try to get away with as few conditional types as possible because they can become complex pretty quickly.
+That's good advice mentioned in _Learning TypeScript_.
 
 Please don't look at the following projects list and think you need to be that familiar with TypeScript's type system.
 These projects are ridiculous.
@@ -24,9 +24,9 @@ They're the equivalent of [code golf](https://en.wikipedia.org/wiki/Code_golf): 
 ## Projects List
 
 Sorted oldest first.
-All projects in this list include helpful explanations explaining how they work.
+All projects listed come with explanations explaining how they work.
 
-### [4-Bit Virtual Machine](https://twitter.com/acutmore)
+### [4-Bit Virtual Machine](https://gist.github.com/acutmore/9d2ce837f019608f26ff54e0b1c23d6e)
 
 [Ashley Claymore](https://twitter.com/acutmore/status/1175820877566492673), September 2019
 
@@ -46,6 +46,13 @@ Very impressive.
 This project also implements low-level bit manipulation logic in the type system.
 It's less extensive than the 4-bit VM, and "just" includes 8-bit integer manipulation instead.
 
+### [Typing the Technical Interview](https://gal.hagever.com/posts/typing-the-technical-interview-in-typescript)
+
+> This blogpost shows how to implement FizzBuzz in TypeScript using types only — with no runtime code whatsoever.
+
+This crafty approach walks through how to set up recursive logic and number arithmetic purely in the type system.
+It ends with a full [FizzBuzz](https://en.wikipedia.org/wiki/Fizz_buzz) implementation that works on numbers.
+
 ### [Maze Solver and More](https://github.com/ronami/meta-typing)
 
 [Ronen Amiel](https://twitter.com/ronenamiel/status/1232012684268392450), February 2020
@@ -59,7 +66,7 @@ Its puzzle solutions in particular stand out as great, well-commented uses of ma
 
 [Devansh Jethmalani](https://twitter.com/devanshj__/status/1297939517853196288), August 2020
 
-> An effort to statically type xstate
+> An effort to statically type xstate.
 
 [XState](https://xstate.js.org) is a popular library for state machines and state charts in JavaScript and TypeScript.
 TXState manages to take those features and run them entirely in the type system.
@@ -81,7 +88,7 @@ It supports `SELECT` statements that return type system array of objects, as wel
 
 [Ronen Amiel](https://twitter.com/ronenamiel/status/1321199372802183169), October 2020
 
-> A tiny language interpreter implemented purely in TypeScript's type-system
+> A tiny language interpreter implemented purely in TypeScript's type-system.
 
 Another fun project from Ronen: this time, an entire language!
 It supports a Lisp-like syntax with commands such as `add`, `join`, and `or`, as well as functions and variables.
@@ -112,8 +119,13 @@ Anurag has a collection of other great type system explorations on GitHub too: [
 
 If the explanations in projects aren't working out for you, I have two resources I'd recommend:
 
-- The _Learning TypeScript_ book covers the foundations of the type system up through smaller uses of conditional and inferred types
-- [Zhenghao He](https://twitter.com/he_zhenghao)'s [An Introduction To Type Programming In TypeScript](https://www.zhenghao.io/posts/type-programming) is a gentle but comprehensive walkthrough
+- The _Learning TypeScript_ book covers the foundations of the type system up through smaller uses of conditional and inferred types.
+- [Zhenghao He](https://twitter.com/he_zhenghao)'s [An Introduction To Type Programming In TypeScript](https://www.zhenghao.io/posts/type-programming) is a gentle but comprehensive walkthrough of techniques used by these projects.
 
 Additionally, [type-challenges](https://github.com/type-challenges/type-challenges) contains a wonderful suite of type challenges starting with foundations and working up to gloriously complex metaprogramming.
-I'd highly recommend using them to work your way up to being able to take on
+I'd highly recommend using them to work your way up to being able to make projects like the ones in this article.
+
+:::info
+Got a project you think should be listed?
+Send it to [@LearningTSBook](https://twitter.com/LearningTSBook) on Twitter!
+:::
