@@ -63,6 +63,10 @@ This frequently shows up with event listeners in UI libraries such as React:
 
 ```tsx
 async function myOnClick() {
+  // (simulate some asynchronous work happening)
+  await new Promise((resolve) => setTimeout(resolve, 100));
+
+  // (simulate some crashing bug in the code)
   if (Math.random() > 0.5) {
     throw new Error("Oh no!");
   }
