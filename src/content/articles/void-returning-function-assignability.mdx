@@ -51,6 +51,30 @@ function thisIsNotFine(): void {
 `void` is not a free pass to return whatever you want.
 It's an explicit indication that no return value is meant to be used.
 
+## Addendum: Misused Promises
+
+[Anat Dagan posted on Twitter](https://twitter.com/anat_in_a_hat/status/1539098263705485312):
+
+> Maybe I'm missing something, but assigning functions that return non-void values to a void-returning function sounds like an opening for bugs to me…
+
+Indeed, there is a common class of bugs from mismatched void/non-void function return types!
+Passing an asynchronous function (one that returns a Promise) to a handler that doesn't handle the created Promise means Promise rejections might not be handled.
+This frequently shows up with event listeners in UI libraries such as React:
+
+```tsx
+async function myOnClick() {
+  if (Math.random() > 0.5) {
+    throw new Error("Oh no!");
+  }
+}
+
+// The "Oh no!" Error won't be logged anywhere or handled...
+const myButton = <button onClick={myOnClick}>...</button>;
+```
+
+[TypeScript ESLint](https://typescript-eslint.io)'s [no-misused-promises](https://typescript-eslint.io/rules/no-misused-promises) rule can catch cases like this automatically for you.
+The [no-floating-promises](https://typescript-eslint.io/rules/no-floating-promises) rule is also useful for catching other classes of "floating" Promises.
+
 ---
 
 This article was inspired by the thread on this tweet:
