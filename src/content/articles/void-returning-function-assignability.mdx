@@ -57,7 +57,7 @@ It's an explicit indication that no return value is meant to be used.
 
 > Maybe I'm missing something, but assigning functions that return non-void values to a void-returning function sounds like an opening for bugs to me…
 
-Indeed, there is a common class of bugs from mismatched void/non-void function return types!
+Indeed, it is!
 Passing an asynchronous function (one that returns a Promise) to a handler that doesn't handle the created Promise means Promise rejections might not be handled.
 This frequently shows up with event listeners in UI libraries such as React:
 
