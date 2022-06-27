@@ -1,0 +1,141 @@
+---
+date: "June 27 2022"
+description: "Some of the most creative, wacky explorations of wha you can do in TypeScript's type system!"
+meta: easter eggs, meta
+---
+
+# Extreme Explorations of TypeScript's Type System
+
+[TypeScript's type system is Turing Complete](https://github.com/microsoft/TypeScript/issues/14833): meaning it has conditional branching (conditional types) and works with an arbitrary huge amount of memory.
+As a result, you can use the type system as its own programming language complete with variables, functions, and recursion.
+Developers have pushed the bounds of type operations possible in the type system to write some pretty incredible things!
+
+This blog post is a starting list of nifty things TypeScript developers have pushed the type system to be able to do.
+They range from binary arithmetic and rudimentary virtual machines to maze solvers and full programming languages.
+
+## ✋ This Is Not Normal
+
+Most applications try to get away with as few extreme type operations as possible.
+Complex logic in the type system gets unreadable and hard to debug pretty quickly.
+The _Learning TypeScript_ book advises:
+
+> If you do find a need to use type operations, please—for the sake of any developer who has to read your code, including a future you—try to keep them to a minimum if possible.
+> Use readable names that help readers understand the code as they read it.
+> Leave descriptive comments for anything you think future readers might struggle with.
+
+Please don't look at the following projects list and think you need to understand them to use TypeScript.
+These projects are ridiculous.
+They're the equivalent of [code golf](https://en.wikipedia.org/wiki/Code_golf): a fun activity for a select few, but not useful for most day-to-day work.
+
+<!--truncate-->
+
+## Projects List
+
+Sorted oldest first.
+All projects listed come with explanations explaining how they work.
+
+### [4-Bit Virtual Machine](https://gist.github.com/acutmore/9d2ce837f019608f26ff54e0b1c23d6e)
+
+[Ashley Claymore](https://twitter.com/acutmore/status/1175820877566492673), September 2019
+
+> So...a joke with a colleague at work got a little bit out of hand. I wrote a 4-Bit Virtual Machine in @typescript, using just Types, no JavaScript.
+
+This well-documented set of types sets up a "virtual machine" that allows for manipulating a 4-bit stack.
+Its exported `VM` type takes in an array of program instructions such as `"push"` and `"peek"`, and simulates manipulating the stack for each instruction.
+It even comes with a [fizz buzz](https://en.wikipedia.org/wiki/Fizz_buzz) implementation in 20 commands.
+Very impressive.
+
+### [Binary Arithmetic](https://blog.joshuakgoldberg.com/binary-arithmetic)
+
+[Josh Goldberg](https://twitter.com/JoshuaKGoldberg/status/1182791917194530816), October 2019
+
+> `type Bit = 0 | 1;`
+
+This project also implements low-level bit manipulation logic in the type system.
+It's less extensive than the 4-bit VM, and "just" includes 8-bit integer manipulation instead.
+
+### [Maze Solver and More](https://github.com/ronami/meta-typing)
+
+[Ronen Amiel](https://twitter.com/ronenamiel/status/1232012684268392450), February 2020
+
+> This project attempts to push TypeScript's type system to its limits by actually implementing various functions and algorithms, purely on top of the type system.
+
+Ronen made available not just a shortest-path maze solver in the type system, but also a whole suite of functions including number arithmetic, list operations, array sorting algorithms, and puzzle solving.
+Its puzzle solutions in particular stand out as great, well-commented uses of many type system features.
+
+### [Fizz Buzz](https://gal.hagever.com/posts/typing-the-technical-interview-in-typescript)
+
+[Gal Schlezinger](https://twitter.com/galstar/status/1230519810418761730), February 2020
+
+> This blogpost shows how to implement FizzBuzz in TypeScript using types only — with no runtime code whatsoever.
+
+This crafty approach walks through how to set up recursive logic and number arithmetic purely in the type system.
+It ends with a full [FizzBuzz](https://en.wikipedia.org/wiki/Fizz_buzz) implementation that works on numbers.
+
+### [TXState](https://github.com/devanshj/txstate)
+
+[Devansh Jethmalani](https://twitter.com/devanshj__/status/1297939517853196288), August 2020
+
+> An effort to statically type xstate.
+
+[XState](https://xstate.js.org) is a popular library for state machines and state charts in JavaScript and TypeScript.
+TXState manages to take those features and run them entirely in the type system.
+The full Twitter thread shows Devansh's journey writing it over several months and links to some insightful discussions on various threads.
+
+Devansh also has a fascinating type predicate eDSL project that makes heavy use of parsing in the type system: [`@sthir/predicate`](https://github.com/devanshj/sthir/tree/main/packages/predicate).
+
+### [SQL Database Engine](https://github.com/codemix/ts-sql)
+
+[Charles Pick](https://twitter.com/c_pick/status/1307433762914009090), September 2020
+
+> A SQL database implemented purely in TypeScript type annotations.
+
+The first entry in this list that extensively makes use of string parsing in the type system.
+Queries are run by parsing raw SQL strings into statements that are then evaluated against the current state of the database.
+It supports `SELECT` statements that return type system array of objects, as well as `INSERT`, `UPDATE`, and `DELETE` statements that return new database contents as a type.
+
+### [Language Interpreter](https://github.com/ronami/typelang)
+
+[Ronen Amiel](https://twitter.com/ronenamiel/status/1321199372802183169), October 2020
+
+> A tiny language interpreter implemented purely in TypeScript's type-system.
+
+Another fun project from Ronen: this time, an entire language!
+It supports a Lisp-like syntax with commands such as `add`, `join`, and `or`, as well as functions and variables.
+You have to wonder whether you could implement TypeScript itself in that language...
+
+### [Tic Tac Toe](https://blog.joshuakgoldberg.com/type-system-game-engines)
+
+[Josh Goldberg](https://twitter.com/JoshuaKGoldberg/status/1314610055963193344), October 2020
+
+> \[We'll figure\] how to take a template string literal, simulate a Tic Tac Toe game on it, and determine out who the winner of that game is.
+
+This fun conference talk addition uses template literal string parsing to convert a description of game steps into a game board with pieces placed on it.
+Checking for a game victory is done with a set of assignability checks on the board's tuples.
+
+### [Tokenizer + Parser + Interpreter](https://github.com/anuraghazra/typelevel-parser)
+
+[Anurag Hazra](https://twitter.com/anuraghazru/status/1512092136841543682), April 2022
+
+> An experimental tokenizer/parser/interpreter written entirely on type-level to push the limits of TypeScript's type system.
+
+Each part of tokenization, parsing, and interpreting is impressive.
+This project takes them all to the next level by implementing a fully working language in the type system.
+Absolutely ridiculous.
+
+Anurag has a collection of other great type system explorations on GitHub too: [github.com/anuraghazra/type-trident](https://github.com/anuraghazra/type-trident).
+
+## More Resources
+
+If the explanations in projects aren't working out for you, I have two resources I'd recommend:
+
+- The _Learning TypeScript_ book covers the foundations of the type system up through smaller uses of conditional and inferred types.
+- [Zhenghao He](https://twitter.com/he_zhenghao)'s [An Introduction To Type Programming In TypeScript](https://www.zhenghao.io/posts/type-programming) is a gentle but comprehensive walkthrough of techniques used by these projects.
+
+Additionally, the [type-challenges repository on GitHub](https://github.com/type-challenges/type-challenges) contains a wonderful suite of type challenges starting with foundations and working up to gloriously complex metaprogramming.
+I'd highly recommend using them to work your way up to being able to make projects like the ones in this article.
+
+:::info
+Got a project you think should be listed?
+Send it to [@LearningTSBook](https://twitter.com/LearningTSBook) on Twitter!
+:::
