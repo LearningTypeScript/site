@@ -82,6 +82,7 @@ const config = {
     })(),
   },
   favicon: "img/favicon.png",
+  onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "throw",
   organizationName: "JoshuaKGoldberg",
   scripts: [
@@ -98,9 +99,6 @@ const config = {
   tagline: "Companion articles and projects for the Learning TypeScript book.",
   title: "Learning TypeScript",
   url: "https://www.learningtypescript.com",
-
-  // TODO...
-  onBrokenLinks: "warn",
 
   presets: [
     [
