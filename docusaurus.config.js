@@ -118,6 +118,7 @@ const config = {
           showReadingTime: true,
         },
         docs: {
+          breadcrumbs: false,
           editUrl: ({ docPath }) =>
             `https://github.com/LearningTypeScript/projects/tree/main/projects/${docPath}`,
           include: ["*/*.md", "*/*/*.md"],
