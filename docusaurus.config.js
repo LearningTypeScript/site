@@ -191,9 +191,28 @@ const config = {
             to: "/starters",
           },
           {
+            children: "The Book",
             href: "https://www.oreilly.com/library/view/learning-typescript/9781098110321",
-            label: "The Book",
+            links: [
+              {
+                children: "Amazon",
+                href: "https://smile.amazon.com/Learning-TypeScript-Development-Type-Safe-JavaScript/dp/1098110331",
+              },
+              {
+                children: "Barnes and Noble",
+                href: "https://www.barnesandnoble.com/w/learning-typescript-josh-goldberg/1141119694",
+              },
+              {
+                children: "Goodreads",
+                href: "https://www.goodreads.com/book/show/61285675-learning-typescript",
+              },
+              {
+                children: "Google Play",
+                href: "https://play.google.com/store/books/details/Josh_Goldberg_Learning_TypeScript?id=Yj5zEAAAQBAJ",
+              },
+            ],
             position: "right",
+            type: "custom-dropdownLinkItem",
           },
         ],
       },
