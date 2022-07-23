@@ -6,11 +6,16 @@
   font-weight: 500;
   padding: 0.5rem 1rem;
   text-align: center;
+  transition: border-radius var(--ifm-transition-fast),
+    box-shadow var(--ifm-transition-fast), transform var(--ifm-transition-fast);
 }
 
 .outlineLink:hover {
   color: var(--ifm-font-color-base);
+  border-radius: 1px;
+  box-shadow: 3px 3px 0px 1px var(--ifm-font-color-base);
   text-decoration: none;
+  transform: translate(-3px, -3px);
 }
 
 /* todo: fancy hover effects from designs */

@@ -1,3 +1,6 @@
-.heading {
-  margin-top: 2rem;
+/* Todo: use var(--lt-media-query-width-large)? */
+@media (min-width: 992px) {
+  .main {
+    padding: 0 2rem;
+  }
 }
