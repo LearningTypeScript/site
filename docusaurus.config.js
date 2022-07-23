@@ -11,6 +11,7 @@ const {
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   baseUrl: "/",
+  clientModules: [require.resolve("./src/clientModules.js")],
   customFields: {
     articles: (() => {
       const articlesBaseDir = path.join(__dirname, "src/content/articles");
