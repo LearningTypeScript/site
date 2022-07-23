@@ -1,11 +1,15 @@
 :root {
   --ifm-background-deemphasized-color: #f4f1f8;
+  --ifm-breadcrumb-color-active: var(--ifm-color-secondary-darkest);
   --ifm-code-font-size: 95%;
+  --ifm-color-primary: var(--ifm-color-secondary-darkest);
   --ifm-color-secondary-darkest: #584e62;
-  --ifm-heading-font-family: "Libre Baskerville";
-  --ifm-heading-font-weight: bold;
   --ifm-font-family-base: "Libre Baskerville", Helvetica, Arial, system-ui;
   --ifm-font-family-monospace: "Red Hat Mono", Monaco, Consolas, monospace;
+  --ifm-heading-font-family: "Libre Baskerville";
+  --ifm-heading-font-weight: bold;
+  --ifm-link-color: var(--ifm-color-secondary-darkest);
+  --ifm-menu-color-active: var(--ifm-color-secondary-darkest);
 
   --lt-layout-width-full: 1234px;
   --lt-media-query-width-medium: 768px;
@@ -33,9 +37,38 @@
   gap: 1rem;
 }
 
+.navbar__link {
+  border-bottom: 2px solid transparent;
+  position: relative;
+}
+
+.navbar__link::after {
+  content: "";
+  display: block;
+  height: 2px;
+  left: 0.75rem;
+  margin-top: 2px;
+  position: absolute;
+  right: 0.75rem;
+  transition: background var(--ifm-transition-fast);
+}
+
 .navbar__link,
 .navbar__title {
   font-weight: bold;
+}
+
+.navbar__link--active,
+.navbar__link:hover {
+  color: initial;
+}
+
+.navbar__link--active::after {
+  background: var(--ifm-navbar-link-color);
+}
+
+.navbar__link:hover:not(.navbar__link--active)::after {
+  background: var(--ifm-color-secondary-darker);
 }
 
 .navbar__title {
@@ -46,4 +79,16 @@
 
 article .markdown a {
   text-decoration: underline;
+}
+
+/* Sidebar */
+
+a[aria-current="page"] {
+  font-weight: bold;
+}
+
+/* Table of Contents */
+
+.table-of-contents__link--active {
+  font-weight: bold;
 }

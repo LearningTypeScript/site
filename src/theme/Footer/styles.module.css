@@ -15,7 +15,7 @@
   font-weight: var(--ifm-heading-font-weight);
   justify-content: space-between;
   margin: auto;
-  max-width: 1000px;
+  max-width: 1200px;
   flex-direction: column;
 }
 
@@ -35,9 +35,10 @@
 
 .icons {
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
+  flex-direction: column;
   margin-bottom: 2rem;
-  justify-content: center;
+  align-items: flex-end;
 }
 
 .icon {
@@ -54,6 +55,7 @@
 .credits {
   margin: 1rem 0 0;
   text-align: center;
+  color: var(--ifm-color-secondary-contrast-foreground);
 }
 
 .credits a {
@@ -73,10 +75,6 @@
 
   .getTheBook {
     margin-top: 2px;
-  }
-
-  .icons {
-    justify-content: flex-end;
   }
 
   .credits {

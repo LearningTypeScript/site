@@ -37,3 +37,10 @@
     display: block;
   }
 }
+
+/* Todo: use var(--lt-media-query-width-large)? */
+@media (min-width: 992px) {
+  .splitBook {
+    display: none;
+  }
+}
