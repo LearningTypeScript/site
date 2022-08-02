@@ -1,7 +1,11 @@
+.card {
+  width: 100%;
+}
+
 /* Todo: use var(--lt-media-query-width-medium)? */
 @media (min-width: 768px) {
   .card {
-    max-width: calc(50% - 2rem);
+    max-width: calc(50% - 1rem);
   }
 }
 

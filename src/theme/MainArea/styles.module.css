@@ -4,10 +4,10 @@
 
 @media screen and (min-width: 992px) {
   .normal {
-    max-width: 1000px;
+    max-width: 1200px;
   }
 
   .thin {
-    max-width: 900px;
+    max-width: 1024px;
   }
 }

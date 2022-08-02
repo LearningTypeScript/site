@@ -6,3 +6,9 @@ contact_links:
       Go here to report an issue with a project.
     name: Looking for the Projects Issue Tracker?
     url: https://github.com/JoshuaKGoldberg/learning-typescript
+  - name: Help with TypeScript concepts
+    about: The TypeScript Discord is a great place for asking for help on your TypeScript journey!
+    url: https://discord.com/invite/typescript
+  - name: Contact Josh
+    about: Want to ask for help more individually? DM or tweet on Twitter.
+    url: https://twitter.com/JoshuaKGoldberg

@@ -15,7 +15,7 @@ export const BookLink = ({
 }: BookLinkProps) => {
   // Todo: arrow glyph
   return (
-    <OutlineLink className={className} href={href}>
+    <OutlineLink className={className} href={href} target="_blank">
       {children} ↗
     </OutlineLink>
   );

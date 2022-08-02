@@ -9,9 +9,9 @@ export const AboutTheAuthor = () => {
     <div className={styles.aboutTheAuthor}>
       <MainArea className={styles.mainArea} size="thin">
         <div className={styles.left}>
-          <img className={styles.josh} src="/img/josh-red-220px.jpg" />
+          <img alt="" className={styles.josh} src="/img/josh-red-220px.jpg" />
         </div>
-        <p className={styles.right}>
+        <div className={styles.right}>
           <h2 className={styles.heading}>About the author</h2>
           <div className={styles.name}>Josh Goldberg</div>
           Hi, I'm Josh! I'm a frontend developer from New York with a passion
@@ -25,7 +25,7 @@ export const AboutTheAuthor = () => {
           >
             Visit my Site
           </BookLink>
-        </p>
+        </div>
       </MainArea>
     </div>
   );

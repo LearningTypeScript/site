@@ -1,7 +1,9 @@
 const path = require("path");
 
-const basePath = "https://github.com/LearningTypeScript/projects/tree/main/";
+const basePath =
+  "https://www.github.com/LearningTypeScript/projects/tree/main/";
 
+// @ts-check
 module.exports.externalProjectLinks = () => {
   return async (root, file) => {
     // Transforms links like:
@@ -11,11 +13,11 @@ module.exports.externalProjectLinks = () => {
     function transformLocalLinks(node) {
       if (node.type === "link") {
         if (/^\.\/\d\d/.test(node.url)) {
-          node.url = path.join(
+          node.url = [
             basePath,
             file.dirname.split("external/")[1],
-            node.url
-          );
+            node.url,
+          ].join("/");
         }
       }
 
