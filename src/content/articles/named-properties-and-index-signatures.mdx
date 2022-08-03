@@ -1,0 +1,148 @@
+---
+date: "August 07 2022"
+description: "Why named properties must be assignable to index signatures in TypeScript object types."
+meta: assignability, index signatures, objects, properties
+---
+
+# Named Properties and Index Signatures in TypeScript
+
+[Index signatures](https://www.typescriptlang.org/docs/handbook/2/objects.html#index-signatures) are a TypeScript feature that allow object types to declare that any arbitrary property on a type will have a certain property.
+They're useful when you have an object meant to allow any arbitrary property of any name.
+
+For example, this object shape allows any property of on a value of type `FruitCounts` to have a `number` value:
+
+```ts twoslash
+interface FruitCounts {
+  [i: string]: number;
+}
+
+const counts: FruitCounts = {};
+
+counts.apple = 1;
+counts.banana = 2;
+```
+
+One rarely-used feature of index signatures is that you can mix and match them with named properties:
+
+```ts twoslash
+interface MoreFruitCounts {
+  [i: string]: number;
+
+  myLeastFavoriteFruit: 0;
+}
+
+const counts: MoreFruitCounts = {
+  myLeastFavoriteFruit: 0,
+};
+
+counts.apple;
+//     ^?
+
+counts.myLeastFavoriteFruit;
+//     ^?
+```
+
+But, there is one restriction: the types of those properties must be assignable to the index signature's type:
+
+```ts twoslash
+// @errors: 2411
+interface FruitCountsWithUnknown {
+  [i: string]: number;
+
+  unknownFruit: string;
+}
+```
+
+Why is that?
+In a word: _assignability_.
+
+<!--truncate-->
+
+## Property Lookups and Assignability
+
+When an object's type contains an index signature and a property is retrieved from the type, TypeScript needs to be able to assume that the retrieved property is that index signature's type.
+
+However, if some properties of the object aren't assignable to the index signature's type, then that assumption will be wrong.
+
+Suppose an interface was allowed to have a property with a mismatched type, and code later retrieved a property from that interface under a dynamic property name -- as with `counts[fruit]` here:
+
+```ts twoslash
+interface FruitCountsWithUnknown {
+  [i: string]: number;
+
+  // @ts-expect-error
+  unknownFruit: string;
+}
+
+// @ts-expect-error
+const counts: FruitCountsWithUnknown = {
+  apple: 0,
+  unknownFruit: "Gotcha!",
+};
+
+function retrieveFruitCount(fruit: string) {
+  return counts[fruit];
+}
+
+const appleCount = retrieveFruitCount("apple");
+//    ^?
+
+const unknownFruitCount = retrieveFruitCount("unknownFruit");
+//    ^?
+```
+
+TypeScript would have no way of knowing when the retrieved property might be the named property's type instead of the index signature's type.
+
+## Numeric Index Signature Assignability
+
+JavaScript objects coerce property names to strings.
+When you look up a property under a name that's not a string it'll be retrieved under the equivalent string key:
+
+```ts twoslash
+const idCounts = {
+  "123": 0,
+} as const;
+
+const countUnderNumber = idCounts[123];
+//    ^?
+
+const countUnderString = idCounts["123"];
+//    ^?
+```
+
+As a result, TypeScript allows index signatures over `number`s in addition to `string`s.
+But they also have the same restriction as named properties: if a `string` index signature is present, the `number` index signature's types must be assignable to it.
+
+```ts twoslash
+// @errors: 2413
+interface FruitOrIdCounts {
+  [i: string]: number;
+
+  [i: number]: string;
+}
+```
+
+You can think of both `number` index signatures and named properties to be considered subsets of `string` index signature properties.
+Both may have their own, more specific types -- as long as those types are assignable to the catch-all `string` index signature's type.
+
+```ts twoslash
+interface PuttingThemAllTogether {
+  [i: string]: number;
+
+  myLeastFavoriteFruit: 0;
+
+  [i: number]: 0 | 1 | 2 | 3;
+}
+```
+
+:::note Food for Thought
+Still having trouble getting your index signatures to work in TypeScript?
+Consider reading [Why for...in and Object.keys() Give String Types](./for-in-string-types): you might be better off using a `Map` or `Set`
+:::
+
+---
+
+Index signatures are covered in _Learning TypeScript_'s Chapter 7: Interfaces.
+
+Got your own TypeScript questions?
+Tweet [@LearningTSbook](https://twitter.com/LearningTSBook) and the answer might become an article too!

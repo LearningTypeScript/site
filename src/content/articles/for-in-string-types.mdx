@@ -1,0 +1,225 @@
+---
+date: "June 3 2022"
+description: "Exploring how TypeScript infers types for iterators in for...in loops"
+meta: for loops, maps, objects, sets, strings
+---
+
+# Why for...in and Object.keys() Give String Types
+
+Why does TypeScript report a `string` type instead of `keyof typeof` the object when you use a `for...in` loop or `Object.keys()` on an object?
+
+One of the most commonly asked questions in TypeScript help forums is why code like the following gives an error under the [`noImplicitAny` compiler option](https://www.typescriptlang.org/tsconfig#noImplicitAny).
+
+```ts twoslash
+// @errors: 7053
+// @lib: dom,es2021
+const counts = {
+  one: 1,
+  two: 2,
+};
+
+for (const i in counts) {
+  //       ^?
+  console.log(counts[i]);
+}
+```
+
+Shouldn't TypeScript know that `i` is type `"one" | "two"`, a.k.a. `keyof typeof counts`?
+Why is it telling us that `i` is `string` and can't be used like `counts[i]`?
+
+The answer is logical -though often inconvenient- and requires understanding a key characteristic of TypeScript's type system.
+
+<!--truncate-->
+
+## Objects May Have More Properties Than They Appear
+
+TypeScript's type system is _structurally typed_: meaning any value that happens to satisfy a type is allowed to be used as a value of that type.
+In other words, when you declare that a value is of a particular object type, you're telling TypeScript any object that just so happens to have those properties is allowed to be considered that type.
+
+As a result, when you write a `for...in` loop over the keys of an object, you often won't have a guarantee that the object's keys will only be from the type of the object.
+Some other area of code might have provided an object with more properties that just so happens to match the structural type.
+
+Take a look at this completely type safe code snippet that passes an object to a function.
+What types would you expect for `i` inside the function's `for` loop?
+
+```ts twoslash
+// @lib: dom,es2021
+interface TwoCounts {
+  one: number;
+  two: number;
+}
+
+function iterateOverCounts(counts: TwoCounts) {
+  for (const i in counts) {
+    console.log(i);
+  }
+}
+
+const counts = {
+  one: 1,
+  two: 2,
+  three: 3,
+};
+
+iterateOverCounts(counts);
+```
+
+`i` at _runtime_ will be `"one"`, `"two"`, then `"three"`.
+But there's no reasonable way for TypeScript's type system to know that.
+It just knows that `counts` is type `TwoCounts`, which has keys `"one"` and `"two"`.
+
+Thus, if TypeScript tried to assume that `i` was `keyof typeof counts` then the type system could be insidiously wrong.
+For example, your code might assume `i` is only ever `"one"` or `"two`", and use it in logic that would crash with any other value!
+
+See [Workarounds](#workarounds) below for how you can get around this behavior in `for...in` loops.
+
+:::tip
+Wondering why the first code snippet couldn't narrow `counts` to a more precise type?
+See also [Why Objects Aren't Narrowed Before Usage](/articles/objects-narrowed-before-usage).
+:::
+
+### `Object.keys()` Too
+
+This same design quirk applies to `Object.keys()`:
+
+```ts twoslash
+// @lib: dom,es2021
+const counts = {
+  one: 1,
+  two: 2,
+};
+
+Object.keys(counts);
+//     ^?
+```
+
+`Object.keys()` and `for...in` loops work almost the same way.
+The main difference is that `Object.keys()` only looks at properties on the object itself, while `for...in` loops also look at properties on the object's `prototype` chain.
+
+See [Workarounds](#workarounds) below for how you can get around this behavior in `Object.keys()` as well.
+
+## Workarounds
+
+Before you try to work around the design of the type checker, please pause a moment and reflect.
+The situations mentioned earlier in this post are real problems in JavaScript and TypeScript code that have caused countless bugs in software.
+
+**TypeScript is right to assume `string` types.**
+
+### `Object` APIs
+
+TypeScript's type checking is designed to work with how JavaScript data typically flows and changes through an application.
+Needing to wrestle with the type checker is often a byproduct of application code going against safe JavaScript practices -- such as the aforementioned issues with `for...in` loops receiving unexpected key strings.
+In many cases, it might be good to listen to TypeScript and consider refactoring your code to use a JavaScript API better suited to the task.
+
+If all your code needs to do is get all the values in an object, an `Object.values()` API exists that returns those as an array.
+You can `for...of` loop over them instead:
+
+```ts twoslash
+// @lib: dom,esnext
+
+const counts = {
+  one: 1,
+  two: 2,
+};
+
+for (const value of Object.values(counts)) {
+  //       ^?
+}
+```
+
+Alternately, if you do need keys, consider using the `Object.entries()` API instead.
+It returns a `[string, T][]` where `T` is the type of values in an object:
+
+```ts twoslash
+// @lib: dom,esnext
+
+const counts = {
+  one: 1,
+  two: 2,
+};
+
+for (const [key, value] of Object.entries(counts)) {
+  key;
+  // ^?
+  value;
+  // ^?
+}
+```
+
+Both `Object.entries()` and `Object.values()` allow you to write clean, idiomatic JavaScript without having to grapple with the type checker.
+
+### `Map`
+
+Taking an even larger step back, why is the application code looping over an object's keys and values?
+Is the object meant to be used as a general key-value store?
+
+If so: consider using the built-in `Map` data structure instead.
+It's made specifically for key-value stores.
+
+You can `for...of` over a `Map`'s values using `Array.from`:
+
+```ts twoslash
+// @lib: dom,esnext
+
+const counts = new Map([
+  ["one", 1],
+  ["two", 2],
+]);
+
+for (const [key, value] of Array.from(counts)) {
+  key;
+  // ^?
+  value;
+  // ^?
+}
+```
+
+`Map`s have the added benefit over `{}` objects of allowing any object to be a key without stringifying them first (which objects do).
+
+### Type Assertions
+
+Still, there are times when a `for...in` loop or `Object.keys()` might likely be mostly safe to use for object keys.
+If you are 100% absolutely completely sure that your use case won't crash from some bizarre type mismatch now or in the future, you can always use an `as` assertion to cast the loop variable to the right type.
+
+One assertion strategy is to use `keyof typeof` to get the keys (`keyof`) of the object's type (`typeof`):
+
+```ts twoslash
+// @lib: dom,es2021
+const counts = {
+  one: 1,
+  two: 2,
+};
+
+for (const i in counts) {
+  console.log(counts[i as keyof typeof counts]); // Ok
+}
+```
+
+Alternately, if the object you're looping over is of a previously declared type, you can use the `keyof` operator on that type to get back a string literal union of its keys:
+
+```ts twoslash
+// @lib: dom,es2021
+interface Counts {
+  one: number;
+  two: number;
+}
+
+const counts: Counts = {
+  one: 1,
+  two: 2,
+};
+
+for (const i in counts) {
+  const count = counts[i as keyof Counts]; // Ok
+  //    ^?
+  console.log(count);
+}
+```
+
+## Further Reading
+
+See [this comment from Anders Hejlsberg](https://github.com/microsoft/TypeScript/pull/12253#issuecomment-263132208) and its surrounding PR for more details to this blog post on why the TypeScript team opted to keep this safer behavior.
+
+The TypeScript team and community have been discussing a [pending issue for "Exact" types](https://github.com/microsoft/TypeScript/issues/12936).
+Exact types wouldn't allow arbitrary extra keys, so `for...in` loops over them would give the more narrow key types.
+The issue has been open since 2016, though, so don't get your hopes up 😉.

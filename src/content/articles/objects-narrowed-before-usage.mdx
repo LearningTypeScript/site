@@ -1,0 +1,61 @@
+---
+date: "June 1 2022"
+description: "yippee!..."
+meta: objects, narrowing, variables
+---
+
+# Why Objects Aren't Narrowed Before Usage
+
+```ts twoslash
+const counts = {
+  one: 1,
+  two: 2,
+};
+
+const twoValue = counts.two;
+//    ^?
+```
+
+Shouldn't TypeScript know that `counts.two` is specifically the literal type `2` and not the general primitive type `number`?
+Can't it tell we haven't changed the object yet.
+
+It can't, but it won't.
+And for very good reason.
+
+<!--truncate-->
+
+## Change Tracking is Impractical
+
+The problem is that it's difficult -oftentimes impossible- for TypeScript to know whether an object has been modified if anything has happened between its initialization and first usage.
+If the object is used in any meaningful application logic, TypeScript won't be able to tell whether it was modified.
+
+### A Practical Example
+
+Let's say you want to `console.log` the `counts` object before usage.
+Your use your own custom `log` function that just so happens to only call `console.log`?
+You'd still want `counts.two` to be `2`, right?
+
+```ts
+function log(data: unknown) {
+  console.log(data);
+}
+
+const counts = {
+  one: 1,
+  two: 2,
+};
+
+log(counts);
+
+const twoValue = counts.two;
+//    ^?
+```
+
+In theory, the `log` function could use the `readonly` modifier on its `data` parameter to indicate that
+But many built-in user type definitions don't properly mark parameters as read-only.
+Even `console.log` isn' marked as read-only as of TypeScript 4.7.2.
+
+## Further Reading
+
+A legendary [Trade-offs in Control Flow Analysis](https://github.com/microsoft/TypeScript/issues/9998) issue exists in the TypeScript repository.
+It describes many more common trade-offs in how the TypeScript type checker analyzes the flow of values.
