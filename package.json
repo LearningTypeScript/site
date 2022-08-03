@@ -17,6 +17,7 @@
     "@mdx-js/react": "^1.6.22",
     "@swc/core": "^1.2.194",
     "clsx": "^1.1.1",
+    "docusaurus-preset-shiki-twoslash": "^1.1.38",
     "fs-readdir-recursive": "^1.1.0",
     "konamimojisplosion": "^0.5.1",
     "mdast-util-from-markdown": "^1.2.0",

@@ -11,7 +11,7 @@ _Learning TypeScript_ describes TypeScript's `void` keyword as indicating that t
 Those two definitions are not always the same!
 TypeScript's `void` comes with an initially surprising behavior: a function type with a non-`void` return is considered assignable to a function type with a `void` return.
 
-```ts
+```ts twoslash
 let returnsVoid: () => void;
 
 returnsVoid = () => "this is fine";
@@ -26,7 +26,8 @@ Why is that?
 It's very common for functions to be called and have their return type ignored.
 Take this code block, in which a function that returns `number` <small>(because Array's `.unshift` returns the new array length)</small> is passed to `.forEach`:
 
-```ts
+```ts twoslash
+// @lib: dom,esnext
 let letters = ["c", "d", "e"];
 
 ["a", "b"].forEach((letter) => letters.unshift(letter)); // Ok
@@ -41,7 +42,8 @@ We should be allowed to write that code in TypeScript!
 Note that TypeScript will not allow you to return a value within a function explicitly annotated as returning `void`.
 TypeScript will report an assignability type error:
 
-```ts
+```ts twoslash
+// @errors: 2322
 function thisIsNotFine(): void {
   return "🔥";
   // Error: Type 'string' is not assignable to type 'void'.
@@ -61,7 +63,8 @@ Indeed, it is!
 Passing an asynchronous function (one that returns a Promise) to a handler that doesn't handle the created Promise means Promise rejections might not be handled.
 This frequently shows up with event listeners in UI libraries such as React:
 
-```tsx
+```tsx twoslash
+// @lib: dom,esnext
 async function myOnClick() {
   // (simulate some asynchronous work happening)
   await new Promise((resolve) => setTimeout(resolve, 100));

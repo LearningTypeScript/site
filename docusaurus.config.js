@@ -113,6 +113,8 @@ const config = {
           editUrl:
             "https://github.com/JoshuaKGoldberg/learning-typescript/tree/main/",
           path: "src/content/articles",
+          readingTime: (args) =>
+            Math.ceil(Math.pow(args.defaultReadingTime(args), 1.5) / 5) * 5,
           routeBasePath: "articles",
           showReadingTime: true,
         },
@@ -130,6 +132,16 @@ const config = {
           customCss: require.resolve("./src/css/custom.css"),
         },
       }),
+    ],
+    [
+      "docusaurus-preset-shiki-twoslash",
+      {
+        defaultCompilerOptions: {
+          lib: ["dom", "es2021"],
+          target: "esnext",
+        },
+        themes: ["min-light", "nord"],
+      },
     ],
   ],
 
