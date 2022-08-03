@@ -136,10 +136,6 @@ const config = {
     [
       "docusaurus-preset-shiki-twoslash",
       {
-        defaultCompilerOptions: {
-          lib: ["dom", "es2021"],
-          target: "esnext",
-        },
         themes: ["min-light", "nord"],
       },
     ],
