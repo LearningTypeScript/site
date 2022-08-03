@@ -1,6 +1,7 @@
 ---
 date: "June 3 2022"
-summary: ""
+description: "Exploring how TypeScript infers types for iterators in for...in loops"
+meta: for loops, maps, objects, sets, strings
 ---
 
 # Why for...in and Object.keys() Give String Types
@@ -11,6 +12,7 @@ One of the most commonly asked questions in TypeScript help forums is why code l
 
 ```ts twoslash
 // @errors: 7053
+// @lib: dom,es2021
 const counts = {
   one: 1,
   two: 2,
@@ -41,6 +43,7 @@ Take a look at this completely type safe code snippet that passes an object to a
 What types would you expect for `i` inside the function's `for` loop?
 
 ```ts twoslash
+// @lib: dom,es2021
 interface TwoCounts {
   one: number;
   two: number;
@@ -48,7 +51,7 @@ interface TwoCounts {
 
 function iterateOverCounts(counts: TwoCounts) {
   for (const i in counts) {
-    // ...
+    console.log(i);
   }
 }
 
@@ -80,6 +83,7 @@ See also [Why Objects Aren't Narrowed Before Usage](/articles/objects-narrowed-b
 This same design quirk applies to `Object.keys()`:
 
 ```ts twoslash
+// @lib: dom,es2021
 const counts = {
   one: 1,
   two: 2,
@@ -99,7 +103,7 @@ See [Workarounds](#workarounds) below for how you can get around this behavior i
 Before you try to work around the design of the type checker, please pause a moment and reflect.
 The situations mentioned earlier in this post are real problems in JavaScript and TypeScript code that have caused countless bugs in software.
 
-**TypeScript is right to assume `string`s types.**
+**TypeScript is right to assume `string` types.**
 
 ### `Object` APIs
 
@@ -118,8 +122,8 @@ const counts = {
   two: 2,
 };
 
-for (const [key, value] of Object.entries(counts)) {
-  //        ^?
+for (const value of Object.values(counts)) {
+  //       ^?
 }
 ```
 
@@ -135,7 +139,10 @@ const counts = {
 };
 
 for (const [key, value] of Object.entries(counts)) {
-  //        ^?
+  key;
+  // ^?
+  value;
+  // ^?
 }
 ```
 
@@ -160,7 +167,10 @@ const counts = new Map([
 ]);
 
 for (const [key, value] of Array.from(counts)) {
-  //        ^?
+  key;
+  // ^?
+  value;
+  // ^?
 }
 ```
 
@@ -174,6 +184,7 @@ If you are 100% absolutely completely sure that your use case won't crash from s
 One assertion strategy is to use `keyof typeof` to get the keys (`keyof`) of the object's type (`typeof`):
 
 ```ts twoslash
+// @lib: dom,es2021
 const counts = {
   one: 1,
   two: 2,
@@ -184,9 +195,10 @@ for (const i in counts) {
 }
 ```
 
-Aternately, if the object you're looping over is of a previously declared type, you can use the `keyof` operator on that type to get back a string literal union of its keys:
+Alternately, if the object you're looping over is of a previously declared type, you can use the `keyof` operator on that type to get back a string literal union of its keys:
 
 ```ts twoslash
+// @lib: dom,es2021
 interface Counts {
   one: number;
   two: number;
@@ -198,7 +210,9 @@ const counts: Counts = {
 };
 
 for (const i in counts) {
-  console.log(counts[i as keyof Counts]); // Ok
+  const count = counts[i as keyof Counts]; // Ok
+  //    ^?
+  console.log(count);
 }
 ```
 

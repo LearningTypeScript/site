@@ -24,6 +24,9 @@ const config = {
             .readFileSync(path.join(articlesBaseDir, file))
             .toString();
 
+          if (!/meta: (.+)/.exec(contents)) {
+            console.log({ file, contents });
+          }
           return {
             date: /date: "(.+)"/.exec(contents)[1],
             description: /description: "(.+)"/.exec(contents)[1],
@@ -136,7 +139,6 @@ const config = {
     [
       "docusaurus-preset-shiki-twoslash",
       {
-        // Todo: ...is this being respected?!
         defaultCompilerOptions: {
           lib: ["dom", "es2021"],
           target: "esnext",

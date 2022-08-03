@@ -74,6 +74,16 @@
   display: none;
 }
 
+/* Override for inaccessible (barely visible) light mode comments */
+.shiki.min-light span[style="color: rgb(194, 195, 197);"] {
+  color: #576 !important;
+}
+
+/* Override for inaccessible (barely visible) dark mode comments */
+.shiki.nord span[style="color: rgb(97, 110, 136);"] {
+  color: #8a9 !important;
+}
+
 /* Bodies */
 
 article .markdown a {
