@@ -58,7 +58,7 @@ By default, TypeScript will infer object properties to be their general primitiv
 So, why does TypeScript infer object properties to be primitives even before they're used?
 
 The reason is that it's difficult -oftentimes impossible- for TypeScript to know whether an object has been modified between its initialization and later uses.
-If the object is used in any meaningful application logic, TypeScript won't be able to tell whether it was modified.
+If the object is used in any meaningful application logic, TypeScript often won't be able to tell whether the object was modified during that logic.
 
 ### A Practical Example
 
@@ -87,7 +87,7 @@ No such luck.
 TypeScript has no reasonable way of knowing whether a function call will modify properties of its arguments.
 Functions might call to potentially many other functions, including ones declared in `.d.ts` files where TypeScript doesn't have access to see the implementation.
 
-As a result, TypeScript has to assume that function calls _might_ modify properties of object parameters.
+As a result, TypeScript has to assume that function calls _might_ modify properties of object provided as arguments.
 
 :::note
 In theory, the `log` function could use the `readonly` modifier on its `data` parameter to indicate that it doesn't change `data`.
@@ -97,11 +97,10 @@ Unfortunately, many built-in and user type definitions don't properly mark param
 ### Predictability is Key
 
 Because TypeScript has to assume function calls might modify properties of arguments, any initial type narrowing done to an object would no longer apply after the object is used in any function calls.
-That's a pretty restrictive range.
-The restriction would likely confuse developers expecting the property to remain narrowed after calls to seeminly innocuous functions such as `console.log`.
+That restriction would likely confuse developers expecting the property to remain narrowed after calls to seemingly innocuous functions such as `console.log`.
 
-In the following code snippet, even if TypeScript had narrowed `counts.apple` to `1` before the `log(counts)`, it would have to forget it afterwards.
-It'd be very surprising for developers to have a different inferred type for `counts.apple` before and after:
+In the following code snippet, even if TypeScript had narrowed `counts.apple` to `1` before the `console.log(counts)`, it would have to forget it afterwards because of the function call.
+It'd be very surprising for developers to see a different inferred type for `counts.apple` before and after the function call:
 
 ```ts twoslash
 // @lib: dom,esnext
@@ -145,14 +144,14 @@ if (counts.apple === 1) {
 ```
 
 Function calls not resetting explicit type narrowing is an intentional quirk of TypeScript's type system.
-While the quirk is not always the right behavior, it's generally convenient in most code.
+While the quirk is not always the right behavior (and seems to be the opposite design choice of the first half of this article), the quirk is generally convenient and often correct in most code.
 
 ## Function Declarations and Type Narrowing
 
 Interestingly, while calling a function may not remove type narrowing from objects provided as arguments, function bodies will generally remove type narrowing from values.
 The only exception is IIFEs (Immediately Invoked Function Expressions), or functions that are immediately called after declaration — TypeScript understands that they're run once and not used later.
 
-In this code snippet, the body of `withCountsDeclaration` forgets that `counts.apple` was narrowed to `1`, but the body of `withCountsIIFE` preserves the type narrowing:
+In this code snippet, the body of `withCountsDeclaration` forgets that the type of `counts.apple` was narrowed to `1`, but the body of `withCountsIIFE` preserves the type narrowing:
 
 ```ts twoslash
 // @lib: dom,esnext
@@ -176,7 +175,7 @@ if (counts.apple === 1) {
 }
 ```
 
-Although it may be irksome at times for function bodies to lose type narrowing, it's a good safety measure.
+Although it may be irksome at times for function bodies to lose type narrowing, the loss is a good safety measure.
 The functions might be called at some later time, after the type narrowing is no longer true.
 
 Here, the `runWithMaybeValue` function shouldn't assume `maybeValue` is still narrowed to `string` because it'll be called a second after `maybeValue` is set to `undefined`:
@@ -212,7 +211,9 @@ In summary:
 
 - Object properties won't immediately be narrowed from primitives to literals
 - Function calls _don't_ reset type narrowing explicitly applied to values
-- Function declarations _do_ reset any type narrowing done to values
+- Function declarations _do_ reset any type narrowing explicitly applied to values
+
+Those three rules are based on how most real-world JavaScript code tends to operate.
 
 ## Further Reading
 
