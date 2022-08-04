@@ -63,7 +63,7 @@ If the object is used in any meaningful application logic, TypeScript won't be a
 ### A Practical Example
 
 Let's say you want to `console.log` the a string and the `counts` object before usage.
-Your write your own custom `log` function that just so happens to only call `console.log`.
+Your write your own custom `log` function that only calls `console.log`.
 You'd still want `counts.apple` to be `1`, right?
 
 ```ts twoslash
@@ -164,7 +164,7 @@ if (counts.apple === 1) {
   counts.apple;
   //     ^?
 
-  function withCounts() {
+  function withCountsDeclaration() {
     counts.apple;
     //     ^?
   }
