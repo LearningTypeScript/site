@@ -42,12 +42,12 @@ export default function Projects(): JSX.Element {
             Learning TypeScript
           </em>{" "}
           book. Choose between:
-          <ul>
-            <li>🥗 Appetizers: bite-sized directed warmups</li>
-            <li>🍲 Entrees: larger, more hands-off challenges</li>
-            <li>🍰 Desserts: entrees with a fun twist</li>
-          </ul>
         </p>
+        <ul>
+          <li>🥗 Appetizers: bite-sized directed warmups</li>
+          <li>🍲 Entrees: larger, more hands-off challenges</li>
+          <li>🍰 Desserts: entrees with a fun twist</li>
+        </ul>
         <div className={styles.chapters}>
           {chapterNames.map((chapterName, index) => {
             return (
