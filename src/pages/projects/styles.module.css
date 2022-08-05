@@ -8,10 +8,3 @@
   gap: 3rem;
   margin-top: 3rem;
 }
-
-/* Todo: use var(--lt-media-query-width-medium)? */
-@media (min-width: 768px) {
-  .mainArea {
-    padding: 2rem 0;
-  }
-}
