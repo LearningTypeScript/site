@@ -62,8 +62,8 @@ If the object is used in any meaningful application logic, TypeScript often won'
 
 ### A Practical Example
 
-Let's say you want to `console.log` the a string and the `counts` object before usage.
-Your write your own custom `log` function that only calls `console.log`.
+Let's say you want to `console.log` the string and the `counts` object before usage.
+You write your own custom `log` function that only calls `console.log`.
 You'd still want `counts.apple` to be `1`, right?
 
 ```ts twoslash
@@ -100,13 +100,17 @@ Because TypeScript has to assume function calls might modify properties of argum
 That restriction would likely confuse developers expecting the property to remain narrowed after calls to seemingly innocuous functions such as `console.log`.
 
 In the following code snippet, even if TypeScript had narrowed `counts.apple` to `1` before the `console.log(counts)`, it would have to forget it afterwards because of the function call.
-It'd be very surprising for developers to see a different inferred type for `counts.apple` before and after the function call:
+It'd be very surprising for developers to see a different inferred type for `counts.apple` before and after the function call.
+TypeScript prefers keeping them the same:
 
 ```ts twoslash
 // @lib: dom,esnext
 const counts = {
   apple: 1,
 };
+
+counts.apple;
+//     ^?
 
 console.log(counts);
 
