@@ -35,10 +35,10 @@
 
 .icons {
   display: flex;
+  flex-direction: row;
   gap: 1rem;
-  flex-direction: column;
+  justify-content: center;
   margin-bottom: 2rem;
-  align-items: flex-end;
 }
 
 .icon {
@@ -75,6 +75,10 @@
 
   .getTheBook {
     margin-top: 2px;
+  }
+
+  .icons {
+    justify-content: flex-end;
   }
 
   .credits {
