@@ -22,8 +22,8 @@ if (fruit) {
 }
 ```
 
-But, TypeScript's type narrowing isn't a perfect system.
-There are some cases where TypeScript's type system can't narrow values exactly the way you might want.
+But, TypeScript's type system isn't perfect.
+There are some cases where TypeScript can't narrow values exactly the way you might want.
 
 Take a look at this code snippet, where `counts.apple` is inferred to be type `number`:
 
@@ -36,7 +36,7 @@ counts.apple;
 //     ^?
 ```
 
-Shouldn't TypeScript know that `counts.apple` is specifically the literal type `1` and not the general primitive type `number`?
+While `counts` is type `{ apple: number }`, shouldn't TypeScript know that the immediately available value of `counts.apple` is specifically the literal type `1` and not the general primitive type `number`?
 Can't TypeScript tell we haven't changed the value yet?
 
 It could, but it won't.
@@ -51,7 +51,7 @@ TypeScript marks a distinction between the two following classifications of type
 - **Primitives**: General types of raw non-object value in JavaScript: such as `boolean`, `string`, and `number`.
 - **Literals**: A specific value within a primitive, such as `false`, `"apple"`, and `1`.
 
-By default, TypeScript will infer object properties to be their general primitive type, not their specific instance type.
+By default for a variable's initial value, TypeScript will infer properties of an object to be their general primitive type, not their specific instance type.
 
 ## Change Tracking is Impractical
 
@@ -82,9 +82,7 @@ counts.apple;
 //     ^?
 ```
 
-No such luck.
-
-TypeScript has no reasonable way of knowing whether a function call will modify properties of its arguments.
+Unfortunately, there's usually no reasonable way TypeScript could know whether a function call might modify properties of its arguments.
 Functions might call to potentially many other functions, including ones declared in `.d.ts` files where TypeScript doesn't have access to see the implementation.
 
 As a result, TypeScript has to assume that function calls _might_ modify properties of object provided as arguments.
@@ -99,9 +97,7 @@ Unfortunately, many built-in and user type definitions don't properly mark param
 Because TypeScript has to assume function calls might modify properties of arguments, any initial type narrowing done to an object would no longer apply after the object is used in any function calls.
 That restriction would likely confuse developers expecting the property to remain narrowed after calls to seemingly innocuous functions such as `console.log`.
 
-In the following code snippet, even if TypeScript had narrowed `counts.apple` to `1` before the `console.log(counts)`, it would have to forget it afterwards because of the function call.
-It'd be very surprising for developers to see a different inferred type for `counts.apple` before and after the function call.
-TypeScript prefers keeping them the same:
+In the following code snippet, even if TypeScript had narrowed `counts.apple` to `1` before the `console.log(counts)`, it would have to forget it afterwards because of the function call:
 
 ```ts twoslash
 // @lib: dom,esnext
@@ -117,6 +113,9 @@ console.log(counts);
 counts.apple;
 //     ^?
 ```
+
+It'd be very surprising for developers to see a different inferred type for `counts.apple` before and after the function call.
+TypeScript prefers keeping them the same.
 
 ### Type Narrowing Is Already Too Optimistic
 
@@ -213,9 +212,9 @@ But, they are predictable if you understand the reasoning behind them.
 
 In summary:
 
-- Object properties won't immediately be narrowed from primitives to literals
-- Function calls _don't_ reset type narrowing explicitly applied to values
-- Function declarations _do_ reset any type narrowing explicitly applied to values
+- Variable object properties won't immediately be narrowed from primitives to literals
+- Function _calls_ **don't** reset type narrowing explicitly applied to values
+- Function _declarations_ **do** reset any type narrowing explicitly applied to values
 
 Those three rules are based on how most real-world JavaScript code tends to operate.
 
@@ -223,7 +222,7 @@ Those three rules are based on how most real-world JavaScript code tends to oper
 
 At the time of writing, [TypeScript's issue tracker's new issue chooser](https://github.com/microsoft/TypeScript/issues/new/choose) includes an explicit [**Types Not Correct in/with Callback** option](https://github.com/microsoft/TypeScript/issues/new?assignees=&labels=Duplicate&template=types-not-correct-in-with-callback.md&title=) because so many issues reported these intentional type narrowing quirks as bugs.
 
-A legendary [Trade-offs in Control Flow Analysis](https://github.com/microsoft/TypeScript/issues/9998) issue exists in the TypeScript repository.
+A legendary [Trade-offs in Control Flow Analysis](https://github.com/microsoft/TypeScript/issues/9998) issue exists in the TypeScript repository for those who want to dive deeper.
 The issue describes many trade-offs in how the TypeScript type checker analyzes the flow of values.
 
 ---
