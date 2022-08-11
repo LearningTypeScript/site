@@ -23,7 +23,7 @@ if (fruit) {
 ```
 
 But, TypeScript's type system isn't perfect.
-There are some cases where TypeScript can't narrow values exactly the way you might want.
+There are some cases where TypeScript can't narrow types exactly the way you might want.
 
 Take a look at this code snippet, where `counts.apple` is inferred to be type `number`:
 
@@ -51,7 +51,7 @@ TypeScript marks a distinction between the two following classifications of type
 - **Primitives**: General types of raw non-object value in JavaScript: such as `boolean`, `string`, and `number`.
 - **Literals**: A specific value within a primitive, such as `false`, `"apple"`, and `1`.
 
-By default for a variable's initial value, TypeScript will infer properties of an object to be their general primitive type, not their specific instance type.
+By default for a variable's initial value, TypeScript will infer properties of an object to be their general primitive type, not their specific literal type.
 
 ## Change Tracking is Impractical
 
