@@ -5,7 +5,7 @@ import styles from "./styles.module.css";
 
 export interface OutlineLinkProps
   extends React.HTMLAttributes<HTMLAnchorElement> {
-  target?: HTMLAttributeAnchorTarget
+  target?: HTMLAttributeAnchorTarget;
   href: string;
 }
 
