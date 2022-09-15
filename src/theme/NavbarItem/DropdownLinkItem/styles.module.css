@@ -14,12 +14,14 @@
   text-align: right;
   top: 50%;
   transition: opacity var(--ifm-transition-fast), top var(--ifm-transition-fast);
+  visibility: hidden;
 }
 
 .dropdownLinkItem:focus-within .links,
 .dropdownLinkItem:hover .links {
   opacity: 1;
   top: 100%;
+  visibility: visible;
 }
 
 .links a {
