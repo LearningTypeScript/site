@@ -18,6 +18,9 @@
 
 [data-theme="dark"] {
   --ifm-background-deemphasized-color: #222024;
+  --ifm-link-color: #f4f1f8;
+  --ifm-menu-color-active: var(--ifm-link-color);
+  --ifm-color-primary: var(--ifm-link-color);
 }
 
 .docusaurus-highlight-code-line {
