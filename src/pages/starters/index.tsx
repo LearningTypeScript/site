@@ -38,6 +38,7 @@ const starters: CardProps[] = [
 
 const metadata = {
   "twitter:description": `Links to recommended getting-started / "Hello World" starters for common frameworks and toolchains with TypeScript.`,
+  "twitter:title": "Starters | Learning TypeScript",
 };
 
 export default function Starters(): JSX.Element {
