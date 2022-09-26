@@ -90,7 +90,7 @@ todo: get the grid to work lol
 /* Todo: use var(--lt-media-query-width-large)? */
 @media (min-width: 992px) {
   .hero {
-    margin: 5rem auto;
+    margin: 5rem auto 0;
     padding: 0 2rem;
   }
 

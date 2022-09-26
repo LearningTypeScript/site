@@ -11,10 +11,23 @@
   padding: 0.25rem;
   position: absolute;
   right: 0;
-  text-align: right;
   top: 50%;
   transition: opacity var(--ifm-transition-fast), top var(--ifm-transition-fast);
   visibility: hidden;
+}
+
+.alignLeft {
+  /* text-align: center; */
+}
+
+.alignLeft,
+.alignLeft .link,
+.alignLeft .links a {
+  width: 15rem;
+}
+
+.alignRight {
+  text-align: right;
 }
 
 .dropdownLinkItem:focus-within .links,

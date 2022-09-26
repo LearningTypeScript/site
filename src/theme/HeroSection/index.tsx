@@ -1,21 +1,14 @@
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
-import clsx from "clsx";
 import React from "react";
 import { MainArea } from "../MainArea";
 
 import styles from "./styles.module.css";
 
 export const HeroSection = () => {
-  // todo: take from constants
-  const { siteConfig } = useDocusaurusContext();
-
   return (
     <MainArea as="header" className={styles.hero}>
       <div className={styles.left}>
         <h1 className={styles.heading}>
-          Companion <span className={styles.together}>projects</span> and
-          articles for{" "}
-          <span className={styles.together}>Learning TypeScript</span>
+          The #1 TypeScript book for JavaScript developers out today
         </h1>
         <div className={styles.author}>By Josh Goldberg</div>
       </div>

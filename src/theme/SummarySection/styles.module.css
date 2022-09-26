@@ -1,0 +1,32 @@
+.contents {
+  margin: 0 auto;
+  max-width: 65%;
+  text-align: center;
+}
+
+.primary {
+  font-size: 1.3rem;
+  margin-bottom: 2rem;
+}
+
+.secondary {
+  margin-bottom: 1rem;
+}
+
+.linksContainer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0 auto 5rem;
+  gap: 0.5rem 1rem;
+  padding: 0 2rem;
+  max-width: 25rem;
+}
+
+/* Todo: use var(--lt-media-query-width-medium)? */
+@media (min-width: 768px) {
+  .linksContainer {
+    margin-bottom: 10rem;
+    max-width: 50rem;
+  }
+}
