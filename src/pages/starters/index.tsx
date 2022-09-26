@@ -7,6 +7,7 @@ import { Card, CardProps } from "../../theme/Card";
 import { MainArea } from "../../theme/MainArea";
 import styles from "./styles.module.css";
 import { OutlineLink } from "@site/src/theme/OutlineLink";
+import { StandardMetadata } from "@site/src/theme/StandardMetadata";
 
 const starters: CardProps[] = [
   {
@@ -35,11 +36,16 @@ const starters: CardProps[] = [
   },
 ].sort((a, b) => a.title.localeCompare(b.title));
 
+const metadata = {
+  "twitter:description": `Links to recommended getting-started / "Hello World" starters for common frameworks and toolchains with TypeScript.`,
+};
+
 export default function Starters(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
 
   return (
     <Layout description={siteConfig.tagline} title="Starters">
+      <StandardMetadata overrides={metadata} />
       <MainArea as="main" className={styles.mainArea}>
         <h1 className={styles.heading}>Starters</h1>
         <p>

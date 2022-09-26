@@ -184,21 +184,8 @@ const config = {
           name: "twitter:creator",
         },
         {
-          content: "@LearningTSBook",
-          name: "twitter:description",
-        },
-        {
           content: "https://learningtypescript.com/img/promo-square.png",
           name: "twitter:image",
-        },
-        {
-          content:
-            "Enhance Your Web Development Skills Using Type-Safe JavaScript",
-          name: "twitter:site",
-        },
-        {
-          content: "Learning TypeScript",
-          name: "twitter:title",
         },
       ],
       navbar: {
