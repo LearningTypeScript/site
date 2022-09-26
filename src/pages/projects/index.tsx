@@ -29,7 +29,6 @@ const chapterNames = [
 const metadata = {
   "twitter:description":
     "Hands on real world projects that will help you exercise your knowledge of TypeScript.",
-  "twitter:title": "Projects | Learning TypeScript",
 };
 
 export default function Projects(): JSX.Element {
