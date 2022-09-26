@@ -8,7 +8,7 @@ import { HeroSection } from "../theme/HeroSection";
 import { SummarySection } from "../theme/SummarySection";
 import { ProjectsSection } from "../theme/ProjectsSection";
 import { ReadTheBook } from "../theme/ReadTheBook";
-
+import { StandardMetadata } from "../theme/StandardMetadata";
 import styles from "./styles.module.css";
 
 export default function Home(): JSX.Element {
@@ -16,6 +16,7 @@ export default function Home(): JSX.Element {
 
   return (
     <Layout description={siteConfig.tagline} title=" ">
+      <StandardMetadata />
       <HeroSection />
       <main className={styles.main}>
         <SummarySection />

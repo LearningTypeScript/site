@@ -6,6 +6,7 @@ import React from "react";
 import { ChapterProjects } from "../../theme/ChapterProjects";
 import { MainArea } from "../../theme/MainArea";
 import styles from "./styles.module.css";
+import { StandardMetadata } from "@site/src/theme/StandardMetadata";
 
 const chapterNames = [
   "From Javascript To Typescript",
@@ -25,12 +26,18 @@ const chapterNames = [
   "Type Operations",
 ];
 
+const metadata = {
+  "twitter:description":
+    "Hands on real world projects that will help you exercise your knowledge of TypeScript.",
+};
+
 export default function Projects(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
   const chapters = useChapters();
 
   return (
     <Layout description={siteConfig.tagline} title="Projects">
+      <StandardMetadata overrides={metadata} />
       <MainArea as="main" className={styles.mainArea}>
         <h1 className={styles.heading}>Projects</h1>
         <p>
