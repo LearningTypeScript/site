@@ -1,7 +1,7 @@
 import ComponentTypes from "@theme-original/NavbarItem/ComponentTypes";
-import { DropdownLinkItem } from "./DropdownLinkItem";
+import { GetTheBook } from "./GetTheBook";
 
 export default {
   ...ComponentTypes,
-  "custom-dropdownLinkItem": DropdownLinkItem,
+  "custom-GetTheBook": GetTheBook,
 };

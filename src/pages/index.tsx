@@ -5,6 +5,7 @@ import { AboutTheAuthor } from "../theme/AboutTheAuthor";
 import { ArticlesSection } from "../theme/ArticlesSection";
 
 import { HeroSection } from "../theme/HeroSection";
+import { SummarySection } from "../theme/SummarySection";
 import { ProjectsSection } from "../theme/ProjectsSection";
 import { ReadTheBook } from "../theme/ReadTheBook";
 
@@ -17,6 +18,7 @@ export default function Home(): JSX.Element {
     <Layout description={siteConfig.tagline} title=" ">
       <HeroSection />
       <main className={styles.main}>
+        <SummarySection />
         <ProjectsSection />
         <ArticlesSection />
         <ReadTheBook />
