@@ -144,12 +144,12 @@ const config = {
           showReadingTime: true,
         },
         docs: {
+          beforeDefaultRemarkPlugins: [[externalProjectLinks, {}]],
           breadcrumbs: false,
           editUrl: ({ docPath }) =>
             `https://github.com/LearningTypeScript/projects/tree/main/projects/${docPath}`,
           include: ["*/*.md", "*/*/*.md"],
           path: "src/content/external/projects",
-          beforeDefaultRemarkPlugins: [[externalProjectLinks, {}]],
           routeBasePath: "/",
           sidebarPath: require.resolve("./sidebars.js"),
         },
