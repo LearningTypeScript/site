@@ -149,7 +149,7 @@ const config = {
             `https://github.com/LearningTypeScript/projects/tree/main/projects/${docPath}`,
           include: ["*/*.md", "*/*/*.md"],
           path: "src/content/external/projects",
-          remarkPlugins: [[externalProjectLinks, {}]],
+          beforeDefaultRemarkPlugins: [[externalProjectLinks, {}]],
           routeBasePath: "/",
           sidebarPath: require.resolve("./sidebars.js"),
         },
