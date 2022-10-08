@@ -29,7 +29,7 @@ module.exports.externalProjectLinks = () => {
     transformLocalLinks(root);
 
     const setupIndex = root.children.findIndex(
-      (child) => child.type === "heading" && child.data.id === "setup"
+      (child) => child.type === "heading" && child.children[0].value === "Setup"
     );
 
     if (setupIndex === -1) {
