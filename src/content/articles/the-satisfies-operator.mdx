@@ -4,7 +4,11 @@ description: "How TypeScript's new `satisfies` operator brings the best of type 
 meta: assertions casts declarations satisfies
 ---
 
-# The `satisfies` operator
+import CodeBlock from "@theme/CodeBlock";
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# The `satisfies` Operator
 
 TypeScript 4.9 introduces a new operator, `satisfies`, that allows opting into a different kind of type inference from the type system's default.
 `satisfies` brings the best of type annotations and default type inference together in a useful manner.
@@ -22,7 +26,8 @@ const vibe = {
 };
 ```
 
-Default inference is not always optimal: you might want to have a different type than what TypeScript would infer by default.
+Default inference is not always optimal.
+You might want to have a different type than what TypeScript would infer by default.
 
 ## Recap: Type Declarations
 
@@ -71,6 +76,8 @@ vibe.mood;
 ```
 
 By using `satisfies`, we were able to make sure our `vibe` matched the `Vibe` interface, without forcing too narrow a type for the `mood` property.
+
+You can read more about `satisfies` in the [TypeScript 4.9 beta release notes](https://devblogs.microsoft.com/typescript/announcing-typescript-4-9-beta/#hamilton).
 
 ## Real World Usage: Next.js
 
@@ -148,8 +155,10 @@ export const getServerSideProps = (context) => ({
     rating: Math.random(),
     referrer: context.query.referrer,
   },
-}); /* satisfies GetServerSideProps; */
-// /* ^? */
+}) satisfies GetServerSideProps;
+
+getServerSideProps;
+// ^?
 ```
 
 ## Using `satisfies` Today
@@ -157,10 +166,7 @@ export const getServerSideProps = (context) => ({
 As of November 2022, TypeScript 4.9 is still in beta.
 That means in order to use `satisfies`, you'll have to install `typescript@4.9-beta` or newer:
 
-<!-- TODO: npmtoyarn/pnpm -->
-<!-- TODO: does this work? -->
-
-```
+```shell
 npm i typescript@4.9-beta --save-dev
 ```
 
@@ -168,7 +174,7 @@ npm i typescript@4.9-beta --save-dev
 
 ## _Learning TypeScript_ and `satisfies`
 
-Unfortunately, the `satisfies` operator was designed and released after the _Learning TypeScript_ book's contents were finalized.
+The `satisfies` operator was designed and released after the _Learning TypeScript_ book's contents were finalized.
 `satisfies` is not mentioned in _Learning TypeScript_.
 
 However, _Learning TypeScript_'s [The Type System chapter](http://localhost:3000/the-type-system) does teach all the concepts you'll need to be able to understand TypeScript's existing type annotations, type inference, and the new `satisfies` operator.

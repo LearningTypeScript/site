@@ -1,4 +1,4 @@
-import IconExternalLink from "@theme/IconExternalLink";
+import ExternalLink from "@theme/Icon/ExternalLink";
 import React from "react";
 import clsx from "clsx";
 
@@ -23,7 +23,7 @@ export const BookLinkAnchor = ({
       target="_blank"
     >
       {children}
-      <IconExternalLink />
+      <ExternalLink />
     </a>
   );
 };
