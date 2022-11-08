@@ -11,12 +11,12 @@ import TabItem from "@theme/TabItem";
 
 TypeScript 4.9 introduces a new operator, `satisfies`, that allows opting into a different kind of type inference from the type system's default.
 `satisfies` brings the best of type annotations and default type inference together in a useful manner.
-Let's explore what `satisfies` changes and why that's useful!
+Let's explore the new `satisfies` operator and why it's useful!
 
 ## Recap: Default Type Inference
 
 TypeScript's default type inference for objects defaults to inferring primitive values for types, rather than literals.
-For example, the `vibe.mood` property in the following value is `string`, not `happy`:
+For example, the `vibe.mood` property in the following value is `string`, not `"happy"`:
 
 ```ts twoslash
 const vibe = {
@@ -25,13 +25,13 @@ const vibe = {
 };
 ```
 
-Default inference is not always optimal.
-You might want to have a different type than what TypeScript would infer by default.
+TypeScript's default inference is not always optimal since you might want to have a different type.
+For our `vibe`, we might have wanted `"happy"` - or maybe even a union of string literals, like as `"happy" | "sad"`.
 
 ## Recap: Type Declarations
 
-You can ask TypeScript to use a specific type for a variable by using a `:` type annotation on the variable.
-Doing so tells TypeScript to use the annotation for the variable's type instead of what the normal inference.
+You can use the `:` type annotation to specify a variable's type.
+Doing so tells TypeScript to use the annotated type for the variable instead of its default inference.
 
 For example, using a `: Vibe` type annotation on the `vibe` variable here switches its `mood` property from `string` to `"happy" | "sad"`:
 
@@ -176,4 +176,9 @@ npm i typescript@4.9-beta --save-dev
 The `satisfies` operator was designed and released after the _Learning TypeScript_ book's contents were finalized.
 `satisfies` is not mentioned in _Learning TypeScript_.
 
-However, _Learning TypeScript_'s [The Type System chapter](http://localhost:3000/the-type-system) does teach all the concepts you'll need to be able to understand TypeScript's existing type annotations, type inference, and the new `satisfies` operator.
+Still, _Learning TypeScript_'s [The Type System chapter](http://localhost:3000/the-type-system) does teach all the concepts you'll need to be able to understand TypeScript's type system.
+That incldues how the type system works, the default type inferences mentioned in this article, and explicitly using `:` type annotations.
+
+## Thanks
+
+Many thanks to [John Reilly](https://twitter.com/johnny_reilly) and Kenny Lin for invaluable help in proofreading this article!
