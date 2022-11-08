@@ -60,6 +60,10 @@ TypeScript 4.9's new `satisfies` operator introduces a happy compromise between 
 - The value must adhere to a specific shape (as with `:` declarations )
 - Type inference is still allowed to give the value a more narrow shape than the declared type
 
+In other words, `satisfies` makes sure a value's type matches some type shape, but doesn't widen the type unnecessarily.
+
+We can use `satisfies` on our `vibe` object to make sure its `mood` property allowed to be only is `"happy" | "sad"`, but is still only `"happy"` afterwards:
+
 ```ts twoslash
 interface Vibe {
   mood: "happy" | "sad";
@@ -74,7 +78,7 @@ vibe.mood;
 //   ^?
 ```
 
-By using `satisfies`, we were able to make sure our `vibe` matched the `Vibe` interface, without forcing too narrow a type for the `mood` property.
+By using `satisfies`, we were able to make sure our `vibe` matched the `Vibe` interface, without forcing too wide a type for the `mood` property.
 
 You can read more about `satisfies` in the [TypeScript 4.9 beta release notes](https://devblogs.microsoft.com/typescript/announcing-typescript-4-9-beta/#hamilton).
 
@@ -171,6 +175,8 @@ npm i typescript@4.9-beta --save-dev
 
 > This post will be updated when TypeScript 4.9 is released as stable.
 
+You can also try out the latest ("nightly") version of TypeScript in your browser on [typescriptlang.org/play?ts=next](https://www.typescriptlang.org/play?ts=next).
+
 ## _Learning TypeScript_ and `satisfies`
 
 The `satisfies` operator was designed and released after the _Learning TypeScript_ book's contents were finalized.
@@ -181,4 +187,4 @@ That incldues how the type system works, the default type inferences mentioned i
 
 ## Thanks
 
-Many thanks to [John Reilly](https://twitter.com/johnny_reilly) and Kenny Lin for invaluable help in proofreading this article!
+Many thanks to [John Reilly](https://twitter.com/johnny_reilly), Kenny Lin, and [Loren Sands-Ramshaw](https://twitter.com/lorendsr) for invaluable help in proofreading this article!
