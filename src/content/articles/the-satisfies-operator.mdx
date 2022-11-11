@@ -1,5 +1,5 @@
 ---
-date: "November 3 2022"
+date: "November 14 2022"
 description: "How TypeScript's new `satisfies` operator brings the best of type annotations and default type inference."
 meta: assertions casts declarations satisfies
 ---
@@ -131,7 +131,6 @@ Its `context` parameter would be implicitly type `any` without a type annotation
 Even if `context` were to be removed or given a proper `: ServerSidePropsContext` type annotation, nothing would enforce the function has the right return type:
 
 ```ts twoslash
-// @errors: 2307 7006
 import { GetServerSidePropsContext } from "next";
 
 export const getServerSideProps = (context: GetServerSidePropsContext) => ({
@@ -150,14 +149,15 @@ Now with TypeScript's `satisfies` operator, we can have the best of both worlds:
 - We can allow its `props` generic type to be inferred from data
 
 ```ts twoslash
-// @errors: 2307 7006
 import { GetServerSideProps } from "next";
 
-export const getServerSideProps = (context) => ({
-  props: {
-    rating: Math.random(),
-    referrer: context.query.referrer,
-  },
+export const getServerSideProps = (async (context) => {
+  return {
+    props: {
+      rating: Math.random(),
+      referrer: context.query.referrer,
+    },
+  };
 }) satisfies GetServerSideProps;
 
 getServerSideProps;
@@ -188,3 +188,5 @@ That incldues how the type system works, the default type inferences mentioned i
 ## Thanks
 
 Many thanks to [John Reilly](https://twitter.com/johnny_reilly), Kenny Lin, and [Loren Sands-Ramshaw](https://twitter.com/lorendsr) for invaluable help in proofreading this article!
+
+Lastly, appreciation to [Oleksandr Tarasiuk](https://github.com/a-tarasyuk) who [implemented and iterated on the feature](https://github.com/microsoft/TypeScript/pull/46827) with the TypeScript team.
