@@ -1,0 +1,193 @@
+---
+date: "November 14 2022"
+description: "How TypeScript's new `satisfies` operator brings the best of type annotations and default type inference."
+meta: assertions casts declarations satisfies
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+
+# The `satisfies` Operator
+
+TypeScript 4.9 introduces a new operator, `satisfies`, that allows opting into a different kind of type inference from the type system's default.
+`satisfies` brings the best of type annotations and default type inference together in a useful manner.
+Let's explore the new `satisfies` operator and why it's useful!
+
+## Recap: Default Type Inference
+
+TypeScript's default type inference for objects defaults to inferring primitive values for types, rather than literals.
+For example, the `vibe.mood` property in the following value is `string`, not `"happy"`:
+
+```ts twoslash
+const vibe = {
+  mood: "happy",
+  // ^?
+};
+```
+
+TypeScript's default inference is not always optimal since you might want to have a different type.
+For our `vibe`, we might have wanted `"happy"` - or maybe even a union of string literals, like as `"happy" | "sad"`.
+
+## Recap: Type Declarations
+
+You can use the `:` type annotation to specify a variable's type.
+Doing so tells TypeScript to use the annotated type for the variable instead of its default inference.
+
+For example, using a `: Vibe` type annotation on the `vibe` variable here switches its `mood` property from `string` to `"happy" | "sad"`:
+
+```ts twoslash
+interface Vibe {
+  mood: "happy" | "sad";
+}
+
+const vibe: Vibe = {
+  mood: "happy",
+  // ^?
+};
+
+vibe.mood;
+//   ^?
+```
+
+But, this has a flaw too!
+As developers reading the code, we know `vibe.mood` should be the more specific ("narrow") `"happy"`, not the more general ("wide") `"happy" | "sad"`.
+
+## `satisfies` to the Rescue
+
+TypeScript 4.9's new `satisfies` operator introduces a happy compromise between `:` annotations and and default type inference.
+`satisfies` takes the best of both worlds:
+
+- The value must adhere to a specific shape (as with `:` declarations )
+- Type inference is still allowed to give the value a more narrow shape than the declared type
+
+In other words, `satisfies` makes sure a value's type matches some type shape, but doesn't widen the type unnecessarily.
+
+We can use `satisfies` on our `vibe` object to make sure its `mood` property allowed to be only is `"happy" | "sad"`, but is still only `"happy"` afterwards:
+
+```ts twoslash
+interface Vibe {
+  mood: "happy" | "sad";
+}
+
+const vibe = {
+  mood: "happy",
+  // ^?
+} satisfies Vibe;
+
+vibe.mood;
+//   ^?
+```
+
+By using `satisfies`, we were able to make sure our `vibe` matched the `Vibe` interface, without forcing too wide a type for the `mood` property.
+
+You can read more about `satisfies` in the [TypeScript 4.9 beta release notes](https://devblogs.microsoft.com/typescript/announcing-typescript-4-9-beta/#hamilton).
+
+## Real World Usage: Next.js
+
+The [Next.js framework](https://nextjs.org) provides an excellent example of how `satisfies` improves the coding experience for TypeScript developers.
+Its [data fetching patterns](https://nextjs.org/docs/basic-features/data-fetching) such as [`getServerSideProps`](https://nextjs.org/docs/basic-features/data-fetching/get-server-side-props) and [`getStaticProps`](https://nextjs.org/docs/basic-features/data-fetching/get-static-props) allow users to declare functions with those names in order to retrieve data for a component.
+Those functions are expected to match a certain type and are also generic in what type of data they return.
+
+A simplified version of the `GetServerSideProps` type might look like:
+
+```ts
+export type GetServerSideProps<Props> = (
+  context: GetServerSidePropsContext
+) => ServerSidePropsResult<Props>;
+
+export interface GetServerSidePropsContext {
+  query: Record<string, string>;
+}
+
+export type GetServerSidePropsResult<P> =
+  | { props: P | Promise<P> }
+  | { notFound: true };
+```
+
+Before `satisfies`, there was no good way to declare many generic `getServerSideProps` functions without using explicit type annotations.
+
+Code could use an explicit `: GetServerSideProps<...>` type annotation, but then that would need to be explicitly told a function type parameter for the generic `Props` type argument:
+
+```ts
+import { GetServerSideProps } from "next";
+
+export interface MyPageData {
+  rating: number;
+  referrer: string | undefined;
+}
+
+export const getServerSideProps: GetServerSideProps<MyPageData> = (
+  context
+) => ({
+  props: {
+    rating: Math.random(),
+    referrer: context.query.referrer,
+  },
+});
+```
+
+Leaving out the `: GetServerSideProps<...>` type annotation meant the `getServerSideProps` function wouldn't be inferred to satisfy that type.
+Its `context` parameter would be implicitly type `any` without a type annotation.
+Even if `context` were to be removed or given a proper `: ServerSidePropsContext` type annotation, nothing would enforce the function has the right return type:
+
+```ts twoslash
+import { GetServerSidePropsContext } from "next";
+
+export const getServerSideProps = (context: GetServerSidePropsContext) => ({
+  rating: Math.random(),
+  referrer: context.query.referrer,
+});
+// No error, even though this is returning the wrong object type shape
+// (it should have wrapped its props in a `props` property)
+```
+
+### Next.js and `satisfies`
+
+Now with TypeScript's `satisfies` operator, we can have the best of both worlds:
+
+- We can declare our `getServerSideProps` function with proper parameter and return types
+- We can allow its `props` generic type to be inferred from data
+
+```ts twoslash
+import { GetServerSideProps } from "next";
+
+export const getServerSideProps = (async (context) => {
+  return {
+    props: {
+      rating: Math.random(),
+      referrer: context.query.referrer,
+    },
+  };
+}) satisfies GetServerSideProps;
+
+getServerSideProps;
+// ^?
+```
+
+## Using `satisfies` Today
+
+As of November 2022, TypeScript 4.9 is still in beta.
+That means in order to use `satisfies`, you'll have to install `typescript@4.9-beta` or newer:
+
+```shell
+npm i typescript@4.9-beta --save-dev
+```
+
+> This post will be updated when TypeScript 4.9 is released as stable.
+
+You can also try out the latest ("nightly") version of TypeScript in your browser on [typescriptlang.org/play?ts=next](https://www.typescriptlang.org/play?ts=next).
+
+## _Learning TypeScript_ and `satisfies`
+
+The `satisfies` operator was designed and released after the _Learning TypeScript_ book's contents were finalized.
+`satisfies` is not mentioned in _Learning TypeScript_.
+
+Still, _Learning TypeScript_'s [The Type System chapter](http://localhost:3000/the-type-system) does teach all the concepts you'll need to be able to understand TypeScript's type system.
+That incldues how the type system works, the default type inferences mentioned in this article, and explicitly using `:` type annotations.
+
+## Thanks
+
+Many thanks to [John Reilly](https://twitter.com/johnny_reilly), Kenny Lin, and [Loren Sands-Ramshaw](https://twitter.com/lorendsr) for invaluable help in proofreading this article!
+
+Lastly, appreciation to [Oleksandr Tarasiuk](https://github.com/a-tarasyuk) who [implemented and iterated on the feature](https://github.com/microsoft/TypeScript/pull/46827) with the TypeScript team.
+Oleksandr is by far the most profilic community contributor to TypeScript and deserves much gratitude and praise.
