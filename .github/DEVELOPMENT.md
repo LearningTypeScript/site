@@ -20,4 +20,5 @@ Most changes are reflected live without having to restart the server.
 
 ```shell
 git submodule foreach git pull
+git add -A; git commit -m "Latest learning-typescript-projects"; git push
 ```
