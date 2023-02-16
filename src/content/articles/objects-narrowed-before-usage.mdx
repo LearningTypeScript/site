@@ -1,27 +1,76 @@
 ---
-date: "June 1 2022"
+date: "February 17 2023"
 description: "yippee!..."
+meta: literals, narrowing, objects, primitive
 ---
 
 # Why Objects Aren't Narrowed Before Usage
 
+When you create a variable in TypeScript with an object for its initial value, TypeScript needs to figure out what type the object's properties are allowed to be.
+TypeScript will by default use _primitive_ types _(`number`, `string`, ...)_ instead of _literal_ types _(`123`, `"abc"`, ...)_ for properties with a literal value.
+
+For example, `counts.zucchini` in this object is considered to be type `number`, not `2`:
+
 ```ts twoslash
 const counts = {
-  one: 1,
-  two: 2,
+  apple: 1,
+  zucchini: 2,
 };
 
-const twoValue = counts.two;
-//    ^?
+counts.zucchini;
+//     ^?
 ```
 
-Shouldn't TypeScript know that `counts.two` is specifically the literal type `2` and not the general primitive type `number`?
-Can't it tell we haven't changed the object yet.
+Shouldn't TypeScript know that `counts.zucchini` is specifically the literal type `2` and not the general primitive type `number`?
+Can't it tell we haven't changed the object yet?
 
 It can't, but it won't.
 And for very good reason.
 
 <!--truncate-->
+
+## Recap: Literals vs. Primitives
+
+When you create a variable, TypeScript decides the type of the variable based on whether it's immutable:
+
+- _Immutable_ values, such as `const` variables, are given the closest _literal_ type
+- _Mutable_ values, such as `let` variables, are given the closest _primitive_ type
+
+For example, the immutable `const fruit` variable here is the literal type `"apple"`, while the mutable `let vegetable` variable is the primitive type `string`:
+
+```ts twoslash
+const fruit = "apple";
+
+fruit;
+// ^?
+
+let vegetable = "zucchini";
+
+vegetable;
+// ^?
+```
+
+### Object Properties and Mutability
+
+Object properties undergo similar type inference logic to variables.
+If an object property is _mutable_, such as an object created in a `const` variable, TypeScript will infer a _primitive_ type, not a _literal_.
+Only for _immutable_ objects, such as those declared with an `as const`, will TypeScript infer all properties to be their _literal_ types.
+
+```ts twoslash
+const fruits = {
+  apple: 1,
+};
+
+fruits.apple;
+//     ^?
+
+const vegetables = {
+  zucchini: 2,
+} as const;
+
+vegetables.zucchini;
+//     ^?
+```
 
 ## Change Tracking is Impractical
 
@@ -32,7 +81,7 @@ If the object is used in any meaningful application logic, TypeScript won't be a
 
 Let's say you want to `console.log` the `counts` object before usage.
 Your use your own custom `log` function that just so happens to only call `console.log`?
-You'd still want `counts.two` to be `2`, right?
+You'd still want `counts.zucchini` to be `2`, right?
 
 ```ts
 function log(data: unknown) {
@@ -40,19 +89,23 @@ function log(data: unknown) {
 }
 
 const counts = {
-  one: 1,
-  two: 2,
+  apple: 1,
+  zucchini: 2,
 };
 
 log(counts);
 
-const twoValue = counts.two;
-//    ^?
+counts.zucchini;
+//     ^?
 ```
 
 In theory, the `log` function could use the `readonly` modifier on its `data` parameter to indicate that
 But many built-in user type definitions don't properly mark parameters as read-only.
-Even `console.log` isn' marked as read-only as of TypeScript 4.7.2.
+Even `console.log` isn' marked as read-only as of TypeScript 5.
+
+## Choosing Primitives or Literals
+
+As a result, TypeScript has
 
 ## Further Reading
 

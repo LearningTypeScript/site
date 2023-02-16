@@ -127,12 +127,6 @@ const config = {
 
   presets: [
     [
-      "docusaurus-preset-shiki-twoslash",
-      {
-        themes: ["min-light", "nord"],
-      },
-    ],
-    [
       "classic",
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
@@ -167,11 +161,6 @@ const config = {
     [
       "docusaurus-preset-shiki-twoslash",
       {
-        // Todo: ...is this being respected?!
-        defaultCompilerOptions: {
-          lib: ["dom", "es2021"],
-          target: "esnext",
-        },
         themes: ["min-light", "nord"],
       },
     ],
