@@ -8,16 +8,7 @@ Thanks for your interest in contributing to _Learning TypeScript_'s site! 💖
 
 This project contains a [Contributor Covenant code of conduct](./CODE_OF_CONDUCT.md) all contributors are expected to follow.
 
-## Getting Started
-
-The [README.md](../README.md) and [DEVELOPMENT.md](./DEVELOPMENT.md) files contain the general right steps to get started locally.
-If you plan on sending pull requests, however, you'll need to [fork the repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo) to your personal account and clone it from there instead:
-
-```shell
-git clone https://github.com/your-username/site learning-typescript-site
-cd learning-typescript-site
-yarn
-```
+See [DEVELOPMENT.md](./DEVELOPMENT.md) for local development instructions.
 
 ## Reporting Issues
 

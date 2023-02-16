@@ -1,7 +1,9 @@
 const path = require("path");
 
-const basePath = "https://github.com/LearningTypeScript/projects/tree/main/";
+const basePath =
+  "https://www.github.com/LearningTypeScript/projects/tree/main/";
 
+// @ts-check
 module.exports.externalProjectLinks = () => {
   return async (root, file) => {
     // Transforms links like:
@@ -11,11 +13,11 @@ module.exports.externalProjectLinks = () => {
     function transformLocalLinks(node) {
       if (node.type === "link") {
         if (/^\.\/\d\d/.test(node.url)) {
-          node.url = path.join(
+          node.url = [
             basePath,
             file.dirname.split("external/")[1],
-            node.url
-          );
+            node.url,
+          ].join("/");
         }
       }
 
@@ -24,15 +26,21 @@ module.exports.externalProjectLinks = () => {
       }
     }
 
+    function findIndex(value) {
+      return root.children.findIndex(
+        (child) => child.type === "heading" && child.children[0].value === value
+      );
+    }
+
     transformLocalLinks(root);
 
-    const setupIndex = root.children.findIndex(
-      (child) => child.type === "heading" && child.data.id === "setup"
-    );
+    const setupIndex = findIndex("Setup");
 
     if (setupIndex === -1) {
       return;
     }
+
+    const stepsIndex = findIndex("Steps");
 
     // https://github.com/facebook/docusaurus/issues/6520
     // Once Docusaurus supports ESM, this can be a normal file-level import...
@@ -53,13 +61,17 @@ npm i
 
 </details>
 
-Change your terminal directory to this project's:
+Open your editor in this project's directory:
 
 \`\`\`shell
-cd projects/${chapter}/${project}
+code projects/${chapter}/${project}
 \`\`\`
       `).children,
-      ...root.children.slice(setupIndex + 1),
+      ...root.children.slice(setupIndex + 1, stepsIndex),
+      ...fromMarkdown(`
+> Note: your terminal should be in the \`${project}\` directory, _not_ the root repository's directory.
+      `).children,
+      ...root.children.slice(stepsIndex),
     ];
   };
 };

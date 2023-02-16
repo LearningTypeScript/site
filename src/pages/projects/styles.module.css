@@ -9,9 +9,6 @@
   margin-top: 3rem;
 }
 
-/* Todo: use var(--lt-media-query-width-medium)? */
-@media (min-width: 768px) {
-  .mainArea {
-    padding: 2rem 0;
-  }
+.h2 {
+  padding-top: 1rem;
 }

@@ -5,9 +5,10 @@ import { AboutTheAuthor } from "../theme/AboutTheAuthor";
 import { ArticlesSection } from "../theme/ArticlesSection";
 
 import { HeroSection } from "../theme/HeroSection";
+import { SummarySection } from "../theme/SummarySection";
 import { ProjectsSection } from "../theme/ProjectsSection";
 import { ReadTheBook } from "../theme/ReadTheBook";
-
+import { StandardMetadata } from "../theme/StandardMetadata";
 import styles from "./styles.module.css";
 
 export default function Home(): JSX.Element {
@@ -15,24 +16,10 @@ export default function Home(): JSX.Element {
 
   return (
     <Layout description={siteConfig.tagline} title=" ">
-      <div
-        style={{
-          margin: "2rem auto 0",
-          maxWidth: "1000px",
-          textAlign: "center",
-        }}
-      >
-        {globalThis?.location?.search?.includes("preview") ? null : (
-          <>
-            <h2 style={{ fontSize: "3rem" }}>🛠 Site under construction! 🛠</h2>
-            <p style={{ fontSize: "2rem" }}>
-              <strong>Check back after the book is released!</strong>
-            </p>
-          </>
-        )}
-      </div>
+      <StandardMetadata />
       <HeroSection />
       <main className={styles.main}>
+        <SummarySection />
         <ProjectsSection />
         <ArticlesSection />
         <ReadTheBook />

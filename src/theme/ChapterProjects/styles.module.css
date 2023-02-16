@@ -19,6 +19,11 @@
   flex-direction: row;
   flex-wrap: wrap;
   gap: 2rem;
+  width: 100%;
+}
+
+.card {
+  width: 100%;
 }
 
 /* Todo: use var(--lt-media-query-width-medium)? */

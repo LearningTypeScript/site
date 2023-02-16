@@ -1,0 +1,15 @@
+.mainArea a {
+  --ifm-link-decoration: underline;
+}
+
+.title {
+  font-family: monospace;
+  font-size: 3rem;
+  margin-bottom: 2rem;
+}
+
+.title::before {
+  content: "$ tsc > ...";
+  display: block;
+  font-size: 1.5rem;
+}

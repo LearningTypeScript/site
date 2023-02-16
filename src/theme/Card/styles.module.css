@@ -1,20 +1,27 @@
 .card {
   background: var(--ifm-background-deemphasized-color);
+  border: 2px solid transparent;
   color: var(--ifm-font-color-base);
   display: flex;
   flex-direction: column;
   font-size: var(--ifm-h4-font-size);
   padding: 2rem;
+  min-height: 15rem;
   text-align: left;
   user-select: none;
+  transition: border-color var(--ifm-transition-fast),
+    border-radius var(--ifm-transition-fast),
+    box-shadow var(--ifm-transition-fast), transform var(--ifm-transition-fast);
 }
 
 .card:hover {
   color: var(--ifm-font-color-base);
   text-decoration: none;
+  border-color: var(--ifm-font-color-base);
+  border-radius: 2px;
+  box-shadow: 4px 4px 0px 1px var(--ifm-font-color-base);
+  transform: translate(-4px, -4px);
 }
-
-/* TODO: fancy hover/focus animations from designs */
 
 .title {
   font-size: var(--ifm-h2-font-size);
@@ -22,6 +29,7 @@
 }
 
 .description {
+  height: 100%;
   margin: 1rem 0;
 }
 

@@ -15,7 +15,7 @@
   font-weight: var(--ifm-heading-font-weight);
   justify-content: space-between;
   margin: auto;
-  max-width: 1000px;
+  max-width: 1200px;
   flex-direction: column;
 }
 
@@ -35,9 +35,10 @@
 
 .icons {
   display: flex;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  flex-direction: row;
+  gap: 1rem;
   justify-content: center;
+  margin-bottom: 2rem;
 }
 
 .icon {
@@ -54,6 +55,7 @@
 .credits {
   margin: 1rem 0 0;
   text-align: center;
+  color: var(--ifm-color-secondary-contrast-foreground);
 }
 
 .credits a {

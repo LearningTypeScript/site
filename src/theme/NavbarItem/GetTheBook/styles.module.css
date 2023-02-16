@@ -1,0 +1,42 @@
+.dropdownLinkItem {
+  position: relative;
+}
+
+.links {
+  background: var(--ifm-background-surface-color);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  padding: 0.25rem;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transition: opacity var(--ifm-transition-fast), top var(--ifm-transition-fast);
+  visibility: hidden;
+}
+
+.alignLeft {
+  /* text-align: center; */
+}
+
+.alignLeft,
+.alignLeft .link,
+.alignLeft .links a {
+  width: 15rem;
+}
+
+.alignRight {
+  text-align: right;
+}
+
+.dropdownLinkItem:focus-within .links,
+.dropdownLinkItem:hover .links {
+  opacity: 1;
+  top: 100%;
+  visibility: visible;
+}
+
+.links a {
+  white-space: nowrap;
+}

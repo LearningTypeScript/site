@@ -1,0 +1,239 @@
+---
+date: "August 11 2022"
+description: "Diving into why TypeScript doesn't narrow object types before they're modified."
+meta: objects, narrowing, variables
+---
+
+# Objects, Functions, and Type Narrowing
+
+TypeScript's type narrowing is a powerful feature of TypeScript's type system that lets it infer more specific types for values in areas of code.
+For example, TypeScript would understand that inside the following `if` statement, the `fruit` variable has to be the literal value `"apple"`:
+
+```ts twoslash
+// @lib: dom,esnext
+const fruit = Math.random() > 0.5 ? "apple" : undefined;
+
+fruit;
+// ^?
+
+if (fruit) {
+  fruit;
+  // ^?
+}
+```
+
+But, TypeScript's type system isn't perfect.
+There are some cases where TypeScript can't narrow types exactly the way you might want.
+
+Take a look at this code snippet, where `counts.apple` is inferred to be type `number`:
+
+```ts twoslash
+const counts = {
+  apple: 1,
+};
+
+counts.apple;
+//     ^?
+```
+
+While `counts` is type `{ apple: number }`, shouldn't TypeScript know that the immediately available value of `counts.apple` is specifically the literal type `1` and not the general primitive type `number`?
+Can't TypeScript tell we haven't changed the value yet?
+
+It could, but it won't.
+And for very good reason.
+
+<!--truncate-->
+
+## Recap: Literals vs. Primitives
+
+TypeScript marks a distinction between the two following classifications of types:
+
+- **Primitives**: General types of raw non-object value in JavaScript: such as `boolean`, `string`, and `number`.
+- **Literals**: A specific value within a primitive, such as `false`, `"apple"`, and `1`.
+
+By default for a variable's initial value, TypeScript will infer properties of an object to be their general primitive type, not their specific literal type.
+
+## Change Tracking is Impractical
+
+So, why does TypeScript infer object properties to be primitives even before they're used?
+
+The reason is that it's difficult -oftentimes impossible- for TypeScript to know whether an object has been modified between its initialization and later uses.
+If the object is used in any meaningful application logic, TypeScript often won't be able to tell whether the object was modified during that logic.
+
+### A Practical Example
+
+Let's say you want to `console.log` the string and the `counts` object before usage.
+You write your own custom `log` function that only calls `console.log`.
+You'd still want `counts.apple` to be `1`, right?
+
+```ts twoslash
+// @lib: dom,esnext
+function log(data: unknown) {
+  console.log("Logging:", data);
+}
+
+const counts = {
+  apple: 1,
+};
+
+log(counts);
+
+counts.apple;
+//     ^?
+```
+
+Unfortunately, there's usually no reasonable way TypeScript could know whether a function call might modify properties of its arguments.
+Functions might call to potentially many other functions, including ones declared in `.d.ts` files where TypeScript doesn't have access to see the implementation.
+
+As a result, TypeScript has to assume that function calls _might_ modify properties of object provided as arguments.
+
+:::note
+In theory, the `log` function could use the `readonly` modifier on its `data` parameter to indicate that it doesn't change `data`.
+Unfortunately, many built-in and user type definitions don't properly mark parameters as read-only.
+:::
+
+### Predictability is Key
+
+Because TypeScript has to assume function calls might modify properties of arguments, any initial type narrowing done to an object would no longer apply after the object is used in any function calls.
+That restriction would likely confuse developers expecting the property to remain narrowed after calls to seemingly innocuous functions such as `console.log`.
+
+In the following code snippet, even if TypeScript had narrowed `counts.apple` to `1` before the `console.log(counts)`, it would have to forget it afterwards because of the function call:
+
+```ts twoslash
+// @lib: dom,esnext
+const counts = {
+  apple: 1,
+};
+
+counts.apple;
+//     ^?
+
+console.log(counts);
+
+counts.apple;
+//     ^?
+```
+
+It'd be very surprising for developers to see a different inferred type for `counts.apple` before and after the function call.
+TypeScript prefers keeping them the same.
+
+### Type Narrowing Is Already Too Optimistic
+
+At this point, you might be unhappy about how timid TypeScript's type narrowing can sometimes be.
+But: in other cases, the type narrowing is actually too aggressive!
+
+In this code snippet, `counts.apple` is narrowed to `1` inside the `if` body — even after a `logAndMutate(counts)` that also changes the `data.apple` property:
+
+```ts twoslash
+// @lib: dom,esnext
+function logAndMutate(data: typeof counts) {
+  console.log("Logging:", data);
+  data.apple += 1;
+}
+
+const counts = {
+  apple: 1,
+};
+
+if (counts.apple === 1) {
+  counts.apple;
+  //     ^?
+
+  logAndMutate(counts);
+
+  counts.apple;
+  //     ^?
+}
+```
+
+Function calls not resetting explicit type narrowing is an intentional quirk of TypeScript's type system.
+While the quirk is not always the right behavior (and seems to be the opposite design choice of the first half of this article), the quirk is generally convenient and often correct in most code.
+
+## Function Declarations and Type Narrowing
+
+Interestingly, while calling a function may not remove type narrowing from objects provided as arguments, function bodies will generally remove type narrowing from values.
+The only exception is IIFEs (Immediately Invoked Function Expressions), or functions that are immediately called after declaration — TypeScript understands that they're run once and not used later.
+
+In this code snippet, the body of `withCountsDeclaration` forgets that the type of `counts.apple` was narrowed to `1`, but the body of `withCountsIIFE` preserves the type narrowing:
+
+```ts twoslash
+// @lib: dom,esnext
+const counts = {
+  apple: 1,
+};
+
+if (counts.apple === 1) {
+  counts.apple;
+  //     ^?
+
+  function withCountsDeclaration() {
+    counts.apple;
+    //     ^?
+  }
+
+  (function withCountsIIFE() {
+    counts.apple;
+    //     ^?
+  })();
+}
+```
+
+Although it may be irksome at times for function bodies to lose type narrowing, the loss is a good safety measure.
+The functions might be called at some later time, after the type narrowing is no longer true.
+
+Here, the `runWithMaybeValue` function shouldn't assume `maybeValue` is still narrowed to `string` because it'll be called a second after `maybeValue` is set to `undefined`:
+
+```ts twoslash
+// @lib: dom,esnext
+let maybeValue = Math.random() > 0.5 ? "cherry" : undefined;
+
+if (maybeValue) {
+  console.log(maybeValue);
+  //          ^?
+
+  function runWithMaybeValue() {
+    console.log(maybeValue);
+    //          ^?
+  }
+
+  setTimeout(runWithMaybeValue, 1000);
+}
+
+maybeValue = undefined;
+```
+
+In this case, it was a good thing TypeScript didn't apply type narrowing inside the function body.
+It would be nigh impossible for TypeScript's type system to be able to understand when a function's argument is a function itself that will be called immediately or after some delay.
+
+## Concluding Thoughts
+
+TypeScript's quirks around when objects will or won't be type narrowed can be confusing at first.
+But, they are predictable if you understand the reasoning behind them.
+
+In summary:
+
+- Variable object properties won't immediately be narrowed from primitives to literals
+- Function _calls_ **don't** reset type narrowing explicitly applied to values
+- Function _declarations_ **do** reset any type narrowing explicitly applied to values
+
+Those three rules are based on how most real-world JavaScript code tends to operate.
+
+## Further Reading
+
+At the time of writing, [TypeScript's issue tracker's new issue chooser](https://github.com/microsoft/TypeScript/issues/new/choose) includes an explicit [**Types Not Correct in/with Callback** option](https://github.com/microsoft/TypeScript/issues/new?assignees=&labels=Duplicate&template=types-not-correct-in-with-callback.md&title=) because so many issues reported these intentional type narrowing quirks as bugs.
+
+A legendary [Trade-offs in Control Flow Analysis](https://github.com/microsoft/TypeScript/issues/9998) issue exists in the TypeScript repository for those who want to dive deeper.
+The issue describes many trade-offs in how the TypeScript type checker analyzes the flow of values.
+
+---
+
+Narrowing is covered in _Learning TypeScript_ Chapter 3: Unions and Literals.
+Object types are covered in _Learning TypeScript_ Chapter 4: Objects.
+
+Got your own TypeScript questions?
+Tweet [@LearningTSbook](https://twitter.com/LearningTSBook) and the answer might become an article too!
+
+Many thanks to:
+
+- Kenny Lin for invaluable proofreading & suggestions in authoring this article! 💖
+- [Zhenghao](https://twitter.com/he_zhenghao) for technical proofreading. Zhenghao also writes about TypeScript in [his blog](https://www.zhenghao.io "zhenghao's blog") -- would recommend!
