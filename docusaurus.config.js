@@ -127,12 +127,6 @@ const config = {
 
   presets: [
     [
-      "docusaurus-preset-shiki-twoslash",
-      {
-        themes: ["min-light", "nord"],
-      },
-    ],
-    [
       "classic",
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
@@ -163,6 +157,12 @@ const config = {
           customCss: require.resolve("./src/css/custom.css"),
         },
       }),
+    ],
+    [
+      "docusaurus-preset-shiki-twoslash",
+      {
+        themes: ["min-light", "nord"],
+      },
     ],
   ],
 
