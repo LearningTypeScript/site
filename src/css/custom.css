@@ -10,6 +10,7 @@
   --ifm-heading-font-weight: bold;
   --ifm-link-color: var(--ifm-color-secondary-darkest);
   --ifm-menu-color-active: var(--ifm-color-secondary-darkest);
+  --ifm-pre-background: white;
 
   --lt-layout-width-full: 1234px;
   --lt-media-query-width-medium: 768px;
@@ -17,6 +18,7 @@
 }
 
 [data-theme="dark"] {
+  --ifm-pre-background: rgb(46, 52, 64);
   --ifm-background-deemphasized-color: #222024;
   --ifm-link-color: #f4f1f8;
   --ifm-menu-color-active: var(--ifm-link-color);
