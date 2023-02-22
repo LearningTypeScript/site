@@ -1,0 +1,112 @@
+---
+date: "February 17 2023"
+description: "Why TypeScript's type narrowing won't apply to ."
+meta: literals, narrowing, objects, primitive
+---
+
+# Why Values Aren't Narrowed After Function Calls
+
+TypeScript's type system boasts a feature called _type narrowing_.
+Type narrowing means that if a block of code can only be reached when a value is a specific type, then the value will be considered that type inside the block.
+
+As an example, take the following `fruit` variable of type `string | undefined` (a union type indicating it can be either `string` or `undefined`.
+TypeScript can deduce that inside the `if` statement, `fruit` must be truthy, which means its type inside that block must be the more narrow (specific) `string`.
+
+```ts twoslash
+let fruit = Math.random() > 0.5 ? "apple" : undefined;
+
+fruit;
+// ^?
+
+if (fruit) {
+  fruit;
+  // ^?
+}
+```
+
+TypeScript's type narrowing is quite useful - but it has limitations in what it can infer.
+Most notably, it is sometimes wrong about the types of values after functions are called to modify them.
+
+```ts twoslash
+let vegetable: string | undefined;
+
+function setVegetable(newValue: string) {
+  vegetable = newValue;
+}
+
+setVegetable("zucchini");
+
+vegetable;
+// ^?
+```
+
+Shouldn't TypeScript know that `vegetable` is specifically `string` after `setVegetable` has been called, not `string | undefined`?
+Can't it tell we haven't changed the object yet?
+
+It can't, but it won't.
+And for very good reason.
+
+<!--truncate-->
+
+## Change Tracking is Impractical
+
+The problem is that it's frequently difficult -sometimes impossible- for TypeScript to know whether a value has been modified after its creation.
+If the value is used in any meaningful application logic, TypeScript won't be able to tell whether it was modified.
+That means TypeScript often can't be sure whether an value is still the same value it started with, even a few lines later.
+
+Take this more convoluted version of the `setVegetable` example:
+
+```ts twoslash
+let vegetable: string | undefined;
+
+function setVegetable(newValue: string) {
+  vegetable = newValue;
+}
+
+setVegetable("zucchini");
+
+vegetable;
+// ^?
+```
+
+### A Practical Example
+
+Let's say you want to log a `counts` object after creating it and before you reassign any values.
+You might pass it to a `log` function that does something like call to `console.log`:
+
+```ts twoslash
+function log(counts: Record<string, number>) {
+  console.log(counts);
+}
+
+const foods = {
+  apple: 1,
+  zucchini: 2,
+};
+
+foods.zucchini;
+//     ^?
+
+log(foods);
+
+foods.zucchini;
+//     ^?
+```
+
+Unfortunately, it would be quite difficult for TypeScript to reliably determine whether the `log` function modifies its `data` parameter.
+The code in this snippet was only one line - but what if the function provides `counts` to potentially several other functions?
+What if those functions are only declared in `.d.ts` files that don't describe the contents of the functions?
+
+In theory, the `log` function could use the `readonly` operator on its `data` parameter to indicate that `data` is never modified.
+But adding `readonly`s everywhere is inconvenient.
+Many community-written type definitions don't properly mark parameters as read-only.
+Even `console.log` isn't marked as having read-only parameters as of TypeScript 5's built-in type definitions.
+
+## TypeScript's Compromise
+
+As a result, TypeScript has made two intentional design decisions
+
+## Further Reading
+
+A legendary [Trade-offs in Control Flow Analysis](https://github.com/microsoft/TypeScript/issues/9998) issue exists in the TypeScript repository.
+It describes many more common trade-offs in how the TypeScript type checker analyzes the flow of values.
