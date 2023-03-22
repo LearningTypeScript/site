@@ -10,7 +10,7 @@ import styles from "./styles.module.css";
 import { StandardMetadata } from "@site/src/theme/StandardMetadata";
 
 const chapterNames = [
-  "From Javascript To Typescript",
+  "From Javascript To TypeScript",
   "The Type System",
   "Unions And Literals",
   "Objects",
