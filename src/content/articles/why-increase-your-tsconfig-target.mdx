@@ -27,7 +27,7 @@ You can specify `target` in your TSConfig as the string name of an ECMAScript ve
 }
 ```
 
-This article digs into what `target` influences and why that's useful.
+This article explores what `target` influences and why that's useful.
 Let's dig in!
 
 <!-- truncate -->
@@ -40,7 +40,7 @@ Runtimes such as browsers and Node.js are constantly updating to support those n
 
 ## What TSConfig `target` Does
 
-`target` influences three facets of how TypeScript interacts with your code:
+`compilerOptions.target` influences three facets of how TypeScript interacts with your code:
 
 1. If TypeScript is being used to transpile your source files to JavaScript, it specifies what syntax must be transpiled down to support older ECMAScript language versions.
 2. Some syntax features are only allowed in newer targets.
@@ -203,8 +203,8 @@ Unless you intentionally support older browsers, such as for corporate or educat
 
 If you do need to support older browsers, consult the [kangax compatibility table](https://kangax.github.io/compat-table/es2016plus) to see what ECMAScript features they support.
 
-To check browser support for specific language features, many developers also like [caniuse.com](https://caniuse.com).
-It can show which browser versions support that feature.
+Many developers also utilize [caniuse.com](https://caniuse.com) for checking specific language feature support in browsers.
+It can show which browser versions support a feature.
 For example, [caniuse.com/?search=replaceAll](https://caniuse.com/?search=replaceAll) shows `String.prototype.replaceAll` as being available in Chrome/Edge (Desktop) 85, Safari (Mac) 13.1, Firefox 77, Opera 71, Chrome (Android) 111, and Safari (iOS) 13.4.
 
 ### Server Apps
