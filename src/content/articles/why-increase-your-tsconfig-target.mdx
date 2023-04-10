@@ -169,7 +169,8 @@ values.replaceAll("a", "!"); // Ok
 We should also note that TypeScript's `target` only impacts your runtime code if you're using TypeScript to transpile your source files to JavaScript.
 If you're using another tool to transpile, such as [Babel](https://babeljs.io), [ESBuild](https://esbuild.github.io), or [SWC](https://swc.rs), then that tool's settings will be what determines the syntax used in your output JavaScript code.
 
-Still, specifying `target` can still be useful. to including global type definitions corresponding to your `compilerOptions.target`.
+Still, specifying `target` can still be useful.
+`compilerOptions.lib` defaults to including global type definitions corresponding to your `compilerOptions.target`.
 If you're not customizing your `lib` compiler option, then specifying `target` can still impact with global APIs TypeScript recognizes you can use.
 
 ## Choosing a `target`
