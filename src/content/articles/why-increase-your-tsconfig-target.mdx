@@ -1,0 +1,241 @@
+---
+date: "April 7 2023"
+description: "Why you should increase the compilerOptions.target value in your TSConfig to as recent an ECMAScript version as you can."
+meta: ECMAScript, compiler options target, TSConfig
+---
+
+# Why Increase Your TSConfig `target`
+
+TypeScript is a highly configurable language.
+It comes with over a hundred compiler options that can be provided via the command-line to `tsc` and/or in a "TSConfig" configuration file (by default, `tsconfig.json`).
+
+:::tip
+TypeScript's compiler options are documented at [aka.ms/tsconfig](https://aka.ms/tsconfig).
+:::
+
+[`compilerOptions.target`](https://www.typescriptlang.org/tsconfig#target) in particular can be an important configuration option for your project.
+It specifies which ECMAScript version your project's output JavaScript code must support.
+
+You can specify `target` in your TSConfig as the string name of an ECMAScript version, such as `"es5"`or`"es2021"`:
+
+```jsonc
+// tsconfig.json
+{
+  "compilerOptions": {
+    "target": "es2021"
+  }
+}
+```
+
+This article explores what `target` influences and why that's useful.
+Let's dig in!
+
+<!-- truncate -->
+
+:::info Recap
+ECMAScript is the standard that JavaScript is based on.
+Each year, a new version is released that adds features to the language.
+Runtimes such as browsers and Node.js are constantly updating to support those newer features.
+:::
+
+## What TSConfig `target` Does
+
+`compilerOptions.target` influences three facets of how TypeScript interacts with your code:
+
+1. If TypeScript is being used to transpile your source files to JavaScript, it specifies what syntax must be transpiled down to support older ECMAScript language versions.
+2. Some syntax features are only allowed in newer targets.
+3. [`compilerOptions.lib`](https://www.typescriptlang.org/tsconfig#lib) defaults to including global API type definitions corresponding to your target.
+
+Let's cover each of those benefits in more detail.
+
+### 1. Smaller Output JavaScript
+
+Regardless of the transpiler you're using to generate JavaScript code, supporting relatively newer ECMAScript targets means your code will stay relatively more similar to its source.
+Older ECMAScript targets necessitate transpiling newer JavaScript syntax down to equivalent older syntax.
+
+Take the following async function written in JavaScript:
+
+```js
+async function valueAfterDelay(value, delay) {
+  await new Promise((resolve) => setTimeout(resolve, delay));
+  return value;
+}
+```
+
+The equivalent runtime code for just that function -ignoring [`tslib` helpers](https://github.com/microsoft/tslib#tslib)- is much larger and much less readable:
+
+<!-- prettier-ignore-start -->
+```js
+function valueAfterDelay(value, delay) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, delay); })];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/, value];
+            }
+        });
+    });
+}
+```
+<!-- prettier-ignore-end -->
+
+That's a lot more code, and quite incomprehensible!
+Choosing a newer target would make sure emitted JavaScript stays lean and readable.
+
+### 2. Unlocked Newer Syntax
+
+New forms of syntax added in newer ECMAScript versions generally try to be backwards-compatible with older ECMAScript versions via transpiling.
+The previous `async function valueAfterDelay` code blocks are an example: they show `async` being turned into code runnable in very old environments.
+
+Some newer forms of syntax, however, can't be transpiled down for support.
+TypeScript will report a syntax error if you try to use one that can't be supported by your `target`.
+
+Those syntax features include [property accessors](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Property_accessors) and [class `#` private identifiers](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_class_fields):
+
+```ts twoslash
+// @errors: 1056 18028
+// @target: es3
+const container = {
+  get property() {
+    return "hi!";
+  },
+};
+
+class RandomBox {
+  #value = Math.random();
+
+  getValue() {
+    return this.#value;
+  }
+}
+```
+
+Projects stuck on older ECMAScript targets can't use those nice new features.
+When using a newer `target`, those syntax features are allowed by TypeScript's syntax checks.
+
+### 3. Unlocked Lib Features
+
+ECMAScript versions also often specify new APIs, such as methods on built-in classes.
+TypeScript's [`lib` compiler option](https://www.typescriptlang.org/tsconfig#lib) allows you to specify what era of runtime ECMAScript features are supposed to be available when your code runs.
+`lib` defaults to including DOM (browser) types along with the same year as your `compilerOptions.target`.
+
+As an example, [`String.prototype.replaceAll`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replaceAll) is only natively available in ES2021 environments and newer.
+Using it in a project with a `target` lower than `"es2021"` and the default `lib` would result in a TypeScript type error:
+
+```ts twoslash
+// @errors: 2550
+// compilerOptions.target: "es2017"
+// (resulting in: compilerOptions.lib: ["dom", "es2017"])
+
+let values = "abc abc abc";
+
+values.replaceAll("a", "!");
+```
+
+By increasing `compilerOptions.target` to a value like `"es2022"` (which increases `lib` as a result), TypeScript recognizes that APIs such as `String.prototype.replaceAll` are available at runtime:
+
+```ts twoslash
+// @errors: 2550
+// @lib: dom,esnext
+// compilerOptions.target: "es2022"
+// (resulting in: compilerOptions.lib: ["dom", "es2022"])
+
+let values = "abc abc abc";
+
+values.replaceAll("a", "!"); // ok
+```
+
+Note that is possible to [polyfill](https://developer.mozilla.org/en-US/docs/Glossary/Polyfill) newer ECMAScript APIs into older environments.
+[core-js](https://github.com/zloirock/core-js) is a popular library for JavaScript polyfills.
+
+Some projects that use polyfills specify a `lib` higher than their `target` because they can rely on the APIs being polyfilled in.
+TypeScript recognizes global API types corresponding to the `lib`:
+
+```ts twoslash
+// @lib: es2022
+// @target: es2020
+// compilerOptions.lib: ["es2022"]
+// compilerOptions.target: "es2020"
+
+let values = "abc abc abc";
+
+values.replaceAll("a", "!"); // Ok
+```
+
+## `target` Might Not Impact Your Runtime Code
+
+We should also note that TypeScript's `target` only impacts your runtime code if you're using TypeScript to transpile your source files to JavaScript.
+If you're using another tool to transpile, such as [Babel](https://babeljs.io), [ESBuild](https://esbuild.github.io), or [SWC](https://swc.rs), then that tool's settings will be what determines the syntax used in your output JavaScript code.
+
+Still, specifying `target` can still be useful. to including global type definitions corresponding to your `compilerOptions.target`.
+If you're not customizing your `lib` compiler option, then specifying `target` can still impact with global APIs TypeScript recognizes you can use.
+
+## Choosing a `target`
+
+_Learning TypeScript_ recommends using the highest possible ECMAScript target supported by all the environment(s) your code will be run in.
+In other words, you'll want to pick the oldest ECMAScript environment target that your code might run in - and no older.
+Picking as new a `compilerOptions.target` as possible improve both the output code your users run and your development experience of using TypeScript.
+
+The [kangax compatibility table](https://kangax.github.io/compat-table/es2016plus) is an excellent tool for determining which features are supported in each environment.
+It includes a list of all the runtime features added in each ECMAScript version, along with whether they're supported in many popular JavaScript environments.
+
+### Browser Apps
+
+As of 2023, the vast majority of browsers support at least **ES2021**, including:
+
+- [Chrome >=99](https://kangax.github.io/compat-table/es2016plus/#chrome99) _(released March 2022)_
+- [Edge >=99](https://kangax.github.io/compat-table/es2016plus/#edge99) _(released February 2022)_
+- [Firefox >=98](https://kangax.github.io/compat-table/es2016plus/#firefox98) _(released March 2022)_
+- [Safari >=15.2](https://kangax.github.io/compat-table/es2016plus/#safari15_2)\* _(released December 2021)_
+
+<em>
+  <small>
+    *Safari &lt;16.4 lacks support for a couple of runtime API features, but
+    they don't impact the type system or <code>target</code>.
+  </small>
+</em>
+<br />
+<br />
+
+Unless you intentionally support older browsers, such as for corporate or education users, you can pick ES2021.
+
+If you do need to support older browsers, consult the [kangax compatibility table](https://kangax.github.io/compat-table/es2016plus) to see what ECMAScript features they support.
+
+Many developers also utilize [caniuse.com](https://caniuse.com) for checking specific language feature support in browsers.
+It can show which browser versions support a feature.
+For example, [caniuse.com/?search=replaceAll](https://caniuse.com/?search=replaceAll) shows `String.prototype.replaceAll` as being available in Chrome/Edge (Desktop) 85, Safari (Mac) 13.1, Firefox 77, Opera 71, Chrome (Android) 111, and Safari (iOS) 13.4.
+
+### Server Apps
+
+As of 2023, the vast majority of servers also support at least **ES2021**.
+That includes:
+
+- [Deno 1.24](https://kangax.github.io/compat-table/es2016plus/#deno1_24)
+- [Node 16.11](https://kangax.github.io/compat-table/es2016plus/#node16_11) and newer supported versions of Node per the [Node release schedule](https://nodejs.dev/en/about/releases)
+
+If you do need to run on older environments, consult the [kangax compatibility table](https://kangax.github.io/compat-table/es2016plus) to see what ECMAScript features they support.
+
+## Next Steps
+
+By now, you've seen why a relatively recent `compilerOptions.target` is beneficial, as well as how to determine which target your code can run with _(most likely at least ES2021)_.
+Knowing how to properly configure each compiler option in your TSConfig can help optimize your development flow and resultant application.
+See [aka.ms/tsconfig](https://aka.ms/tsconfig) for the TSConfig full reference docs.
+
+```jsonc
+{
+  "compilerOptions": {
+    // This should be enough for most projects.
+    "target": "es2021"
+  }
+}
+```
+
+[_Learning TypeScript_'s Chapter 13: Configuration Options](https://www.learningtypescript.com/configuration-options) also goes over many of the important configuration options provided by TypeScript.
+Consider reading that chapter for an overview of how many of them fit together.
+
+---
+
+Got your own TypeScript questions?
+Tweet [@LearningTSbook](https://twitter.com/LearningTSBook) and the answer might become an article too!
