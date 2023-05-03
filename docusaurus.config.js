@@ -133,6 +133,7 @@ const config = {
         blog: {
           blogDescription:
             "Articles on TypeScript features. Syntax, type checking, and more!",
+          blogSidebarCount: "ALL",
           blogSidebarTitle: "Recent Articles",
           blogTitle: "Articles",
           editUrl:
