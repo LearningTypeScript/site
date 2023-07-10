@@ -4,8 +4,9 @@
 
 @media screen and (min-width: 992px) {
   .mainArea {
-    margin: 0 auto;
+    margin-left: auto;
   }
+
   .normal {
     max-width: 1200px;
   }
