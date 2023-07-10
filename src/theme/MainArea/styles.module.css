@@ -1,8 +1,11 @@
 .mainArea {
-  margin: auto;
+  margin: 0;
 }
 
 @media screen and (min-width: 992px) {
+  .mainArea {
+    margin: auto;
+  }
   .normal {
     max-width: 1200px;
   }
