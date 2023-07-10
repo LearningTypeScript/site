@@ -5,6 +5,7 @@
 @media screen and (min-width: 992px) {
   .mainArea {
     margin-left: auto;
+    margin-right: auto;
   }
 
   .normal {
