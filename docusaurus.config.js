@@ -140,7 +140,12 @@ const config = {
             "https://github.com/JoshuaKGoldberg/learning-typescript/tree/main/",
           path: "src/content/articles",
           readingTime: (args) =>
-            Math.ceil(Math.pow(args.defaultReadingTime(args), 1.5) / 5) * 5,
+            // We cap the inner exponential at 20 (I won't write longer articles)...
+            Math.min(
+              // ...but small articles should still be increased a bit
+              Math.ceil(Math.pow(args.defaultReadingTime(args), 1.5) / 5) * 5,
+              20
+            ),
           routeBasePath: "articles",
           showReadingTime: true,
         },
