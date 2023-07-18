@@ -8,13 +8,6 @@ import { CaptionedImage } from "@site/src/theme/CaptionedImage";
 
 # Why TypeScript Doesn't Follow Strict Semantic Versioning
 
-:::danger
-This is a rough draft of a the blog post and has not been fully proofread, nor approved by the TypeScript team.
-Its information might be blatantly incorrect.
-Its best practices might actually be the the worst.
-Please be cautious and doubtful when reading it, and provide feedback on how it could be better!
-:::
-
 Most projects in the JavaScript/TypeScript ecosystem release new versions with numbers respecting to _**[semantic versioning](https://semver.org)**_, or _semver_ for short.
 TypeScript is notable for not following a traditional interpretation of semver for its releases.
 This article will dig into:
@@ -25,7 +18,7 @@ This article will dig into:
 
 While TypeScript's diverging from a common community specification can be irksome for developers, there are real reasons why it chose to do so.
 
-// <!-- truncate -->
+<!-- truncate -->
 
 ## Context: Semantic Versioning
 
@@ -144,30 +137,41 @@ TypeScript's version strategy options therefore are:
 - Allowing changes to the type system in non-major versions _(the strategy in use today)_
 - Only releasing those changes in major versions
 
-Unfortunately, only releasing type system changes in major versions is impractical regardless of how often those major versions are released.
+Unfortunately, regardless of how often major versions are released, only releasing type system changes in those major versions is impractical.
 
 ### Frequent Majors
 
 In theory, TypeScript could release a new major version every three or so months instead of a new minor as it does today.
 This would more directly follow traditional semver by indicating type system changes as breaking.
 
-However, doing so would negate much of the benefits of semver for consumers.
+However, doing so would negate many of the benefits of semver for consumers.
 With a major version released every 3 months, consumers would have to update to that major version very frequently.
 The distinction between major and minor versions would lose meaning.
 
 That loss of distinction would be detrimental to consumers because TypeScript does occasionally need to release an API-level breaking change.
 If every release were to be branded as major, then neither developers nor tooling would be able to easily identify the "true" major breakages.
 
+Furthermore, frequent majors can contribute to large swathes of the community being left behind.
+Most projects don't update major versions of dependencies very often.
+Enterprise software in particular is notorious for sticking with older major versions.
+The larger the number of major versions of a piece of software exist, the more likely it is that many users will still be on old, unsupported versions.
+
+#### Bugs and Bug Fix Releases
+
+What happens when an unintentional change, such as a type checking bug, is shipped in a TypeScript release?
+If TypeScript were to consider type system changes as semver-breaking, then bug fixes would also have to be released as major versions.
+The inevitable need to patch bug fixes after a release would necessitate a significant number of added major versions per intended release.
+
 ### Infrequent Majors
 
 On the other hand, TypeScript could release major versions infrequently - say, once every six months, or even every year.
 This would minimize the frequency consumers would need to update major versions and experience breakages.
 
-But restricting all "breaking" changes to an occasional new major version would mean bottling up all changes for months at a time.
-New infrequent major versions would contain a significant amount of type system changes all at once.
+But restricting all "breaking" changes to an occasional new major version would mean bottling up nearly _all_ changes for months at a time.
+New infrequent major versions would contain a significant amount of type system changes at once.
 Onboarding to new infrequent major versions would be much more difficult than today's minor versions.
 
-Even worse, because the new changes would have so little public user testing in stable versions versions before release, they'd likely contain ma ny more bugs.
+Even worse, because the new changes would have so little public user testing in stable versions versions before release, they'd likely contain many more bugs.
 TypeScript is a complex enough language with a large enough community that many type system edge cases aren't caught until a stable release.
 Even with long beta periods for new infrequent major versions, bugs would likely creep in - and their fixes would often be considered "breaking" changes that have to wait for another new major version.
 
@@ -186,7 +190,13 @@ Nuances in how TypeScript generates its outputs, such as type checking behavior,
 ## Working with TypeScript Releases
 
 Given that TypeScript's minor releases generally change type checking behavior, updating to new TypeScript versions can sometimes be nontrivial, even practically painful.
-There are a few strategies you can take to minimize that pain.
+TypeScript's breaking changes are documented online:
+
+- Release notes are always available on the TypeScript handbook: e.g. [What's New > TypeScript 5.1](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-1.html)
+- [github.com/microsoft/TypeScript/wiki/Breaking-Changes](https://github.com/microsoft/TypeScript/wiki/Breaking-Changes): End-user changes, most notably around emitting and type checking behavior
+- [github.com/microsoft/TypeScript/wiki/API-Breaking-Changes](https://github.com/microsoft/TypeScript/wiki/API-Breaking-Changes): Changes that impact running TypeScript itself as a library or Node.js API
+
+Additionally, there are a few strategies you can take to minimize that pain.
 
 ### Pinned TypeScript Versions
 
@@ -250,7 +260,7 @@ The [`@typescript-eslint/no-explicit-any`](https://typescript-eslint.io/rules/no
 Even more dangerous than `any` are the TypeScript _comment directives_ that completely turn off the type checker for a line:
 
 - `// @ts-ignore`: Silences any type checking errors for a line
-- `// @ts-expect-error`: Acts like `// @ts-ignore`, but if a type error isn't reported, causes a new type error for the unnecessary comment
+- `// @ts-expect-error`: Acts like `// @ts-ignore`, but if the corresponding line doesn't cause a type error, TypeScript will report that the comment directive is unnecessary
 
 These are absolute last ditch strategies for when all else has failed.
 Silencing TypeScript type errors altogether brings the same downside as an `any`, but even more so - across an entire line of code.
@@ -259,20 +269,32 @@ If you absolutely must use a comment directive to silence TypeScript, prefer usi
 If a future change to your codebase removes the need for a comment directive, the `// @ts-expect-error` will direct TypeScript to let you know to remove the comment.
 
 :::tip
-The [`@typescript-eslint/ban-ts-comment`](https://typescript-eslint.io/rules/ban-ts-comment) lint rule can enforce against comment directives, or enforce that they be accompanied by an explanatory comment
-:::
 
-:::tip
-The [`@typescript-eslint/prefer-ts-expect-error`](https://typescript-eslint.io/rules/prefer-ts-expect-error) lint rule can enforce using `// @ts-expect-error` over `// @ts-ignore`.
+- The [`@typescript-eslint/ban-ts-comment`](https://typescript-eslint.io/rules/ban-ts-comment) lint rule can enforce against comment directives, or enforce that they be accompanied by an explanatory comment.
+- The [`@typescript-eslint/prefer-ts-expect-error`](https://typescript-eslint.io/rules/prefer-ts-expect-error) lint rule can enforce using `// @ts-expect-error` over `// @ts-ignore`.
+
 :::
 
 ## Closing Thoughts
 
-For more information, see [TypeScript issue #14116](https://github.com/microsoft/TypeScript/issues/14116) that discussed a request to start using semantic versioning: in particular [RyanCavanaugh's second comment](https://github.com/microsoft/TypeScript/issues/14116#issuecomment-292581018).
+Semantic versioning is a lovely specification that has helped standardize how many tools publish new versions and/or build on top of predictable versioning.
+The TypeScript project does its best to keep to semver with its public API.
+
+Unfortunately, strictly adhering to semver would be practically impossible for much of TypeScript -especially the type checker- regardless of how TypeScript attempted to schedule new versions.
+TypeScript instead aims to be as semver-compatible as possible in its public API while still iterating on its type system at a reasonable pace through minor versions.
+
+When upgrading a project's TypeScript dependency to a new version, there are several strategies one can take to minimize disruption.
+Those strategies mostly revolve around having clean, idiomatic TypeScript code, and using TypeScript's "escape hatches" only as a last resort.
+
+For more public discourse, see [TypeScript issue #14116](https://github.com/microsoft/TypeScript/issues/14116) that discussed a request to start using semantic versioning: in particular [@RyanCavanaugh's second comment](https://github.com/microsoft/TypeScript/issues/14116#issuecomment-292581018).
+
+If you find the nuances of breaking changes in a type system interesting, you might enjoy [Ember's Semantic Versioning for TypeScript Types RFC](https://rfcs.emberjs.com/id/0730-semver-for-ts) and the resultant [www.semver-ts.org](https://www.semver-ts.org).
 
 ---
 
 This article was inspired by [@MatteoColina's spicy thread on Twitter](https://twitter.com/matteocollina/status/1679159833247858691) - in particular [this threaded context explanation](https://twitter.com/JoshuaKGoldberg/status/1679173438974443530).
+
+Many thanks to [Daniel Rosenwasser](https://github.com/DanielRosenwasser), [Kenny Lin](https://github.com/LinKCoding), and [Ryan Cavanaugh](https://github.com/RyanCavanaugh) for helping proofread and suggest additions to this article. 💙
 
 Got your own TypeScript questions?
 Tweet [@LearningTSBook](https://twitter.com/LearningTSBook) and the answer might become an article too!
