@@ -8,28 +8,37 @@ import { CaptionedImage } from "@site/src/theme/CaptionedImage";
 
 # Why TypeScript Doesn't Follow Strict Semantic Versioning
 
-Most projects in the JavaScript/TypeScript ecosystem release new versions with numbers respecting to _**[semantic versioning](https://semver.org)**_, or _semver_ for short.
-TypeScript is notable for not following a traditional interpretation of semver for its releases.
+Most projects in the JavaScript/TypeScript ecosystem release new versions with numbers respecting _**[semantic versioning](https://semver.org)**_, or _semver_ for short.
+Semver is a specification that describes how to predictably increase a package's version numbers upon each new release.
+TypeScript is notable for not following a strict interpretation of semver for its releases.
 This article will dig into:
 
 1. What semver is and why it's useful for many packages
 2. Why following a strict interpretation of semver would be impractical for TypeScript
 3. How TypeScript's releases are versioned to an interpretation of semver that makes sense for it
 
-While TypeScript's diverging from a common community specification can be irksome for developers, there are real reasons why it chose to do so.
+While TypeScript's diverging from a common community specification can be irksome for developers, there are real reasons why it chose to diverge.
+
+The reasoning can be summarized as:
+
+- Nuances of TypeScript's type checking change in virtually every release.
+- It would be impractical to increase TypeScript's major version for every type checking change.
+- If we consider those type checking nuances as details rather than the public API, TypeScript actually has quite good adherance to semantic versioning.
+
+This article will more deeply explain each of those points.
 
 <!-- truncate -->
 
 ## Context: Semantic Versioning
 
-Semver is a specification that describes how to increase a package's version numbers upon each new release.
-Specifically, it dictates that versions adhere to a _Major.Minor.Patch_ format:
+Semver dictates that versions adhere to a _Major.Minor.Patch_ format:
 
 - _Major_: increases when you make incompatible API changes
 - _Minor_: increases when you add functionality in a backward compatible manner
 - _Patch_: increases when you make backward compatible bug fixes
 
-For example, given a package at version `1.2.3`, it might increase its version to:
+For example, suppose a package is at version `1.2.3`.
+It might increase its version to:
 
 - `1.2.4`: upon release of a small bugfix that doesn't change its API or typical behaviors
 - `1.3.0`: upon release of a new feature that doesn't change its API or typical behaviors
@@ -59,7 +68,8 @@ Most notably, [Node.js `package.json`'s package dependencies](https://docs.npmjs
 Symbols such as `^` and `~` commonly seen in `package.json` files are built on semver and explained by [`node-semver`'s documentation](https://github.com/npm/node-semver#advanced-range-syntax).
 
 Another common example of tooling built on semver is automated release management.
-Tools such as [Changesets](https://github.com/changesets/changesets), [release-it](https://github.com/release-it/release-it), and [semantic-release](https://github.com/semantic-release/semantic-release) can automatically publish semantically versioned packages based on the kinds of changes made to the package, such as by [conventional commits](https://www.conventionalcommits.org).
+Tools such as [Changesets](https://github.com/changesets/changesets), [release-it](https://github.com/release-it/release-it), and [semantic-release](https://github.com/semantic-release/semantic-release) can automatically publish semantically versioned packages based on the kinds of changes made to the package.
+Commit standards such as [conventional commits](https://www.conventionalcommits.org) can inform tooling of what changes are contained by each commit.
 
 ## TypeScript Versioning Today
 
@@ -76,9 +86,9 @@ This was an intentional engineering decision: releasing a new version of TypeScr
 ### "Breaking" Type Checking Changes
 
 Many users consider TypeScript's type checking as a part of its API.
-When a minor or patch version introduces changes to type checkin, some might consider that a "breaking change".
+When a minor or patch version introduces changes to type checking, some might consider that a "breaking change".
 
-But - the type checker is a core part of TypeScript, and one of the most frequently modified parts of each release.
+But - the type checker is a core part of TypeScript, and one of the most frequently modified parts upon each release.
 Strictly following semver would mean any change to type checking would be considered "breaking".
 
 Changes to the type system can come in many forms.
@@ -92,10 +102,12 @@ Even seemingly small changes in each of those forms can cause breakages for some
   src="https://imgs.xkcd.com/comics/workflow_2x.png"
 />
 
+Most changes fall into one of the following categories.
+
 #### Added Type Errors
 
 One of the main benefits of using TypeScript is that it reports a type error when it detects an issue in code.
-New versions of TypeScript are often made more capable in finding more classses of type errors.
+New versions of TypeScript are often made more capable in finding more classes of type errors.
 But what some would consider bugfixes or new features in type checking, others would consider introduced breakages.
 
 Updating to a new version of TypeScript and seeing new red editor squigglies or build failures could be considered "breaking" - but is a natural consequence of TypeScript improving over time.
@@ -107,15 +119,15 @@ That code would newly receive type errors in TypeScript >=4.8.
 
 #### Removed Type Errors
 
-Similarly, TypeScript sometimes stops reporting type errors in situations that used to be considered incorrect.
+Conversely, TypeScript sometimes stops reporting type errors in situations that used to be considered incorrect.
 This is sometimes done to make TypeScript more permissive and compatible with existing JavaScript code.
 But for consumers who relied on TypeScript's stricter type checking to catch issues, these changes could also be considered "breaking".
 
-Updating to a new version of TypeScript and no longer being prevented from shipping code patterns the project wanted to avoid could also be considered "breaking" - even if TypeScript considers the change an improvement.
+Updating to a new version of TypeScript and no longer being prevented from shipping code patterns the project wanted to avoid might be a problem - even if TypeScript considers the change an improvement.
 
 Example: [TypeScript 5.1 allowed `get`ter and `set`ter accessor pairs to specify two different types](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-1.html#unrelated-types-for-getters-and-setters).
-This is correct, as many built-in JavaScript objects had APIs that had different types.
-However, teams that expected code to prevent them from writing mismatched accessor pairs could be surprised to see that TypeScript >=5.1 no longer would.
+This is correct, as many built-in JavaScript objects have APIs with different types for accessor pairs.
+However, teams that expected TypeScript to prevent them from writing mismatched accessor pairs could be surprised to see that TypeScript >=5.1 no longer would.
 
 #### Built-In Type Definition Changes
 
@@ -127,17 +139,18 @@ Many projects augment built-in type definitions to fill in gaps or make them mor
 Modifications to augmented built-in types can introduce type errors for [declaration merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html) that previously was permitted.
 
 Example: [TypeScript 4.9 improved the accuracy of the built-in `Promise.resolve` types](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-9.html#better-types-for-promiseresolve).
-That improved type can break existing code relying on `Promise.resolve(...)` calls previously typed as `any` or `unknown` (&lt;4.9) instead of a `Promise<...>` (>=4.9).
+That improved type can break existing code relying on `Promise.resolve(...)` calls to be typed as returning `any` or `unknown` (&lt;4.9) instead of a `Promise<...>` (>=4.9).
 
 ## Strict Versioning Options
 
-Given how "breaking" many common type checking changes are, it follows that if TypeScript followed a strict interpretation of semver, _every release would be a major_.
+We seen now how "breaking" many common type checking changes are.
+It follows that if TypeScript followed a strict interpretation of semver, _every release would be a major_.
 TypeScript's version strategy options therefore are:
 
 - Allowing changes to the type system in non-major versions _(the strategy in use today)_
 - Only releasing those changes in major versions
 
-Unfortunately, regardless of how often major versions are released, only releasing type system changes in those major versions is impractical.
+Unfortunately, only releasing type system changes in those major versions is impractical regardless of how often major versions are released.
 
 ### Frequent Majors
 
@@ -171,7 +184,7 @@ But restricting all "breaking" changes to an occasional new major version would 
 New infrequent major versions would contain a significant amount of type system changes at once.
 Onboarding to new infrequent major versions would be much more difficult than today's minor versions.
 
-Even worse, because the new changes would have so little public user testing in stable versions versions before release, they'd likely contain many more bugs.
+Even worse, because the new changes would have so little public user testing in stable versions before release, they'd likely contain many more bugs.
 TypeScript is a complex enough language with a large enough community that many type system edge cases aren't caught until a stable release.
 Even with long beta periods for new infrequent major versions, bugs would likely creep in - and their fixes would often be considered "breaking" changes that have to wait for another new major version.
 
@@ -185,7 +198,7 @@ It considers _API_ changes to be breaking:
 - Changes to default values of TSConfig compiler options (other than the catch-all [`strict`](https://www.typescriptlang.org/tsconfig#strict), which is explicitly noted as an exclusion)
 
 In other words, the way you might call TypeScript, such as API inputs and the general format of its outputs, are considered its stable public API.
-Nuances in how TypeScript generates its outputs, such as type checking behavior, may change in non-major releases, as with any software package.
+Nuances in how TypeScript generates its outputs, such as type checking behavior, may change in non-major releases.
 
 ## Working with TypeScript Releases
 
@@ -294,7 +307,7 @@ If you find the nuances of breaking changes in a type system interesting, you mi
 
 This article was inspired by [@MatteoColina's spicy thread on Twitter](https://twitter.com/matteocollina/status/1679159833247858691) - in particular [this threaded context explanation](https://twitter.com/JoshuaKGoldberg/status/1679173438974443530).
 
-Many thanks to [Daniel Rosenwasser](https://github.com/DanielRosenwasser), [Kenny Lin](https://github.com/LinKCoding), and [Ryan Cavanaugh](https://github.com/RyanCavanaugh) for helping proofread and suggest additions to this article. 💙
+Many thanks to [Christine Belzie](https://github.com/CBID2), [Daniel Rosenwasser](https://github.com/DanielRosenwasser), [Kenny Lin](https://github.com/LinKCoding), and [Ryan Cavanaugh](https://github.com/RyanCavanaugh) for helping proofread and suggest additions to this article. 💙
 
 Got your own TypeScript questions?
 Tweet [@LearningTSBook](https://twitter.com/LearningTSBook) and the answer might become an article too!
