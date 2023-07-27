@@ -1,0 +1,15 @@
+.captionedImage {
+  text-align: center;
+}
+
+.img {
+  min-width: 15rem;
+  width: 35%;
+}
+
+.label {
+  display: block;
+  font-size: smaller;
+  font-style: italic;
+  text-align: center;
+}
