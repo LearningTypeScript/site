@@ -1,21 +1,19 @@
 ---
-date: "October 30 2023"
+date: "October 31 2023"
 description: "Using rest parameters and tuples to apply union type narrowing to a function's parameters"
 meta: arguments, functions, parameters, rest, spread, tuples, unions
 ---
 
 # Narrowing Function Parameters With Rests And Tuples
 
-TypeScript's function overloads can be a handy way to describe the type of a function that can be called in multiple different ways.
-But they don't help much with how the function's internal implementation understands the types of its parameters.
-For example, if you'd like the second parameter of a function to change based on the type of the first parameter, function overloads might not be able to get their types right.
-Generic functions sometimes struggle with that too.
+TypeScript's provides several ways to describe the type of a function that can be called in multiple different ways.
+But the two most common strategies -function overloads and generic functions- don't help much with how the function's internal implementation understands the types of its parameters.
 
 This article will walk through three techniques for describing a parameter type that changes based on a previous parameter.
 The first two allow using standard JavaScript syntax but aren't quite precise in describing the types inside the function.
 The third one requires using a `...` array spread and `[...]` tuple type in a funky new way that gets the right types internally.
 
-{/* <!-- truncate --> */}
+<!-- truncate -->
 
 ## Dependent Parameter Types? What?
 
@@ -79,9 +77,9 @@ The `logFruit` function needs a way to indicate that `info`'s type is dependent 
 
 One approach for describing a function as having multiple ways it can be called is with _function overloads_.
 To recap function overloads, TypeScript allows code to describe any number of call signatures just before a function's implementation.
-The function will is then allowed to be called in ways matching either of those call signatures.
+The function is then allowed to be called in ways matching any of those call signatures.
 
-For example, this `eitherWay` can be called either with `number` input to return a `number` or a `string` input to return a `string`:
+For example, this `eitherWay` can be called either with a `number` input to return a `number` or a `string` input to return a `string`:
 
 ```ts twoslash
 function eitherWay(input: number): number;
