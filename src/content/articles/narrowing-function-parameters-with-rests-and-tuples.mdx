@@ -1,0 +1,361 @@
+---
+date: "October 31 2023"
+description: "Using rest parameters and tuples to apply union type narrowing to a function's parameters"
+meta: arguments, functions, parameters, rest, spread, tuples, unions
+---
+
+# Narrowing Function Parameters With Rests And Tuples
+
+TypeScript's provides several ways to describe the type of a function that can be called in multiple different ways.
+But the two most common strategies -function overloads and generic functions- don't help much with how the function's internal implementation understands the types of its parameters.
+
+This article will walk through three techniques for describing a parameter type that changes based on a previous parameter.
+The first two allow using standard JavaScript syntax but aren't quite precise in describing the types inside the function.
+The third one requires using a `...` array spread and `[...]` tuple type in a funky new way that gets the right types internally.
+
+<!-- truncate -->
+
+## Dependent Parameter Types? What?
+
+Suppose you wanted to write a function that takes in two parameters:
+
+- `fruit`: either `"apple"` or `"banana"`
+- `info`: either...
+  - an `AppleInfo` type if `fruit` is `"apple"`, or
+  - a `BananaInfo` type if `fruit` is `"banana"`
+
+In that function, the second parameter's type is different based on the first parameter.
+
+An initial approach might be to declare the function's two parameters -`fruit` and `info`- as union types.
+In short:
+
+```ts
+declare function logFruit(
+  fruit: "apple" | "banana",
+  info: AppleInfo | BananaInfo
+): void;
+```
+
+That would allow calling the function with the right matched types, such as `"apple"` and an object matching `AppleInfo`.
+That might look something like this:
+
+```ts twoslash
+interface AppleInfo {
+  color: "green" | "red";
+}
+
+interface BananaInfo {
+  curvature: number;
+}
+
+function logFruit(fruit: "apple" | "banana", info: AppleInfo | BananaInfo) {
+  switch (fruit) {
+    case "apple":
+      console.log(`My apple's color is ${(info as AppleInfo).color}.`);
+      break;
+    case "banana":
+      console.log(
+        `My banana's curvature is ${(info as BananaInfo).curvature}.`
+      );
+      break;
+  }
+}
+
+logFruit("apple", { color: "green" }); // Ok
+
+logFruit("banana", { color: "green" }); // Should error, but doesn't...
+```
+
+Two problems in that code block:
+
+- It requires manually `as` asserting `info` to the right type even when `fruit`'s type has been narrowed, such as within `case "apple"`.
+- Nothing prevents calling `logFruit` with mismatched types, such as `"banana"` and an object matching `AppleInfo`.
+
+The `logFruit` function needs a way to indicate that `info`'s type is dependent on the type of `fruit`.
+
+## Using Function Overloads
+
+One approach for describing a function as having multiple ways it can be called is with _function overloads_.
+To recap function overloads, TypeScript allows code to describe any number of call signatures just before a function's implementation.
+The function is then allowed to be called in ways matching any of those call signatures.
+
+For example, this `eitherWay` can be called either with a `number` input to return a `number` or a `string` input to return a `string`:
+
+```ts twoslash
+function eitherWay(input: number): number;
+function eitherWay(input: string): string;
+function eitherWay(input: number | string) {
+  return input;
+}
+
+eitherWay(123);
+// ^?
+
+eitherWay("abc");
+// ^?
+```
+
+Describing the `logFruit` function with overloads -let's call it `logFruitOverload`- would look something like declaring a signature for `"apple"` and a signature for `"banana"`:
+
+```ts twoslash
+// @errors: 2769
+interface AppleInfo {
+  color: "green" | "red";
+}
+
+interface BananaInfo {
+  curvature: number;
+}
+// ---cut---
+function logFruitOverload(fruit: "apple", info: AppleInfo): void;
+function logFruitOverload(fruit: "banana", info: BananaInfo): void;
+function logFruitOverload(
+  fruit: "apple" | "banana",
+  info: AppleInfo | BananaInfo
+) {
+  switch (fruit) {
+    case "apple":
+      console.log(`My apple's color is ${(info as AppleInfo).color}.`);
+      break;
+    case "banana":
+      console.log(
+        `My banana's curvature is ${(info as BananaInfo).curvature}.`
+      );
+      break;
+  }
+}
+
+logFruitOverload("apple", { color: "green" }); // Ok
+
+logFruitOverload("banana", { color: "green" }); // Should error
+```
+
+This function overloads approach does improve on the first one around union types:
+
+- Calling `logFruitOverload` with `"apple"` permits passing an object matching `AppleInfo` as `info`.
+- Calling `logFruitOverload` with `"banana"` and an `AppleInfo` object is a type error.
+
+Progress!
+
+But, the type of `info` inside the `case "apple":` is still `AppleInfo | BananaInfo`.
+You can see this by hovering your cursor or mouse over the `info` in `info as AppleInfo`.
+Explicit `as` assertions are still needed to access fruit-specific properties.
+
+TypeScript isn't able to narrow the type of `info` even though the two overloads explicitly stated that each fruit string matched up with a specific interface.
+The function's implementation signature -which is what its internal implementation respects- didn't understand the relationship.
+
+## Using Generics
+
+Another attempt at type safety for this function might be to turn it generic.
+The type of `info` depends on the type of `fruit`; therefore, using a type parameter for `fruit` would allow for narrowing the type of `info` based on the type of `fruit`.
+
+This implementation declares a `Fruit` type parameter that must be one of the keys of an `InfoForFruit` interface (`"apple" | "banana"`), then declares that `info` must the corresponding `InfoForFruit` value under that `Fruit` key:
+
+```ts twoslash
+// @errors: 2345
+interface AppleInfo {
+  color: "green" | "red";
+}
+
+interface BananaInfo {
+  curvature: number;
+}
+// ---cut---
+interface InfoForFruit {
+  apple: AppleInfo;
+  banana: BananaInfo;
+}
+
+function logFruitGeneric<Fruit extends keyof InfoForFruit>(
+  fruit: Fruit,
+  info: InfoForFruit[Fruit]
+) {
+  switch (fruit) {
+    case "apple":
+      console.log(`My apple's color is ${(info as AppleInfo).color}.`);
+      break;
+    case "banana":
+      console.log(
+        `My banana's curvature is ${(info as BananaInfo).curvature}.`
+      );
+      break;
+  }
+}
+
+logFruitGeneric("apple", { color: "green" }); // Ok
+
+logFruitGeneric("banana", { color: "green" }); // Should error
+```
+
+This generic version gives a friendlier error message in the case of calling `logFruitGeneric` with `"banana"` and the wrong shape of info.
+But TypeScript again unfortunately isn't able to narrow down the type of `info` inside `case "apple"`.
+
+## Using Rest Parameters
+
+For a third and final attempt, let's combine three pieces of syntax:
+
+1. [Rest parameters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters): using a `...` to allow any number of parameters as an array
+2. [Tuple types](https://www.typescriptlang.org/docs/handbook/2/objects.html#tuple-types): restricting the type of an array to a fixed size, with an explicit type for element
+3. [Array destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment): taking the elements in an array and assigning them to local variables
+
+This `logFruitTuple` version uses those three techniques to allow passing in `fruit` and `info` parameters adhering to the `FruitAndInfo` tuple type:
+
+```ts twoslash
+// @errors: 2345
+interface AppleInfo {
+  color: "green" | "red";
+}
+
+interface BananaInfo {
+  curvature: number;
+}
+// ---cut---
+type FruitAndInfo = ["apple", AppleInfo] | ["banana", BananaInfo];
+
+function logFruitTuple(...[fruit, info]: FruitAndInfo) {
+  switch (fruit) {
+    case "apple":
+      console.log(`My apple's color is ${info.color}.`);
+      break;
+    case "banana":
+      console.log(`My banana's curvature is ${info.curvature}.`);
+      break;
+  }
+}
+
+logFruitTuple("apple", { color: "green" }); // Ok
+
+logFruitTuple("banana", { color: "green" }); // Should error
+```
+
+The function properly narrows `info`'s type based on `fruit`, and properly flags the incorrect call with `"banana"` and an `AppleInfo`-shaped object.
+Hooray!
+
+Step-by-step, here's how that parameter works:
+
+1. `...` is a rest parameter, collecing any arguments may be passed to the function into an array
+2. `[fruit, info]` collects the first two elements of that array, storing them in `fruit` and `info` variables, respectively
+3. `: FruitAndInfo` annotates the type of the parameters to be `FruitAndInfo`, which is a union allowing either of the two tuples:
+   - `["apple", AppleInfo]`
+   - `["banana", BananaInfo]`
+
+Putting it all together: the function accepts two parameters, and assigns them the type `FruitAndInfo` together.
+That's exactly what we wanted!
+
+### How It Works
+
+TypeScript is smart enough that when elements of a tuple are narrowed, other elements of that same tuple are narrowed too.
+That's why TypeScript knows that if `fruit` is an `"apple"` inside `logFruitTuple`, it can _narrow_ the type of `info` to `AppleInfo`.
+
+You can isolate that smartness separately from function parameters.
+In the following snippet, when the destructured `fruit` variable is narrowed to `"apple"`, `info` is narrowed to `AppleInfo`:
+
+```ts twoslash
+interface AppleInfo {
+  color: "green" | "red";
+}
+
+interface BananaInfo {
+  curvature: number;
+}
+// ---cut---
+type FruitAndInfo = ["apple", AppleInfo] | ["banana", BananaInfo];
+
+const [fruit, info]: FruitAndInfo = Math.random()
+  ? ["apple", { color: "green" }]
+  : ["banana", { curvature: 35 }];
+
+if (fruit === "apple") {
+  info;
+  // ^?
+}
+```
+
+`logFruitTuple`'s `[fruit, info]` parameter is typed as `FruitAndInfo`, so it benefits from the tuple types narrowing.
+Smart.
+
+---
+
+## Which Should You Use?
+
+It depends.
+
+Most of the time, these kinds of complex function signatures are a sign of overly complicated code.
+Types that are difficult to represent in the type system can be difficult to work with because they can be conceptually complex.
+When possible, try to avoid needing this kind of function signature.
+
+### Technique Tradeoffs
+
+If you must use one of these techniques, consider which one will cause your project's developer(s) the least pain in the future.
+Many TypeScript developers prefer to avoid function overloads because of how wacky they appear at first glance.
+Generic functions can also be intimidating to many TypeScript developers, though generally less so in cases such as this one that only have one type parameter.
+
+`...` rest tuple parameters are a nifty trick that also run the risk of confusing developers.
+But the increased type safety internally may be worth that confusion.
+My recommendation would be to wait for a time that they're very well suited towards, try them out once, and see how they feel.
+You may find that you like them or you may not.
+
+Wrapping arguments in an array and then immediately destructuring that array also runs a small risk of hurting runtime performance if used in a very commonly run path.
+Though, this performance hit is likely optimized to be zero or near-zero in most instances of the function.
+Always diagnose runtime performance problems before jumping to conclusions.
+
+### Alternative: Objects
+
+Instead of wrestling with multiple function parameters, consider using a single object with multiple properties.
+Doing so would allow using techniques such as the following [discriminated union](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions) to represent different allowed shapes.
+
+```ts twoslash
+// @errors: 2322
+interface AppleInfo {
+  color: "green" | "red";
+}
+
+interface AppleAndInfo {
+  fruit: "apple";
+  info: AppleInfo;
+}
+
+interface BananaInfo {
+  curvature: number;
+}
+
+interface BananaAndInfo {
+  fruit: "banana";
+  info: BananaInfo;
+}
+
+function logFruitTuple({ fruit, info }: AppleAndInfo | BananaAndInfo) {
+  switch (fruit) {
+    case "apple":
+      console.log(`My apple's color is ${info.color}.`);
+      break;
+    case "banana":
+      console.log(`My banana's curvature is ${info.curvature}.`);
+      break;
+  }
+}
+
+logFruitTuple({ fruit: "apple", info: { color: "green" } }); // Ok
+
+logFruitTuple({ fruit: "banana", info: { color: "green" } }); // Should error
+```
+
+Whichever strategy you choose, remember to keep the code as readable and straightforward to understand as possible.
+This quote from Brian Kerninghan applies to the type system as well as runtime code:
+
+> Debugging is twice as hard as writing the code in the first place.
+> Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.
+
+Happy typing!
+
+## Further Reading
+
+- Narrowing is covered in [_Learning TypeScript_ Chapter 3: Unions and Literals](https://www.learningtypescript.com/unions-and-literals).
+- Object types and discriminated type unions are covered in [_Learning TypeScript_ Chapter 4: Objects](https://www.learningtypescript.com/objects).
+- Function overloads are covered in [_Learning TypeScript_ Chapter 5: Functions](https://www.learningtypescript.com/type-modifiers).
+- Generic functions are covered in [_Learning TypeScript_ Chapter 10: Generics](https://www.learningtypescript.com/generics).
+
+---
+
+Got your own TypeScript questions?
+Tweet [@LearningTSbook](https://twitter.com/LearningTSBook) and the answer might become an article too!
