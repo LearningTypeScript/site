@@ -144,7 +144,7 @@ Explicit `as` assertions are still needed to access fruit-specific properties.
 TypeScript isn't able to narrow the type of `info` even though the two overloads explicitly stated that each fruit string matched up with a specific interface.
 The function's implementation signature -which is what its internal implementation respects- didn't understand the relationship.
 
-## Using Generics
+## Using Generic Functions
 
 Another attempt at type safety for this function might be to turn it generic.
 The type of `info` depends on the type of `fruit`; therefore, using a type parameter for `fruit` would allow for narrowing the type of `info` based on the type of `fruit`.
@@ -273,6 +273,53 @@ if (fruit === "apple") {
 
 `logFruitTuple`'s `[fruit, info]` parameter is typed as `FruitAndInfo`, so it benefits from the tuple types narrowing.
 Smart.
+
+### Named Tuples
+
+> Thanks to [Emil van Galen on Twitter](https://twitter.com/EmilVanGalen/status/1719622053769216013) for noting the usage of named tuples!
+
+One downside of the tuples approach is that, by default, arguments do not have names.
+The `logFruitTuple` function from earlier uses auto-generated `__0_0` and `__0_` when suggesting parameter names in editors:
+
+```ts
+logFruitTuple(__0_0: "apple", __0_1: AppleInfo): void
+```
+
+You can work around this naming behavior by assigning explicit names to the tuple type's elements.
+
+```ts twoslash
+// @errors: 2345
+interface AppleInfo {
+  color: "green" | "red";
+}
+
+interface BananaInfo {
+  curvature: number;
+}
+// ---cut---
+type FruitAndInfo =
+  | [fruit: "apple", info: AppleInfo]
+  | [fruit: "banana", info: BananaInfo];
+
+function logFruitTupleNamed(...[fruit, info]: FruitAndInfo) {
+  switch (fruit) {
+    case "apple":
+      console.log(`My apple's color is ${info.color}.`);
+      break;
+    case "banana":
+      console.log(`My banana's curvature is ${info.curvature}.`);
+      break;
+  }
+}
+```
+
+Putting `fruit:` and `info:` before each of the elements in the tuples will let TypeScript know to suggest those names in the function:
+
+```ts
+logFruitTuple(fruit: "apple", info: AppleInfo): void
+```
+
+See [Default rest parameter names to destructuring names when of an anonymous tuple](https://github.com/microsoft/TypeScript/issues/56289) on the TypeScript issue tracker for more details.
 
 ---
 
