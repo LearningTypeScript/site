@@ -12,11 +12,11 @@ TypeScript often takes issue with that approach by treating the keys as `string`
 
 ```ts twoslash
 // @errors: 7053
-const values = { apple: 1, banana: 2 };
+const counts = { apple: 1, banana: 2 };
 
-for (const key in values) {
+for (const key in counts) {
   //       ^?
-  console.log(key, values[key]);
+  console.log(key, counts[key]);
 }
 
 // Logs:
@@ -25,7 +25,7 @@ for (const key in values) {
 ```
 
 Why does TypeScript give this complaint?
-Can't it use a more precise key type such as `keyof typeof values` (`"apple" | "banana"`), to allow lookups like the `key[value]`?
+Can't it use a more precise key type such as `"apple" | "banana"`, to allow lookups like the `counts[key]`?
 
 TypeScript's type system intentionally won't, and for good (if inconvenient) reasons.
 Let's dig in and see why!
@@ -97,13 +97,13 @@ If you are 100% confident that an object won't contain excess keys, you can alwa
 Type assertions tell TypeScript to treat a value as a different type than it would normally.
 They're useful for situations where you know something TypeScript can't infer from code, such as knowing that a value will only ever be its exact declared type shape.
 
-This code snippet uses an `as` type assertion to tell TypeScript to treat `key` as one of the keys of `values`:
+This code snippet uses an `as` type assertion to tell TypeScript to treat `key` as one of the `keyof typeof` (keys of the type of) `counts`:
 
 ```ts twoslash
-const values = { apple: 1, banana: 2 };
+const counts = { apple: 1, banana: 2 };
 
-for (const key in values) {
-  console.log(key, values[key as keyof typeof values]); // Ok
+for (const key in counts) {
+  console.log(key, counts[key as keyof typeof counts]); // Ok
 }
 
 // Logs:
@@ -129,10 +129,10 @@ Using static `Object` methods can sometimes make it easier to work with type ass
 This code snippet uses a type assertion so that `key` is always type `"apple" | "banana"`:
 
 ```ts twoslash
-const values = { apple: 1, banana: 2 };
+const counts = { apple: 1, banana: 2 };
 
-for (const key of Object.keys(values) as (keyof typeof values)[]) {
-  console.log(key, values[key]); // Ok
+for (const key of Object.keys(counts) as (keyof typeof counts)[]) {
+  console.log(key, counts[key]); // Ok
 }
 
 // Logs:
@@ -144,9 +144,9 @@ Even better, `Object.entries` returns an array of `[key, value]` pairs that can 
 
 ```ts twoslash
 // @lib: dom,esnext
-const values = { apple: 1, banana: 2 };
+const counts = { apple: 1, banana: 2 };
 
-for (const [key, value] of Object.entries(values)) {
+for (const [key, value] of Object.entries(counts)) {
   console.log(key, value); // Ok
 }
 
@@ -155,14 +155,37 @@ for (const [key, value] of Object.entries(values)) {
 // "banana", 2
 ```
 
-Note how the type of `value` in the `Object.entries(values)` loop was `number`.
+Note how the type of `value` in the `Object.entries(counts)` loop was `number`.
 `Object.entries` has convenient types that sometimes allow for inferring more specific types of values - even if it's not completely type-safe.
 
 If all you need to do is loop over the key-value pairs of an object `Object.entries` is a convenient way to do so.
 
-## Option: Rethinking What You're Doing
+## Option: Switching Data Structures
 
 TypeScript's type checker is often right to complain that loops over object keys can easily include unexpected values.
+It can sometimes be useful to take a step back and question why there should be a loop over an object in the first place.
+
+JavaScript contains other data structures that are more tailored to holding arbitrary collections of data.
+The built-in [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) class is meant for holding key-value pairs, and its TypeScript type allows declaring the types of its keys and values explicitly.
+
+This rewritten snippet uses a `Map` to store counts, and then `for..of` loop over the map's keys and values without needing any type assertion:
+
+```ts twoslash
+const counts = new Map([
+  ["apple", 1],
+  ["banana", 2],
+]);
+
+for (const [key, value] of counts) {
+  console.log(key, value);
+}
+
+// Logs:
+// "apple", 1
+// "banana", 2
+```
+
+Whenever you have a collection of data that will need to be looped over, using an appropriate data structure such as a `Map` instead of the catch-all `Object` can help prevent needing to work around the type system.
 
 ---
 
