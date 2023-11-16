@@ -1,0 +1,73 @@
+---
+date: "November 21 2023"
+description: "Using rest parameters and tuples to apply union type narrowing to a function's parameters"
+meta: arguments, functions, parameters, rest, spread, tuples, unions
+---
+
+# Why Looping Over Objects Is Hard To Type Safely
+
+JavaScript allows for looping over all the keys and/or values in an object in a few different ways.
+
+The oldest way is with a `for..in` loop, to loop over the keys of an object so that the code can look up each value under the key.
+It can be inconvenient how TypeScript considers the `key` variable in the loop to be general type `string`, which often isn't allowed as the key in a lookup under the object:
+
+```ts twoslash
+// @errors: 7053
+const values = { apple: 1, banana: 2 };
+
+for (const key in values) {
+  //       ^?
+  console.log(key, values[key]);
+}
+
+// Logs:
+// "apple", 1
+// "banana", 2
+```
+
+Why does TypeScript give this complaint?
+Can't it use a more narrow, specific key type such as `keyof typeof values` (`"apple" | "banana"`), to allow lookups like the `key[value]`?
+
+TypeScript's type system intentionally won't, and for good (if inconvenient) reasons.
+Let's dig in and see why!
+
+{/* <!-- truncate --> */}
+
+## Structural Typing and Excess Properties
+
+TypeScript's type system is _structurally typed_: meaning any object that happens to match a type shape is allowed in locations marked as that type.
+For example, the following `countFruits` function that takes in a `FruitsCount` shape allows, any object that happens to match that shape:
+
+```ts
+interface FruitsCount {
+  apple: number;
+  banana: number;
+}
+
+function countFruits(counts: FruitsCount) {
+  console.log("apple", counts.apple);
+  console.log("banana", counts.banana);
+}
+
+const fruitsAndVegetable = {
+  apple: 1,
+  banana: 2,
+  zucchini: "gotcha!",
+};
+
+countFruits(fruitsAndVegetable); // Ok
+```
+
+Notice how although the `fruitsAndVegetable` object had an extra `zucchini` property, it still was allowed as an argument to the `counts` parameter of type `FruitsCount`.
+Structural typing means values don't need to be explicitly declared as adhering to a type: if they happen to match a type's structure, they can be used in places of that type.
+
+Unfortunately, structural typing means there's often no guarantee that a value thought to be a particular shape doesn't have additional, unknown properties.
+Looping over the keys of an object therefore is not guaranteed to be only the known keys from its type.
+The `fruitsAndVegetable` variable's additional `zucchini` property, for example, would show up in a `for..in` loop.
+
+TODO WRITE MORE
+
+---
+
+Got your own TypeScript questions?
+Tweet [@LearningTSbook](https://twitter.com/LearningTSBook) and the answer might become an article too!
