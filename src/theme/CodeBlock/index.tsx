@@ -12,13 +12,11 @@ export default function CodeBlockWrapper({
   ...props
 }: CodeBlockWrapperProps) {
   return (
-    <>
-      <CodeBlock
-        className={clsx("shiki hihi", styles.codeBlock, className)}
-        {...props}
-      >
-        {children}
-      </CodeBlock>
-    </>
+    <CodeBlock
+      className={clsx("shiki hihi", styles.codeBlock, className)}
+      {...props}
+    >
+      {children}
+    </CodeBlock>
   );
 }
