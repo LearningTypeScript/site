@@ -90,6 +90,15 @@
   display: none;
 }
 
+pre.shiki.nord > .code-container {
+  padding: var(--ifm-pre-padding);
+}
+
+pre.shiki.nord > .code-container > code {
+  display: block;
+  position: relative;
+}
+
 /* Override for inaccessible (barely visible) light mode comments */
 .shiki.min-light span[style="color: rgb(194, 195, 197);"],
 .shiki.min-light span[style="color:#C2C3C5"] {
