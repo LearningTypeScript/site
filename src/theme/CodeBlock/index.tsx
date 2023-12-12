@@ -17,9 +17,7 @@ export default function CodeBlockWrapper({
         className={clsx("shiki hihi", styles.codeBlock, className)}
         {...props}
       >
-        <div className="code-container line">
-          <code>{children}</code>
-        </div>
+        {children}
       </CodeBlock>
     </>
   );
