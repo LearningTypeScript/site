@@ -38,6 +38,10 @@
 
 /* Header */
 
+[data-theme="dark"] .navbar__item.navbar__link {
+  color: var(--ifm-color-primary);
+}
+
 .navbar__items {
   gap: 1rem;
 }
