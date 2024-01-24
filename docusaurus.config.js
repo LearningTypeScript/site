@@ -134,7 +134,7 @@ const config = {
           blogDescription:
             "Articles on TypeScript features. Syntax, type checking, and more!",
           blogSidebarCount: "ALL",
-          blogSidebarTitle: "Recent Articles",
+          blogSidebarTitle: "All Articles",
           blogTitle: "Articles",
           editUrl:
             "https://github.com/JoshuaKGoldberg/learning-typescript/tree/main/",
