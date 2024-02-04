@@ -27,9 +27,9 @@ const projects: CardProps[] = [
   },
   {
     description: "🍲 Entree Project",
-    href: "/unions-and-literals/various-lawyerings",
+    href: "/unions-and-literals/the-narrow-trail",
     meta: "03. Unions and Literals",
-    title: "Narrow Trails",
+    title: "The Narrow Trail",
   },
   {
     description: "🥗 Appetizer Project",
