@@ -193,6 +193,10 @@ const config = {
           content: "https://learningtypescript.com/img/promo-square.png",
           name: "twitter:image",
         },
+        {
+          content: "https://learningtypescript.com/img/promo-square.png",
+          name: "og:image",
+        },
       ],
       navbar: {
         title: "Learning TypeScript",
