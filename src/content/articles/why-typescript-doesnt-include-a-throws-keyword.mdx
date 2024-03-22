@@ -13,32 +13,24 @@ Please give feedback if you see anything that could be improved!
 ❤️
 :::
 
-One long-requested feature for TypeScript is the ability to mark what exceptions a function might throw.
+One long-requested feature for TypeScript is the ability for its types to describe what exceptions a function might throw.
 "Throw types", as the feature is often called, are used in some programming languages to help ensure developers call functions safely.
 
 The popular strongly typed language Java, for example, implements throw types with a `throws` keyword.
-The following Java code declares a custom `ValueException` class along with an `Assert.positive` method that throws an new `ValueException` if a provided value isn't positive.
-The `positive` method is explicitly given a `throws ValueException` annotation:
+Without reading any other code, a developer would infer from the following first line of a `positive` function that the function is able to throw a `ValueException`:
 
 ```java
-public class Assert {
-  public static void positive(int value) throws ValueException {
-    if (value < 0) {
-      throw new ValueException(value);
-    }
-  }
-}
-
-class ValueException extends Exception {
-  public ValueException(int value) {
-    super("Invalid value: " + value);
-  }
-}
+public static void positive(int value) throws ValueException { /* ...*/ }
 ```
 
-TypeScript intentionally doesn't include throw types or any equivalent to a `throws` keyword.
-Doing so wouldn't be feasible for TypeScript -- and some would argue isn't practical in most programming languages.
-Let's explore the potential of `throw` types and TypeScript!
+Throw types are also useful for developer tooling.
+They can tell compilers when a function call might throw an exception without safe `try`/`catch` handling.
+
+That all seems useful, so why doesn't TypeScript include throw types?
+
+In short, doing so wouldn't be feasible for TypeScript -- and some would argue isn't practical in most programming languages.
+This blog post will dig into the benefits, drawbacks, and general blockers to including throw types in TypeScript.
+Let's dig in!
 
 {/* truncate */}
 
@@ -97,7 +89,7 @@ These ranging from what's practically possible given common JavaScript practices
 It is an unfortunate reality in coding that most lines of code can throw all sorts of errors unexpectedly.
 Even seemingly type-safe code can sometimes mysteriously throw an error, including Object getters and setters.
 
-For example, setting [`Array length`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length) to a negative or too-large will throw a [`RangeError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError):
+For example, setting [the `.length` of an `Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length) to a negative or too-large will throw a [`RangeError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError):
 
 ```ts twoslash
 [].length - 1;
@@ -202,7 +194,7 @@ JavaScript and TypeScript include several features that make "happy" and "unhapp
 - [Union types](#union-types): allowing returned values to match one of several possible shapes
 
 Nowadays, many JavaScript and TypeScript developers prefer using those languages' flexible features to avoid throwing exceptions.
-In doing so, they've lessened the frequency with which their code throws exceptions, lessening the need for `throw` types or checked exceptions.
+In doing so, they've lessened the frequency with which their code throws exceptions, lessening the need for throw types or checked exceptions.
 
 ### Type System Complexity
 
@@ -237,8 +229,6 @@ For example, the [Node.js `fs.readFile` API](https://nodejs.org/api/fs.html) des
 The function is called with two parameters, `err` and `data`, only one of which will be provided a value:
 
 ```ts
-// ---cut---
-
 import fs from "node:fs";
 
 fs.readFile("data.txt", (err, data) => {
@@ -254,7 +244,7 @@ Many traditional strongly typed languages have either never supported inline fir
 
 ### Union Types
 
-JavaScript doesn't enforce that any function return only one particular shape of data.
+JavaScript allows functions to return any number of different data types.
 TypeScript represents values that could be one of several possible types with union types.
 
 Instead of the possibility of a function throwing an `Error`, TypeScript developers might switch it to instead return either an `Error` or a `Value`.
@@ -355,7 +345,13 @@ console.log("Got an value:", value);
 Not all code can be refactored from a polymorphic return type to an alternate strategy such as factory functions.
 Regardless of which strategy you're able to choose, it's preferable to use one that can be represented cleanly in your language's type system.
 
-## Further Reading
+## Closing Thoughts
+
+Throw types seem like a useful idea at first, and do have some use in helping developers write safer code.
+But especially in a more dynamic ecosystem like JavaScript's, their drawbacks outweigh their potential positives.
+If you'd like to achieve more safe, predictable function calls, consider using an alternate strategy such as a union type.
+
+### Further Reading
 
 Ryan Cavanaugh, the development lead for TypeScript, posted a [thorough explanation comment of why TypeScript doesn't have throw types](https://github.com/microsoft/TypeScript/issues/13219#issuecomment-1515037604) on the TypeScript issue tracker.
 This blog post is a simplified regurgitation of some of the points made in that comment.
@@ -372,3 +368,5 @@ Functions are covered in _Learning TypeScript_ Chapter 5: Functions.
 
 Got your own TypeScript questions?
 Tweet [@LearningTSBook](https://twitter.com/LearningTSBook) and the answer might become an article too!
+
+Many thanks to Kenny Lin and [Jeroen Engels](https://github.com/jfmengels) for proofreading help in this article's pull request! ❤️‍🔥
