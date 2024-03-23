@@ -92,7 +92,7 @@ Even seemingly type-safe code can sometimes mysteriously throw an error, includi
 For example, setting [the `.length` of an `Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length) to a negative or too-large will throw a [`RangeError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError):
 
 ```ts twoslash
-[].length - 1;
+[].length = -1;
 // Runtime error thrown: "RangeError: Invalid array length"
 ```
 
@@ -273,7 +273,7 @@ function getValueMaybe() {
 
 try {
   const value = getValueMaybe();
-  console.log("Got an value:", value);
+  console.log("Got a value:", value);
 } catch (error) {
   console.error("Not ready to get value:", error);
 }
@@ -301,7 +301,7 @@ const value = getValueMaybe();
 if (value instanceof Error) {
   console.error("Not ready to get value:", value);
 } else {
-  console.log("Got an value:", value);
+  console.log("Got a value:", value);
 }
 ```
 
@@ -339,7 +339,7 @@ const createValue = await getValueCreator();
 
 const value = await createValue();
 
-console.log("Got an value:", value);
+console.log("Got a value:", value);
 ```
 
 Not all code can be refactored from a polymorphic return type to an alternate strategy such as factory functions.
