@@ -97,11 +97,11 @@ For example, setting [the `length` of an `Array`](https://developer.mozilla.org/
 ```
 
 User-defined getters and setters may throw errors too.
-The following `Counter` class intentionally is able to throw errors in its `count` property's getter and setter:
+The following `Counter` class intentionally is able to throw errors in its `count` property's getter:
 
 ```ts twoslash
 class Counter {
-  #counted: undefined;
+  #counted = 0;
 
   get count() {
     if (!this.#counted) {
@@ -111,10 +111,8 @@ class Counter {
     return this.#counted;
   }
 
-  set count(value: number) {
-    if (!value || value < 0) {
-      throw new Error("Value should be positive.");
-    }
+  increment() {
+    this.#counted += 1;
   }
 }
 
