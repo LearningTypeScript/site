@@ -89,7 +89,7 @@ These ranging from what's practically possible given common JavaScript practices
 It is an unfortunate reality in coding that most lines of code can throw all sorts of errors unexpectedly.
 Even seemingly type-safe code can sometimes mysteriously throw an error, including Object getters and setters.
 
-For example, setting [the `.length` of an `Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length) to a negative or too-large will throw a [`RangeError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError):
+For example, setting [the `length` of an `Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length) to a negative or too-large will throw a [`RangeError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError):
 
 ```ts twoslash
 [].length = -1;
