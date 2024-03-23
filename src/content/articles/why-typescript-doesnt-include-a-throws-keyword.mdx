@@ -202,7 +202,8 @@ However, being able to define throw types that don't excessively report on valid
 
 Take the case of Object getters and setters potentially throwing errors.
 It would be very inconvenient for developers if setting the `length` property of an Array always necessitated adding a throws type.
-But, TypeScript doesn't have the ability to represent integer types more precise than `number`.
+But, TypeScript doesn't have the ability to represent numerics types more precise than `number`.
+There'd be no way in the type system to know which numeric values would be at risk of triggering an error.
 
 Additional tricky type system questions include:
 
