@@ -1,0 +1,370 @@
+---
+date: "March 26 2024"
+description: "Why a `throws` keyword has not been added to TypeScript, despite some other languages having an equivalent."
+meta: checked exceptions, errors, throw, throw types, try catch
+---
+
+# Why TypeScript Doesn't Include a `throws` Keyword
+
+One long-requested feature for TypeScript is the ability for its types to describe what exceptions a function might throw.
+"Throw types", as the feature is often called, are used in some programming languages to help ensure developers call functions safely.
+
+The popular strongly typed language Java, for example, implements throw types with a `throws` keyword.
+Without reading any other code, a developer would infer from the following first line of a `positive` function that the function is able to throw a `ValueException`:
+
+```java
+public static void positive(int value) throws ValueException { /* ...*/ }
+```
+
+Throw types are also useful for developer tooling.
+They can tell compilers when a function call might throw an exception without safe `try`/`catch` handling.
+
+That all seems useful, so why doesn't TypeScript include throw types?
+
+In short, doing so wouldn't be feasible for TypeScript -- and some would argue isn't practical in most programming languages.
+This blog post will dig into the benefits, drawbacks, and general blockers to including throw types in TypeScript.
+Let's dig in!
+
+<!-- truncate -->
+
+## Benefits of Throw Types
+
+Developers generally prefer to know when a function might throw an exception, along with which types of exceptions.
+Describing a function's exceptions alongside its parameter and return types can act as useful documentation for developers.
+Throw types also allow a language's type checker to warn when a function is called without appropriate error handling.
+
+For example, if the `Assert.positive` Java method from earlier were to be used in a method that doesn't handle that case, Java would know to report a compilation error:
+
+```java
+public void example() {
+  Assert.positive(2);
+  //            ~
+  // Error: unreported exception ValueException; must be caught or declared to be thrown.
+}
+```
+
+Another way of thinking about thrown exceptions is that they describe a second return type for a function.
+Functions may either return a value or throw an error.
+Traditional type annotations annotate the former; throw types document the latter.
+
+In theory, documenting potential exceptions sounds like a lovely way to satisfy the [Principle of Least Astonishment](https://en.wikipedia.org/wiki/Principle_of_least_astonishment): that behaviors in a system shouldn't surprise users.
+Explicitly marking the types of potential exceptions a function may throw reduces potential surprise when the function throws.
+
+### Checked Exceptions
+
+Throw types are often used alongside a feature called "checked exceptions", where `catch` clauses are able to annotate the type(s) of exceptions they might catch.
+Languages such as Java allow adding a type annotation alongside caught exceptions to run logic specific
+
+This hypothetical Java code runs specific logic for caught `ValueException`s, and falls back to more general logic for other `Exception`s:
+
+```java
+public void example() {
+  try {
+    Assert.positive(-1);
+  } catch (ValueException error) {
+    System.out.println("Incorrect value: " + error.value);
+  } catch (Exception error) {
+    System.out.println("General error: " + error.message);
+  }
+}
+```
+
+Checked exceptions are a handy tool for running different logic based on the type of a thrown exception.
+Strongly typed languages like Java are able to enforce the correct `catch` block is run based on the type of the caught exception.
+
+## Barriers to Throw Types
+
+In practice, there are quite a few reasons why throw types aren't feasible in the TypeScript language.
+These ranging from what's practically possible given common JavaScript practices up through difficulties of truly representing throw types in the type system.
+
+### Unchecked Untyped Exceptions
+
+It is an unfortunate reality in coding that most lines of code can throw all sorts of errors unexpectedly.
+Even seemingly type-safe code can sometimes mysteriously throw an error, including Object getters and setters.
+
+For example, setting [the `length` of an `Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length) to a negative or too-large will throw a [`RangeError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError):
+
+```ts twoslash
+[].length = -1;
+// Runtime error thrown: "RangeError: Invalid array length"
+```
+
+User-defined getters and setters may throw errors too.
+The following `Counter` class intentionally is able to throw errors in its `count` property's getter:
+
+```ts twoslash
+class Counter {
+  #counted = 0;
+
+  get count() {
+    if (!this.#counted) {
+      throw new Error("Not ready yet.");
+    }
+
+    return this.#counted;
+  }
+
+  increment() {
+    this.#counted += 1;
+  }
+}
+
+const { count } = new Counter();
+// Runtime error thrown: "Error: Not ready yet."
+```
+
+Even worse, JavaScript doesn't guarantee thrown objects to be instances of its built-in `Error` class!
+The following code, horrifyingly, throws one of four types, two of which are not `Error` instances:
+
+```ts twoslash
+function thisIsValidTypeScript() {
+  switch (Math.floor(Math.random() * 4)) {
+    case 0:
+      throw new RangeError("Zero?!");
+    case 1:
+      throw new Error("Gotcha!");
+    case 2:
+      throw "a primitive string, not an Error";
+    case 3:
+      throw null;
+  }
+}
+```
+
+:::tip
+The [`plugin:@typescript-eslint/only-throw-error`](https://typescript-eslint.io/rules/only-throw-error) lint rule can enforce writing code that only ever throws `Error`s.
+However, it only looks at your own code, not the code of any dependencies.
+:::
+
+As a result, TypeScript can't predict the type of errors in `catch` clauses.
+It has to assume a "top" type (a type that allows any other type): namely `any` by default, or `unknown` when [`useUnknownInCatchVariables`](https://www.typescriptlang.org/tsconfig#useUnknownInCatchVariables) is enabled.
+
+TypeScript code in `catch` blocks must therefore use type assertions and/or runtime type checks to type narrow the types of caught errors.
+
+```ts
+try {
+  thisIsValidTypeScript();
+} catch (error) {
+  if (error) {
+    if (error instanceof RangeError) {
+      console.warn("Out of range:", error.message);
+    } else if (error instanceof Error) {
+      console.warn("Caught an Error:", error.stack);
+    } else {
+      console.warn("Caught a non-Error:", error);
+    }
+  } else {
+    console.error("I don't even know what this is:", error);
+  }
+}
+```
+
+In other words, even if functions could have throw types, their exceptions' types would effectively still be `unknown`.
+Throw types are much less useful in runtimes like JavaScript's that can't enforce checked exception types.
+
+### Ecosystem Inertia
+
+JavaScript and TypeScript developers don't have an existing culture of documenting their functions' potential exceptions.
+There's no standard for which types of function calls or failure cases should be represented by exceptions and/or a well-crafted return type.
+As a result, although many non-TypeScript packages have well-designed value return types, their potential throw types are surprisingly complex.
+
+Compounding this issue is the JavaScript community's propensity for creating many small packages built on top of each other.
+Each of the packages in a project's dependency tree may have different approaches to error handling.
+Filling out throw types for many third-party packages would be a huge task, regardless of whether it would benefit TypeScript developers.
+
+### Lack of Need
+
+Older languages like Java were created with thrown exceptions in part because they didn't support more rich language features such as union types.
+Methods meant to either result in an `Exception` or some `Value` couldn't return the union of `Exception | Value`.
+Instead, they would often use value returns for the "happy" path (`Value`) and thrown exceptions for the "unhappy" path (`Exception`).
+
+JavaScript, on the other hand, is a much more flexible language than many traditional strongly-typed languages.
+JavaScript and TypeScript include several features that make "happy" and "unhappy" path management easier, including the ones described later in [Preferred Alternatives](#preferred-alternatives):
+
+- [First-class functions](#first-class-functions): providing inline functions that can be provided multiple parameters
+- [Union types](#union-types): allowing returned values to match one of several possible shapes
+
+Nowadays, many JavaScript and TypeScript developers prefer using those languages' flexible features to avoid throwing exceptions.
+In doing so, they've lessened the frequency with which their code throws exceptions, lessening the need for throw types or checked exceptions.
+
+### Type System Complexity
+
+Every addition to the TypeScript language increases the complexity of its type system.
+Throw types would need to also be factored into the type checker's assignability checks for function types.
+However, being able to define throw types that don't excessively report on valid code is tricky.
+
+Take the case of Object getters and setters potentially throwing errors.
+It would be very inconvenient for developers if setting the `length` property of an Array always necessitated adding a throws type.
+But, TypeScript doesn't have the ability to represent numerics types more precise than `number`.
+There'd be no way in the type system to know which numeric values would be at risk of triggering an error.
+
+Additional tricky type system questions include:
+
+- How should interface and object type properties indicate they may throw errors?
+- If code isn't annotated as throwing an exception, should adding a `try` block around it still be allowed?
+- How should type annotations indicate that a function's parameter may be a function that can throw errors, but those won't be raised to calling code? (e.g. [`setTimeout`](https://developer.mozilla.org/en-US/docs/Web/API/setTimeout))
+
+TypeScript adding throws types would necessitate developers learning those answers in order to effectively write type-safe functions with throw types.
+Even if the answers are straightforward, that's still added complexity to what developers need to understand to write TypeScript code.
+
+## Preferred Alternatives
+
+When working in a typed language such as TypeScript, it's useful to design code in ways that can be modeled by the language's type system.
+Doing so allows the type system to better understand the code and provide more assistance to developers using it.
+
+### First-Class Functions
+
+JavaScript is known in part for its support for "first-class functions": meaning new functions may be provided as values for function arguments and variables.
+Many APIs developed in JavaScript chose to use first-class functions instead of throwing exceptions.
+
+For example, the [Node.js `fs.readFile` API](https://nodejs.org/api/fs.html) designed before JavaScript Promises have developers provide a function to be called on completion.
+The function is called with two parameters, `err` and `data`, only one of which will be provided a value:
+
+```ts
+import fs from "node:fs";
+
+fs.readFile("data.txt", (err, data) => {
+  if (err) {
+    console.error("Oh no:", err);
+  } else {
+    console.log("Got data:", data.toString());
+  }
+});
+```
+
+Many traditional strongly typed languages either never supported inline first-class functions or only recently started to.
+First-class functions are a handy way to allow multiple result types.
+
+### Union Types
+
+JavaScript allows functions to return any number of different data types.
+TypeScript represents values that could be one of several possible types with union types.
+
+Instead of the possibility of a function throwing an `Error`, TypeScript developers might switch it to instead return either an `Error` or a `Value`.
+
+Consider the following `getValueMaybe` function that either returns a `Value` or throws an `Error`:
+
+```ts twoslash
+interface Value {
+  /* ... */
+}
+
+declare function createValue(): Value;
+declare function readyForValues(): Boolean;
+
+function getValueMaybe() {
+  if (!readyForValues()) {
+    throw new Error("Wait!");
+  }
+
+  const value: Value = {
+    /* ... */
+  };
+
+  return value;
+}
+
+try {
+  const value = getValueMaybe();
+  console.log("Got a value:", value);
+} catch (error) {
+  console.error("Not ready to get value:", error);
+}
+```
+
+One refactor of the `getValueMaybe` function might have it return `Value | Error`, where the `Error` type indicates it wasn't able to run yet.
+TypeScript's type system would then enforce that code handle the `Error` case instead of assuming the returned value is an `Value`:
+
+```ts twoslash
+declare function createValue(): Value;
+declare function readyForValues(): Boolean;
+
+interface Value {
+  /* ... */
+}
+
+// ---cut---
+
+function getValueMaybe() {
+  return readyForValues() ? createValue() : new Error("Wait!");
+}
+
+const value = getValueMaybe();
+
+if (value instanceof Error) {
+  console.error("Not ready to get value:", value);
+} else {
+  console.log("Got a value:", value);
+}
+```
+
+Other common union type returns include `Value | undefined`, where `undefined` indicates there's no `Value` to be had, or a [discriminated union](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions).
+
+### Precise Ready States
+
+A more comprehensive refactor might try to eliminate the possibility of calling a function when it might throw an error.
+Savvy TypeScript developers might prefer the previous `createValue()` function not be made available until its `readyForValues()` would be `true`.
+
+A refactor might wrap the `createValue()` function in an asynchronous "factory" that only returns the function once it's ready to be called:
+
+```ts twoslash
+// @lib: dom,esnext
+// @module: nodenext
+// @target: esnext
+export interface Value {
+  /* ... */
+}
+
+// ---cut---
+
+async function getValueCreator() {
+  // (wait until the value is ready to be created)
+
+  return function createValue() {
+    const value: Value = {
+      /* ... */
+    };
+    return value;
+  };
+}
+
+const createValue = await getValueCreator();
+
+const value = await createValue();
+
+console.log("Got a value:", value);
+```
+
+Not all code can be refactored to an alternate strategy such as factory functions.
+But, when possible, factory functions can help make code more natural to work in and avoid error states altogether.
+
+Regardless of which strategy you're able to choose, it's preferable to use one that can be represented cleanly in your language's type system.
+
+## Closing Thoughts
+
+Throw types seem like a useful idea at first, and do have some use in helping developers write safer code.
+But especially in a more dynamic ecosystem like JavaScript's, their drawbacks outweigh their potential positives.
+Adding them to the TypeScript ecosystem would be a large amount of work for much less benefit than in less flexibly-typed ecosystems.
+
+If you'd like to achieve more safe, predictable function calls, consider using an alternate strategy.
+Several lovely alternatives are available in TypeScript, including first-class functions and union types.
+
+### Further Reading
+
+Ryan Cavanaugh, the development lead for TypeScript, posted a [thorough explanation comment of why TypeScript doesn't have throw types](https://github.com/microsoft/TypeScript/issues/13219#issuecomment-1515037604) on the TypeScript issue tracker.
+This blog post is a simplified regurgitation of some of the points made in that comment.
+
+Anders Hejlsberg, the creator of C# and TypeScript, discussed problems with checked exceptions in [this interview with Bill Venners and Bruce Eckel](https://www.artima.com/articles/the-trouble-with-checked-exceptions).
+
+The TypeScript [`useUnknownInCatchVariables` compiler option](https://www.typescriptlang.org/tsconfig#useUnknownInCatchVariables) is useful for ensuring safe usage of caught errors.
+
+Union types are covered in _Learning TypeScript_ Chapter 3: Unions and Literals.
+Object types and discriminated unions are covered in _Learning TypeScript_ Chapter 4: Objects.
+Functions are covered in _Learning TypeScript_ Chapter 5: Functions.
+
+---
+
+Got your own TypeScript questions?
+Tweet [@LearningTSBook](https://twitter.com/LearningTSBook) and the answer might become an article too!
+
+Many thanks to Kenny Lin and [Jeroen Engels](https://github.com/jfmengels) for proofreading help in this article's pull request! ❤️‍🔥
