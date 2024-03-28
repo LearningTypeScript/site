@@ -53,7 +53,7 @@ Explicitly marking the types of potential exceptions a function may throw reduce
 ### Checked Exceptions
 
 Throw types are often used alongside a feature called "checked exceptions", where `catch` clauses are able to annotate the type(s) of exceptions they might catch.
-Languages such as Java allow adding a type annotation alongside caught exceptions to run logic specific
+Languages such as Java allow adding a type annotation alongside caught exceptions to run logic specific to the type of thrown exception.
 
 This hypothetical Java code runs specific logic for caught `ValueException`s, and falls back to more general logic for other `Exception`s:
 
@@ -75,14 +75,14 @@ Strongly typed languages like Java are able to enforce the correct `catch` block
 ## Barriers to Throw Types
 
 In practice, there are quite a few reasons why throw types aren't feasible in the TypeScript language.
-These ranging from what's practically possible given common JavaScript practices up through difficulties of truly representing throw types in the type system.
+These range from what's practically possible given common JavaScript practices up through difficulties of truly representing throw types in the type system.
 
 ### Unchecked Untyped Exceptions
 
 It is an unfortunate reality in coding that most lines of code can throw all sorts of errors unexpectedly.
 Even seemingly type-safe code can sometimes mysteriously throw an error, including Object getters and setters.
 
-For example, setting [the `length` of an `Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length) to a negative or too-large will throw a [`RangeError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError):
+For example, setting [the `length` of an `Array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length) to a negative or too-large number will throw a [`RangeError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError):
 
 ```ts twoslash
 [].length = -1;
@@ -137,7 +137,7 @@ However, it only looks at your own code, not the code of any dependencies.
 :::
 
 As a result, TypeScript can't predict the type of errors in `catch` clauses.
-It has to assume a "top" type (a type that allows any other type): namely `any` by default, or `unknown` when [`useUnknownInCatchVariables`](https://www.typescriptlang.org/tsconfig#useUnknownInCatchVariables) is enabled.
+It has to assume a "top" type (a type that allows any other type): namely `any` by default, or the safer `unknown` when [`useUnknownInCatchVariables`](https://www.typescriptlang.org/tsconfig#useUnknownInCatchVariables) is enabled.
 
 TypeScript code in `catch` blocks must therefore use type assertions and/or runtime type checks to type narrow the types of caught errors.
 
