@@ -89,9 +89,15 @@ export default function Projects(): JSX.Element {
           repository locally:
         </p>
         <CodeBlock language="shell">
-          {`git clone https://github.com/LearningTypeScript/projects learning-typescript-projects
+          <div className="code-container line">
+              <code>
+                {
+                `git clone https://github.com/LearningTypeScript/projects learning-typescript-projects
 cd learning-typescript-projects
-npm i`}
+npm i`
+                }
+              </code>
+          </div>
         </CodeBlock>
         <div className={styles.chapters}>
           {chapterNames.map((chapterName, index) => {
