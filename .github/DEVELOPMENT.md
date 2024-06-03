@@ -3,7 +3,7 @@
 After [forking the repo from GitHub](https://help.github.com/articles/fork-a-repo) and [installing Yarn Classic](https://classic.yarnpkg.com/lang/en):
 
 ```shell
-git clone https://github.com/<your-name-here>/template-typescript-node-package
+git clone https://github.com/<your-name-here>/template-typescript-node-package --recurse-submodules
 cd template-typescript-node-package
 yarn
 ```
