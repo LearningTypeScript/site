@@ -40,7 +40,7 @@ In other words, we need a way to _"brand"_ (mark) some number as being not just 
 
 ### Introducing Branded Types
 
-A _"branded type"_ is one that is he same as an existing type, but with some extra type system property that doesn't actually exist at runtime.
+A _"branded type"_ is one that is the same as an existing type, but with some extra type system property that doesn't actually exist at runtime.
 That _"brand"_ property is used to differentiate the two types in the type system.
 
 As an example, we can declare a branded type for positive numbers by declaring a `Positive` type that is both a `number` and an object with a never-used `__brand` property.
