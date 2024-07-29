@@ -35,7 +35,7 @@ async function waitThenLog(seconds: number) {
 }
 ```
 
-We need a way to tell TypeScript that there is a classification of numbers that are specifically known to be positive.
+TypeScript doesn't have a built-in way to describe positive numbers, but we still want to indicate them in the type system.
 In other words, we need a way to _"brand"_ (mark) some number as being not just any old number, but specifically the type we want.
 
 ### Introducing Branded Types
@@ -75,7 +75,7 @@ We're just making sure that no developer accidentally provides a value of a non-
 ## Branding Values
 
 The previous code showed passing around values that are already known to be a branded type.
-But what about using a new value that is known to a branded type?
+But how do we tell the type system that some new value is known to a branded type?
 
 Creating a new value that is used as a branded type generally requires asserting to TypeScript that the value does, in fact, satisfy the branded type's guarantees.
 This is often done in one of two ways: with an `as` assertion or with a utility function.
@@ -160,7 +160,7 @@ A type assertion function takes in a value, throws an error if the value doesn't
 When paired with a type predicate function, a type assertion function can inform TypeScript's type system that a value is an instance of a branded type.
 
 This `asPositive` function uses `isPositive` to throw an error if the value isn't an integer.
-The result is that calling code can wrap a value with `asPositive` to assert that that value is, in fact, an `Positive`:
+The result is that calling code can wrap a value with `asPositive` to assert that that value is definitely a `Positive`:
 
 ```ts twoslash
 // @errors: 2322
@@ -180,7 +180,7 @@ function asPositive(value: number): Positive {
 
 let myPositive: Positive;
 
-// Ok: the type predicate tells TypeScript we meant this. 👍
+// Ok: the type assertion function enforces that it's a `Positive`. 👍
 myPositive = asPositive(123);
 
 // Type error: TypeScript doesn't know whether this is intended. 👍
@@ -191,7 +191,7 @@ Type assertion functions can be a handy pattern for writing more succinct code w
 However, they introduce a new downside of relying on throwing errors to indicate when values aren't the correct type.
 [Thrown errors can't be made type-safe](./why-typescript-doesnt-include-a-throws-keyword.mdx).
 
-Be very careful whenever using type assertion functions in TypeScript.
+As with `as` assertions, be very careful whenever using type assertion functions in TypeScript.
 
 ## Uses for Branded Types
 
@@ -201,11 +201,11 @@ The following three sections are are non-exhaustive list of use cases for brande
 ### Branded Numbers
 
 Numbers are some of the most common uses for branded types because TypeScript doesn't support numeric types more specific than `bigint` or `integer`.
-Existing proposals such as [Microsoft/TypeScript#54925](https://github.com/microsoft/TypeScript/issues/54925) are still in discussion.
+Existing proposals such as [Microsoft/TypeScript#54925 Numeric Range Types (Feature Update)](https://github.com/microsoft/TypeScript/issues/54925) are still in discussion.
 
-Other general variants: `Negative`, `NonZero`, `Prime`, and so on can all be represented with branded types.
+Other numeric variants such as `Negative`, `NonZero`, and `Prime` on can all be represented with branded types.
 
-Currency handling is another useful case.
+Currency handling is another useful case for branded numeric types.
 Applications dealing with multiple currencies might need to make sure numbers used for amounts of one currency don't accidentally get transferred to a different currency.
 
 This code uses a generic `Currency<T>` type to set up multiple branded types for currencies:
@@ -237,6 +237,7 @@ Use with caution.
 ### Branded Strings
 
 Other uses for branded string types include decoded or sanitized text, such as user input that has been sanitized against injected code, passwords, and HTML or URL encoded characters.
+Branded types can be used to enforce that un-sanitized strings aren't provided in locations that should only use sanitized strings.
 
 This snippet shows protecting against [XSS attacks](https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting) by forcing user input to be sanitized before appending to the DOM:
 
@@ -532,7 +533,7 @@ class Task {
 
 Whenever a value can only be one of a set of known values, consider using a union type to represent that set.
 
-#### Enums
+### Enums
 
 Another TypeScript construct for representing a known set of values is an _enum_.
 Enums, enumerated type, are similar to unions in that they allow describing a set of related types under one shared name.
@@ -640,6 +641,14 @@ store.setTheme("dark-regular");
 ```
 
 Whenever strings are guaranteed to match a particular format, template literal types can be a precise tool for describing their format in the type system.
+
+## Closing Thoughts
+
+Branded types are a nifty trick in the type system for differentiating structurally identical types from each other.
+They have quite a few use cases that can help increase program safety.
+
+However, they come with the cost of increased conceptual complexity for working with your code.
+Whether you're writing your own branded types, onboarding a community library, or opting for an alternative strategy instead, you've got options for using types to precisely describe the characteristics of your values.
 
 ## Further Reading
 
