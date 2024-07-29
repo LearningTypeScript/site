@@ -1,7 +1,7 @@
 ---
 date: "August 04 2024"
 description: "How the concept of branded types allows describing primitives more precisely than TypeScript normally allows."
-meta: brands, type brands, nominal typing, unions, discriminated unions, numbers, strings
+meta: brands, type brands, unions, discriminated unions, numbers, strings
 ---
 
 # Branded Types
@@ -11,7 +11,7 @@ But what if you want to restrict a type to only allow certain values, even if ot
 Say, marking a difference between sanitized and un-sanitized strings, or positive integers from all numbers?
 
 This need is solvable with a pattern called _"branded types"_, sometimes also called _"opaque types"_.
-Let's dive into why you'd want to revert back to "nominal" typing with branded types, how to declare and use brand types, and some alternatives to the pattern.
+Let's dive into why you'd want to use branded types, how to declare and use them, and some alternatives to the pattern.
 
 {/* <!-- truncate --> */}
 
