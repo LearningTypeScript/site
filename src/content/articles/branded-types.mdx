@@ -59,18 +59,23 @@ async function waitThenLog(seconds: Positive) {
   // Now, this errors as we'd expect it to. 👍
   console.log(waitForSeconds(-1));
 
-  // This should not be an error: a guid is being used. 👍
+  // This should not be an error: seconds are being used. 👍
   console.log(waitForSeconds(seconds));
 
   console.log("Done!");
 }
 ```
 
-By marking our guid numbers as the `Positive` type, we indicated to TypeScript that non-positive numbers shouldn't be used in their place.
+By marking our numbers as the `Positive` type, we indicated to TypeScript that non-positive numbers shouldn't be used in their place.
 In doing so we achieved more safety in our code - at the cost of writing a few more types.
 
 Branded types are a useful lie to the type system: our positive numbers will never actually have that `__brand` property.
 We're just making sure that no developer accidentally provides a value of a non-branded type to a location that requires one that is branded.
+
+:::note
+Per [Microsoft/TypeScript#202 Support some non-structural (nominal) type matching](https://github.com/microsoft/TypeScript/issues/202), TypeScript doesn't have built-in support for branded types.
+_"Nominal"_ typing is the term for types that might have similar runtime structures but are treated differently in the type system -- such as branded types.
+:::
 
 ## Branding Values
 
@@ -464,7 +469,7 @@ console.log(divide(12, asNonZero(3)));
 
 ```ts twoslash
 function divide(a: number, b: number) {
-  if (b !== 0) {
+  if (b === 0) {
     throw new Error("Cannot divide by zero.");
   }
 
@@ -642,6 +647,34 @@ store.setTheme("dark-regular");
 
 Whenever strings are guaranteed to match a particular format, template literal types can be a precise tool for describing their format in the type system.
 
+### Wrappers
+
+Instead of using primitive values directly, another strategy shift can be to
+For example, this snippet [courtesy of Chris Krycho](https://github.com/LearningTypeScript/site/pull/135#pullrequestreview-2206383164) shows a dedicated class with a static `of` method for creating and storing validated positive numbers:
+
+```ts
+class Positive {
+  readonly value: number;
+
+  private constructor(value: number) {
+    this.value = value;
+  }
+
+  static of(value: number): Positive | Error {
+    return value > 0
+      ? new this(value)
+      : new Error(`Non-positive number: ${value}`);
+  }
+}
+
+Positive.of(123); // Positive { value: 123 }
+Positive.of(-1); // Error { message: "Non-positive number: -1" }
+```
+
+Wrapper types such as that `Positive` class can be very useful when you need the utmost safety in creating and validating numbers.
+However, they add overhead -both conceptually and at runtime- for every time they're used.
+Consider saving them for only the cases when you absolutely need the utmost safety in your code.
+
 ## Closing Thoughts
 
 Branded types are a nifty trick in the type system for differentiating structurally identical types from each other.
@@ -650,12 +683,23 @@ They have quite a few use cases that can help increase program safety.
 However, they come with the cost of increased conceptual complexity for working with your code.
 Whether you're writing your own branded types, onboarding a community library, or opting for an alternative strategy instead, you've got options for using types to precisely describe the characteristics of your values.
 
-## Further Reading
+### Further Reading
 
 - Narrowing is covered in [_Learning TypeScript_ Chapter 3: Unions and Literals](https://www.learningtypescript.com/unions-and-literals).
 - Type predicates are covered in [_Learning TypeScript_ Chapter 9: Type Modifiers](https://www.learningtypescript.com/type-modifiers).
 - Enums are covered in [_Learning TypeScript_ Chapter 14: Syntax Extensions](https://www.learningtypescript.com/syntax-extensions).
 - Template literal types are covered in [_Learning TypeScript_ Chapter 15: Type Operations](https://www.learningtypescript.com/type-operations).
+
+### Acknowledgements
+
+Many thanks to the kind developers who provided feedback on [this article's pull request](https://github.com/LearningTypeScript/site/pull/135):
+
+- [Chris Krycho](https://github.com/chriskrycho)
+- [Jeroen Engels](https://jfmengels.net)
+- [Mathieu Laurent](https://github.com/messenjer)
+- [Nico Jansen](https://github.com/nicojs)
+
+Much appreciated! ❤️
 
 ---
 
