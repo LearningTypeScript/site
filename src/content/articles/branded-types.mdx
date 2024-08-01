@@ -155,7 +155,7 @@ But, keep in mind that type predicates aren't much more type-safe than an `as` a
 TypeScript doesn't check whether the logic of a type predicate matches up to a branded type's intent.
 It leaves that up to the code author.
 
-### Type Assertion Functions
+### Assertion Functions
 
 Another downside of type predicate functions is that they require writing conditional wrappers in code (the `if (isPositive) { ... }`).
 Those `if`s take up more space and add more runtime logic than `as` assertions.
@@ -170,26 +170,21 @@ The result is that calling code can wrap a value with `asPositive` to assert tha
 ```ts twoslash
 // @errors: 2322
 type Positive = number & { __brand: "positive" };
+declare function waitForSeconds(seconds: Positive): Promise<void>;
 
-function isPositive(value: number): value is Positive {
-  return value > 0;
-}
-
-function asPositive(value: number): Positive {
-  if (!isPositive(value)) {
+function assertPositive(value: number): asserts value is Positive {
+  if (value < 0) {
     throw new Error(`${value} is not positive.`);
   }
-
-  return value;
 }
 
-let myPositive: Positive;
+let n = 123;
 
 // Ok: the type assertion function enforces that it's a `Positive`. 👍
-myPositive = asPositive(123);
+assertPositive(n);
 
-// Type error: TypeScript doesn't know whether this is intended. 👍
-myPositive = 123;
+// Ok: the assertion changed the type to be `Positive`. 👍
+waitForSeconds(n);
 ```
 
 Type assertion functions can be a handy pattern for writing more succinct code with branded types.
