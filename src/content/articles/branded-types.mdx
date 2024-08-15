@@ -1,0 +1,716 @@
+---
+date: "August 15 2024"
+description: "How the concept of branded types allows describing primitives more precisely than TypeScript normally allows."
+meta: brands, type brands, unions, discriminated unions, numbers, strings
+---
+
+# Branded Types
+
+TypeScript's type system allows any two types that seem to have the same structure to be assignable to each other.
+But what if we want to restrict a type to only allow certain values, even if other values happen to have the same structure?
+Say, marking a difference between sanitized and un-sanitized strings, or positive integers from all numbers?
+
+This need is solvable with a pattern called _"branded types"_, sometimes also called _"opaque types"_.
+Let's dive into why one might want to use branded types, how to declare and use them, and some alternatives to the pattern.
+
+<!-- truncate -->
+
+## Branding Needs
+
+TypeScript's type system doesn't always provide a way to differentiate types that seem to be structurally the same.
+For example, some values in application might need to work only with positive numbers.
+Assigning any number that isn't known to be zero or positive should be a type error:
+
+```ts
+declare function waitForSeconds(seconds: number): Promise<void>;
+
+async function waitThenLog(seconds: number) {
+  // This should not be an error. 👍
+  console.log(waitForSeconds(seconds));
+
+  // This should be an error: -1 is not positive. 👎
+  console.log(waitForSeconds(-1));
+
+  console.log("Done!");
+}
+```
+
+TypeScript doesn't have a built-in way to describe positive numbers, but being able to indicate them in the type system could still be useful.
+In other words, we need a way to _"brand"_ (mark) some number as being not just any old number, but specifically the type we want.
+
+### Introducing Branded Types
+
+A _"branded type"_ is one that is the same as an existing type, but with some extra type system property that doesn't actually exist at runtime.
+That _"brand"_ property is used to differentiate the two types in the type system.
+
+As an example, we could declare a branded type for positive numbers by declaring a `Positive` type that is both a `number` and an object with a never-used `__brand` property.
+The values we'll later use as `Positive`s won't actually have a `__brand` value -- this property is just in the type system.
+
+We can then use that `Positive` branded type in place of `number` for any location that should only ever receive a positive number:
+
+```ts twoslash
+// @errors: 2345
+type Positive = number & { __brand: "positive" };
+
+declare function waitForSeconds(seconds: Positive): Promise<void>;
+
+async function waitThenLog(seconds: Positive) {
+  // This should not be an error: seconds are being used. 👍
+  console.log(waitForSeconds(seconds));
+
+  // Now, this errors as we'd expect it to. 👍
+  console.log(waitForSeconds(-1));
+
+  console.log("Done!");
+}
+```
+
+By marking our numbers as the `Positive` type, we indicated to TypeScript that non-positive numbers shouldn't be used in their place.
+In doing so we achieved more safety in our code -- at the cost of writing a few more types.
+
+Branded types are a useful lie to the type system: our positive numbers will never actually have that `__brand` property.
+We're just making sure that no developer accidentally provides a value of a non-branded type to a location that requires one that is branded.
+
+:::note
+Per [Microsoft/TypeScript#202 Support some non-structural (nominal) type matching](https://github.com/microsoft/TypeScript/issues/202), TypeScript doesn't have built-in support for branded types.
+_"Nominal"_ typing is the term for types that might have similar runtime structures but are treated differently in the type system -- such as branded types.
+:::
+
+## Branding Values
+
+The previous code showed passing around values that are already known to be a branded type.
+But how do we tell the type system that some new value is a branded type?
+
+Creating a new value that is used as a branded type generally requires asserting to TypeScript that the value does, in fact, satisfy the branded type's guarantees.
+This is often done in one of two ways: with an `as` assertion or with a utility function.
+
+### `as` Assertions
+
+Type assertions are a way of telling TypeScript something it wouldn't be able to know from code on its own.
+In the case of branded values, `as` can be used to tell TypeScript that a value is intended to be an instance of a branded type.
+
+The following snippet uses an `as` assertion to tell TypeScript that the `123` is, in fact, a `Positive`:
+
+```ts twoslash
+// @errors: 2322
+type Positive = number & { __brand: "positive" };
+
+let myPositive: Positive;
+
+// Ok: the assertion tells TypeScript we meant this. 👍
+myPositive = 123 as Positive;
+
+// Type error: TypeScript doesn't know whether this is intended. 👍
+myPositive = 123;
+```
+
+By using an `as` assertion, the code told TypeScript that the `123` value should be considered a `Positive`.
+Notice that no `__brand` property was ever assigned at runtime.
+The `as` assertion told TypeScript to assume it exists.
+
+Using `as` assertions for branded types is a convenient way to quickly assert a value to be a branded type.
+Unfortunately, `as` assertions can bypass type errors in cases where the developer might not be correct.
+The previous code could have written something blatantly incorrect, like `-1 as Positive`, and TypeScript would have been none the wiser.
+
+Be very careful whenever using `as` assertions in TypeScript.
+
+### Type Predicates
+
+Instead of writing `as` assertions to create new instances of branded types, it's often safer -though more laborious- to use functions that validate values before they can be considered instances of branded types.
+
+_"Type predicates"_ are functions whose return type indicates whether a parameter `is` a particular type.
+Although they return a `boolean` value at runtime, the type system knows to apply type narrowing based on the returned value.
+
+Type predicates can be used to return whether a parameter `is` a particular branded type.
+
+This `isPositive` returns a `boolean` indicating whether `value is Positive`.
+That means inside of the following `if (isPositive(value)) {`, TypeScript knows the `value` is of type `Positive`:
+
+```ts twoslash
+// @errors: 2322
+type Positive = number & { __brand: "positive" };
+
+function isPositive(value: number): value is Positive {
+  return value > 0;
+}
+
+let myPositive: Positive;
+
+let value = 123;
+//  ^?
+
+if (isPositive(value)) {
+  // Ok: the type predicate tells TypeScript we meant this. 👍
+  myPositive = value;
+  //           ^?
+}
+
+// Type error: TypeScript doesn't know whether this is intended. 👍
+myPositive = 123;
+```
+
+Type predicates can be useful for safely gating some logic on whether a value matches a branded type's intent.
+But, keep in mind that type predicates aren't much more type-safe than an `as` assertion.
+TypeScript doesn't check whether the logic of a type predicate matches up to a branded type's intent.
+It leaves that up to the code author.
+
+### Assertion Functions
+
+Another downside of type predicate functions is that they require writing conditional wrappers in code (the `if (isPositive) { ... }`).
+Those `if`s take up more space and add more runtime logic than `as` assertions.
+
+To make our code a little more readable, we can extract a utility function known as a _"type assertion function"_.
+A type assertion function takes in a value, throws an error if the value doesn't match an expected type, and otherwise returns the value.
+When paired with a type predicate function, a type assertion function can inform TypeScript's type system that a value is an instance of a branded type.
+
+This `asPositive` function uses `isPositive` to throw an error if the value isn't an integer.
+The result is that calling code can wrap a value with `asPositive` to assert that that value is definitely a `Positive`:
+
+```ts twoslash
+// @errors: 2322
+type Positive = number & { __brand: "positive" };
+
+declare function waitForSeconds(seconds: Positive): Promise<void>;
+
+function assertPositive(value: number): asserts value is Positive {
+  if (value < 0) {
+    throw new Error(`${value} is not positive.`);
+  }
+}
+
+let n = 123;
+
+// Ok: the value is positive. 👍
+assertPositive(n);
+
+// Ok: the assertion changed the type to be `Positive`. 👍
+waitForSeconds(n);
+```
+
+Type assertion functions can be a handy pattern for writing more succinct code with branded types.
+However, they introduce a new downside of relying on throwing errors to indicate when values aren't the correct type.
+[Thrown errors can't be made type-safe](./why-typescript-doesnt-include-a-throws-keyword.mdx).
+
+As with `as` assertions, be very careful whenever using type assertion functions in TypeScript.
+
+## Uses for Branded Types
+
+Branded types can be helpful whenever TypeScript should be told that two seemingly-identical structures are actually different.
+We’ll explore two popular use-cases: branded numbers and branded strings.
+
+### Branded Numbers
+
+Numbers are some of the most common uses for branded types because TypeScript doesn't support numeric types more specific than `bigint` or `integer`.
+Existing proposals such as [Microsoft/TypeScript#54925 Numeric Range Types (Feature Update)](https://github.com/microsoft/TypeScript/issues/54925) are still in discussion.
+
+Other numeric variants such as `Negative`, `NonZero`, and `Prime` on can all be represented with branded types.
+
+Currency handling is another useful case for branded numeric types.
+Applications dealing with multiple currencies might need to make sure numbers used for amounts of one currency don't accidentally get transferred to a different currency.
+
+This code uses a generic `Currency<T>` type to set up multiple branded types for currencies.
+Attempting to describe a Euro-based gyro's cost in USD results in a type error:
+
+```ts twoslash
+// @errors: 2322
+type Currency<T> = number & { __currency: T };
+type Euro = Currency<"euro">;
+type USD = Currency<"usd">;
+
+interface PurchasableEuro {
+  cost: Euro;
+  name: string;
+}
+
+const myPrice = 10 as USD;
+
+const gyro: PurchasableEuro = {
+  cost: myPrice,
+  name: "euro",
+};
+```
+
+:::note
+Per [Microsoft/TypeScript#59423 Don't allow math operations on different branded numeric types](https://github.com/microsoft/TypeScript/issues/59423), binary operations on branded numeric types don't cause any type errors.
+Use with caution.
+:::
+
+Branded string types can be used whenever numeric values have some characteristic that separates them from other numbers.
+
+### Branded Strings
+
+Other uses for branded types include decoded or sanitized text, such as user input that has been sanitized against injected code, passwords, and HTML or URL encoded characters.
+Branded types can be used to enforce that un-sanitized strings aren't provided in locations that should only use sanitized strings.
+
+This snippet shows protecting against [XSS attacks](https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting) by forcing user input to be sanitized before appending to the DOM:
+
+```ts twoslash
+// @errors: 2345
+type SafeString = string & { __sanitized: true };
+
+/**
+ * Removes any unsafe parts, such as <script> tags.
+ */
+declare function sanitize(xml: string): SafeString;
+
+function writeToDocument(xml: SafeString) {
+  document.body.innerHTML += xml;
+}
+
+const userInput = `<script src="evil.js"></script>`;
+
+// Ok: the text is sanitized and safe for the page 👍
+writeToDocument(sanitize(userInput));
+
+// Type error: unsafe input XML 👎
+writeToDocument(userInput);
+```
+
+:::note
+[Writing to `innerHTML`](https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML#replacing_the_contents_of_an_element) is a dangerous practice in general.
+Treat this as an educational example, not an endorsement of insecure HTML practices.
+:::
+
+Another use for branded string types is the concept of a "guid" (Globally Unique ID) type, used by some applications to assign a unique identifier for every kind of data in their database.
+GUIDs are typically represented as strings but each data type's GUID can't be used for any other data type.
+Branded strings can be used to ensure GUID values for different data types aren't accidentally interchanged.
+
+This snippet differentiates comment IDs and post IDs with branded `Guid` types:
+
+```ts twoslash
+// @errors: 2345
+type Guid<DataType> = string & { __guid: DataType };
+
+type CommentId = Guid<"comment">;
+type PostId = Guid<"post">;
+
+interface Comment {
+  id: CommentId;
+  // ...
+}
+
+interface Post {
+  id: PostId;
+  // ...
+}
+
+declare function getCommentById(id: CommentId): Promise<Comment>;
+declare function getPostById(id: PostId): Promise<Post>;
+
+async function getById(id: CommentId) {
+  // Ok: the branded type matches up 👍
+  await getCommentById(id);
+
+  // Type error: mismatched comment and post 👎
+  await getPostById(id);
+}
+```
+
+Branded string types can be useful whenever data from different sources is stored as similar-looking strings, but shouldn't be mixed together.
+
+## Community Libraries
+
+Branded types aren't used in most TypeScript projects, but they are handy enough that a few community projects have sprung up to make using them easier.
+`ts-brand` and Effect TS are two of the more popular ones.
+
+### `ts-brand`
+
+The [`ts-brand`](https://github.com/kourge/ts-brand) package provides a community-built option to share pre-written code just for type brands.
+It exports a generic `Brand` type that can be used to create branded types:
+
+```ts
+import { Brand } from "ts-brand";
+
+type Guid = Brand<string, "guid">;
+
+const myKnownGuid = "abc123" as Guid;
+```
+
+<!--
+`ts-brand` comes with several utilities around branded types.
+Its `make` function notably creates a utility function that asserts a value to be a branded type.
+
+This `asPositive` is an _"identity"_ function (one that directly returns its argument) with a return type of `Positive` instead of `number`:
+
+```ts twoslash
+import { Brand, make } from "ts-brand";
+
+type Positive = Brand<number, "positive">;
+
+const asPositive = make<Positive>();
+
+const value = asPositive(42);
+//    ^?
+```
+
+`make` can take in an optional [type assertion function](#type-assertion-functions) to enforce provided values match some constraint.
+We can use those to enforce the constraints as part of `make`'s identity functions.
+
+This `asPositive` throws an error if the provided number isn't greater than zero:
+
+```ts twoslash
+import { Brand, make } from "ts-brand";
+
+type Positive = Brand<number, "positive">;
+
+const asPositive = make<Positive>((value) => {
+  if (value <= 0) {
+    throw new Error(`Non-positive value: ${value}`);
+  }
+});
+
+// No error thrown
+asPositive(42);
+
+// Error: Non-positive value: -1
+asPositive(-1);
+```
+
+-->
+
+See the [`ts-brand` API docs](https://github.com/kourge/ts-brand#api) for more details.
+
+:::tip
+The next version of `ts-brand` will allow `make` to take in a validation function.
+This article will be updated once it's released.
+:::
+
+### Effect TS
+
+[Effect](https://github.com/Effect-TS/effect) is a popular framework for building type-rich TypeScript applications.
+One of the many utilities it provides is a `Brand` including:
+
+- `Brand.Brand`: a generic type that acts as the brand in a type
+- `Brand.nominal`: a generic function that returns a type brand identify function
+
+Put together, the two allow making type brands similar to `ts-brand`:
+
+```ts twoslash
+// @errors: 2322
+import { Brand } from "effect";
+
+type Positive = number & Brand.Brand<"Positive">;
+
+const asPositive = Brand.nominal<Positive>();
+
+let myPositive: Positive;
+
+// Ok: the asPositive tells TypeScript we meant this. 👍
+myPositive = asPositive(123);
+
+// Type error: TypeScript doesn't know whether this is intended. 👍
+myPositive = 123;
+```
+
+`Effect` also allows making a type brand assertion function.
+Unlike `ts-brand`'s `make`, `Effect` provides a separate function, `Brand.refined`, that takes in two parameters:
+
+1. A function that determines whether a value matches the type brand's constraint
+2. A function to throw an error for a value that doesn't match the constraint
+
+This `asPositive` throws an error if the provided number isn't greater than zero:
+
+```ts twoslash
+// @errors: 2322
+import { Brand } from "effect";
+
+type Positive = number & Brand.Brand<"Positive">;
+
+const asPositive = Brand.refined<Positive>(
+  (value) => value > 0,
+  (value) => Brand.error(`Non-positive value: ${value}`)
+);
+
+// Ok 👍
+asPositive(42);
+
+// Error: Non-positive value: -1 👎
+asPositive(-1);
+```
+
+See [Effect's Branded Types docs](https://effect.website/docs/guides/style/branded-types) for more details.
+
+## Alternatives to Type Brands
+
+Type brands, as with all type system features, add complexity to code.
+The benefits of type brands might not outweigh the drawback of that added complexity!
+
+Before using type brands, think on whether they solve any actual issues you're likely to face in your application.
+You might be better off with a different strategy, such as one of the following ones.
+
+### Avoiding Type Brands Altogether
+
+Your type system doesn't have to document every facet of your code.
+In fact, no type system can fully describe all the nuances of your values.
+Attempting to do so can sometimes lead to overly complex code or type definitions.
+Sometimes it's easier to stick with basic type primitives and live with slightly imprecise types.
+
+For example, in an application that operates with numeric values that must always be non-zero, it can be tempting to make a `NonZero` branded type to enforce that.
+But if values are known by developers to never be zero, it might be easier to just sprinkle in an occasional assertion.
+
+Instead of the following `NonZero` type brand and assertion functions with a `divide` function...
+
+```ts
+type NonZero = number & { __brand: "non-zero" };
+
+function isNonZero(value: number): value is NonZero {
+  return value !== 0;
+}
+
+function asNonZero(value: number): Positive {
+  if (!isNonZero(value)) {
+    throw new Error("Received unexpected zero.");
+  }
+
+  return value;
+}
+
+function divide(a: number, b: NonZero) {
+  return asNonZero(a / b);
+}
+
+console.log(divide(12, asNonZero(3)));
+```
+
+...using a single thrown error inside `divide` results in equivalently safe and much more readable code:
+
+```ts twoslash
+function divide(a: number, b: number) {
+  if (b === 0) {
+    throw new Error("Cannot divide by zero.");
+  }
+
+  return a / b;
+}
+
+console.log(divide(12, 34));
+```
+
+When deciding whether to add branded types to your code, use your best judgement on the tradeoffs.
+Branded types can help precisely describe code -- at the cost of extra verbosity.
+
+### Unions
+
+If a value is known to be one of a limited set of possible types, the best description for it might be a `|` union type.
+Union types are made to describe a specific set of known allowed types.
+
+As an example, take a `Task` class that stores its current status as a `status` string.
+One version of the class could represent that `status` as a branded `TaskStatus` type to differentiate it from other strings:
+
+```ts twoslash
+// @errors: 2322
+// This should only be: "pending", "rejected", "resolved"
+type TaskStatus = string & { __brand: "status" };
+
+class Task {
+  #status: TaskStatus = "pending" as TaskStatus;
+
+  constructor(worker: () => Promise<void>) {
+    worker()
+      .then(() => (this.#status = "resolved" as TaskStatus))
+      .catch(() => (this.#status = "rejecting" as TaskStatus));
+    //                             ~~~~~~~~~~~
+    // This should be "rejected", but there is no type error. 👎
+  }
+
+  getStatus() {
+    return this.#status;
+  }
+}
+```
+
+Cases where a value must be one of a set of known types are generally better represented by a _union_ type.
+Union types are more precise for describing exactly what a value might be.
+
+The `TaskStatus` type would be better off as a union of the three known task status strings.
+Doing so would have caught the incorrect string in the previous example:
+
+```ts twoslash
+type TaskStatus = "pending" | "rejected" | "resolved";
+
+class Task {
+  #status: TaskStatus = "pending";
+
+  constructor(worker: () => Promise<void>) {
+    worker()
+      .then(() => (this.#status = "resolved"))
+      .catch(() => (this.#status = "rejected"));
+  }
+
+  getStatus() {
+    return this.#status;
+  }
+}
+```
+
+Whenever a value can only be one of a set of known values, consider using a union type to represent that set.
+
+### Enums
+
+Another TypeScript construct for representing a known set of values is an _enum_.
+Enums, enumerated type, are similar to unions in that they allow describing a set of related types under one shared name.
+
+Unlike unions, enums are one of the few runtime syntax extensions provided by TypeScript.
+Each enum declared in code becomes an object.
+Values under the enum are referred to under the enum's name -- both when used as a type and when as a runtime value.
+
+The `TaskStatus` example could be written with an `enum TaskStatus`:
+
+```ts twoslash
+enum TaskStatus {
+  Pending = "pending",
+  Rejected = "rejected",
+  Resolved = "resolved",
+}
+
+class Task {
+  #status = TaskStatus.Pending;
+
+  constructor(worker: () => Promise<void>) {
+    worker()
+      .then(() => (this.#status = TaskStatus.Resolved))
+      .catch(() => (this.#status = TaskStatus.Rejected));
+  }
+
+  getStatus() {
+    return this.#status;
+  }
+}
+```
+
+Enums are a bit contentious to some TypeScript developers.
+They add new runtime code that may eventually conflict with later versions of JavaScript, such as if the [TC39 Enums Proposal](https://github.com/rbuckton/proposal-enum) is ever ratified.
+On the one hand, they can be useful for having a set of types and values under a shared name.
+
+### Template Literal Types
+
+TypeScript allows types describing general patterns of strings called _template literal types_.
+These types are handy when a string must match some pattern, but it'd be cumbersome to write out all permutations of that pattern in a union or enum.
+
+The following `ThemeStore` class uses a branded string type named `Theme` to represent its themes.
+However, `Theme` doesn't enforce any pattern for the contents, even though the code comment suggests it should be a specific shape of string:
+
+```ts twoslash
+// This should only be two components, joined by a "-":
+// 1. Base visual: "dark", "light", or "system"
+// 2. Contrast level: "high", "low", or "standard"
+type Theme = string & { __brand: "theme" };
+
+class ThemeStore {
+  #theme: Theme;
+
+  constructor(theme: Theme) {
+    this.#theme = theme;
+  }
+
+  getTheme() {
+    return this.#theme;
+  }
+
+  setTheme(theme: Theme) {
+    this.#theme = theme;
+  }
+}
+
+const store = new ThemeStore("dark-standard" as Theme);
+
+store.setTheme("dark-high" as Theme);
+
+store.setTheme("dark-regular" as Theme);
+//             ~~~~~~~~~~~~~
+// This should be "dark-standard", but there is no type error. 👎
+```
+
+Switching `Theme` to a template literal string allows TypeScript to give a type error when a string of the wrong pattern is provided:
+
+```ts twoslash
+// @errors: 2345
+type ThemeBase = "dark" | "light" | "system";
+type ThemeContrast = "high" | "low" | "standard";
+type Theme = `${ThemeBase}-${ThemeContrast}`;
+
+class ThemeStore {
+  #theme: Theme;
+
+  constructor(theme: Theme) {
+    this.#theme = theme;
+  }
+
+  getTheme() {
+    return this.#theme;
+  }
+
+  setTheme(theme: Theme) {
+    this.#theme = theme;
+  }
+}
+
+const store = new ThemeStore("dark-standard");
+
+store.setTheme("dark-high");
+
+store.setTheme("dark-regular");
+```
+
+Whenever strings are guaranteed to match a particular format, template literal types can be a precise tool for describing their format in the type system.
+
+### Wrappers
+
+Instead of using primitive values directly, another strategy shift can be to
+For example, this snippet [courtesy of Chris Krycho](https://github.com/LearningTypeScript/site/pull/135#pullrequestreview-2206383164) shows a dedicated class with a static `of` method for creating and storing validated positive numbers:
+
+```ts
+class Positive {
+  readonly value: number;
+
+  private constructor(value: number) {
+    this.value = value;
+  }
+
+  static of(value: number): Positive | Error {
+    return value > 0
+      ? new this(value)
+      : new Error(`Non-positive number: ${value}`);
+  }
+}
+
+Positive.of(123); // Positive { value: 123 }
+Positive.of(-1); // Error { message: "Non-positive number: -1" }
+```
+
+Wrapper types such as that `Positive` class can be very useful when you need the utmost safety in creating and validating numbers.
+However, they add overhead -both conceptually and at runtime- for every time they're used.
+Consider saving them for only the cases when you absolutely need the utmost safety in your code.
+
+## Closing Thoughts
+
+Branded types are a nifty trick in the type system for differentiating structurally identical types from each other.
+They have quite a few use cases that can help increase program safety.
+
+However, they come with the cost of increased conceptual complexity for working with your code.
+Whether you're writing your own branded types, onboarding a community library, or opting for an alternative strategy instead, you've got options for using types to precisely describe the characteristics of your values.
+
+### Further Reading
+
+- Narrowing is covered in [_Learning TypeScript_ Chapter 3: Unions and Literals](https://www.learningtypescript.com/unions-and-literals).
+- Type predicates are covered in [_Learning TypeScript_ Chapter 9: Type Modifiers](https://www.learningtypescript.com/type-modifiers).
+- Enums are covered in [_Learning TypeScript_ Chapter 14: Syntax Extensions](https://www.learningtypescript.com/syntax-extensions).
+- Template literal types are covered in [_Learning TypeScript_ Chapter 15: Type Operations](https://www.learningtypescript.com/type-operations).
+
+### Acknowledgements
+
+Many thanks to the kind developers who provided feedback on [this article's pull request](https://github.com/LearningTypeScript/site/pull/135):
+
+- [Chris Krycho](https://github.com/chriskrycho)
+- [Jeroen Engels](https://jfmengels.net)
+- [Mathieu Laurent](https://github.com/messenjer)
+- [Nico Jansen](https://github.com/nicojs)
+
+Special thanks in particular to Kenny Lin for invaluable proofreading & suggestions as always.
+
+Much appreciated! ❤️
+
+---
+
+Got your own TypeScript questions?
+Tweet [@LearningTSBook](https://twitter.com/LearningTSBook) and the answer might become an article too!
