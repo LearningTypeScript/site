@@ -56,10 +56,10 @@ declare function waitForSeconds(seconds: Positive): Promise<void>;
 
 async function waitThenLog(seconds: Positive) {
   // This should not be an error: seconds are being used. 👍
-  console.log(waitForSeconds(seconds));
+  await waitForSeconds(seconds);
 
   // Now, this errors as we'd expect it to. 👍
-  console.log(waitForSeconds(-1));
+  await waitForSeconds(-1);
 
   console.log("Done!");
 }
