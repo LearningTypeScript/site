@@ -26,10 +26,10 @@ declare function waitForSeconds(seconds: number): Promise<void>;
 
 async function waitThenLog(seconds: number) {
   // This should not be an error. 👍
-  console.log(await waitForSeconds(seconds));
+  await waitForSeconds(seconds);
 
   // This should be an error: -1 is not positive. 👎
-  console.log(await waitForSeconds(-1));
+  await waitForSeconds(-1);
 
   console.log("Done!");
 }
