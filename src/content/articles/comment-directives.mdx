@@ -1,5 +1,5 @@
 ---
-date: "November 29 2024"
+date: "February 05 2025"
 description: "// @ts-expect-error, // @ts-ignore, and other comments that direct how TypeScript's type checking works."
 meta: comments, directives, ts-check, ts-expect-error, ts-ignore, ts-nocheck
 ---
@@ -14,15 +14,18 @@ TypeScript includes several comment directives that can change type checking beh
 
 One comment directive sometimes used in TypeScript files is `// @ts-expect-error`, which suppresses type checking for a single line:
 
-```ts
+```ts twoslash
 // @ts-expect-error
-let value: number = "oops!"; // No type error ✅
+let value: number = "oops!";
 ```
 
-This might seem counterintuitive: if a project already decided to use TypeScript's type checking, why disable it?
+Wanting to ignore type errors might seem counterintuitive at first.
+If a project already decided to use TypeScript, why disable type checking?
 
 Rare cases do exist when TypeScript's type checking needs to be suppressed in a small area of code.
-This post will explain the kinds of comment directives supported by TypeScript: why they exist, what they do, and how to use use them.
+Comment directives can be helpful for those rare cases to get around the type checker.
+
+This article will explain the kinds of comment directives supported by TypeScript: why they exist, what they do, and how to use them.
 
 ## TypeScript's Comment Directives
 
@@ -293,6 +296,9 @@ declare function process(data: number): void;
 process("abc"); // No type error ✅
 ```
 
+Including explanations with comment directives is a good practice to adhere to.
+In addition to explaining the _"why"_ of the comment directive, they hint to future code authors to think on and explain any comment directive they might want to add.
+
 ### Linting Comment Directives
 
 [`@typescript-eslint/ban-comment`](https://typescript-eslint.io/rules/ban-ts-comment) can be used to enforce best practices with TypeScript's comment directives.
@@ -383,7 +389,57 @@ Equivalent lint rules in other common linters are:
 
 ## Comment Directives in Other Tools
 
+TypeScript is not the only static analysis tool that allows inline configuration comments.
+Formatters, linters, and others often include their own comment directives that operate separately from TypeScript.
+
+### Formatter Comment Directives
+
+Popular web formatters such as [Biome's](https://biomejs.dev/formatter/#ignore-code "Biome > Formatter > Ignore Code"), [`deno fmt`](https://docs.deno.com/runtime/reference/cli/fmt/#ignoring-code "deno fmt > Ignoring Code"), and [Prettier](https://prettier.io/docs/ignore#javascript "Prettier > Ignoring Code > JavaScript") all support comment directives that disable formatting within a file.
+For example, the following line taken from the Prettier documentation shows `// prettier-ignore` excluding a line from being formatted by Prettier:
+
+```js
+matrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
+
+// prettier-ignore
+matrix(
+  1, 0, 0,
+  0, 1, 0,
+  0, 0, 1
+)
+```
+
+Formatter comment directives don't change the behavior of TypeScript's type checker.
+
 ### Linter Comment Directives
 
-[Linters are not the same tools as type checkers](TODO).
+Popular web linters such as [Biome's](https://biomejs.dev/linter/#ignore-code "Biome > Linter > Ignore code"), [ESLint](https://eslint.org/docs/latest/use/configure/rules#disabling-rules "ESLint > Configure > Rules > Disabling Rules"), [`deno lint`](https://docs.deno.com/runtime/reference/cli/lint/#line-level "Deno > Linter > Ignore directives > Line level"), and [`oxlint`](https://oxc.rs/docs/guide/usage/linter.html#features "Oxc > Linter (oxlint) > Features")
 Linters such as ESLint have their own comment directives that can reconfigure the linter on a per-file or per-line basis.
+
+For example, the following line demonstrates disabling the `no-console` ESLint rule for a line:
+
+```js
+// eslint-disable-next-line no-console
+console.log("Hello, world!");
+```
+
+Linters are not the same tools as type checkers.
+Linter comment directives don't change the behavior of TypeScript's type checker.
+
+For more information, see:
+
+- [ESLint > Blog > Differences between ESLint and TypeScript](ps://eslint.org/blog/2025/01/differences-between-eslint-and-typescript)
+- [typescript-eslint > FAQs > Why aren't // @ts-expect-error or // @ts-ignore comments affecting lint results?](https://typescript-eslint.io/troubleshooting/faqs/typescript#why-arent--ts-expect-error-or--ts-ignore-comments-affecting-lint-results)
+
+## Closing Thoughts
+
+Comment directives are a "necessary evil" for static analysis tools such as TypeScript.
+They provide an occasionally-useful escape hatch to write code that the type checker would not otherwise permit.
+Try to avoid comment directives if possible, and instead write code that works well with the type checker.
+
+If you must use a comment directive, be sure to choose the appropriate one.
+Consider using a lint rule such as [`@typescript-eslint/ban-comment`](https://typescript-eslint.io/rules/ban-ts-comment) to enforce directives be explained.
+
+---
+
+Got your own TypeScript questions?
+Tweet [@LearningTSBook](https://twitter.com/LearningTSBook) and the answer might become an article too!
