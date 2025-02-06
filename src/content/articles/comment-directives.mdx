@@ -300,7 +300,7 @@ In addition to explaining the _"why"_ of the comment directive, they hint to fut
 
 ### Linting Comment Directives
 
-[`@typescript-eslint/ban-comment`](https://typescript-eslint.io/rules/ban-ts-comment) can be used to enforce best practices with TypeScript's comment directives.
+[`@typescript-eslint/ban-ts-comment`](https://typescript-eslint.io/rules/ban-ts-comment) can be used to enforce best practices with TypeScript's comment directives.
 By default, the rule:
 
 - Always reports on `@ts-ignore` and `@ts-nocheck` comment directives
@@ -336,7 +336,7 @@ process("New York City");
 Teams using issue trackers such as GitHub Issues or Jira will often prefer to include links to tracking tickets in todo comments.
 Doing so can help ensure the reason for the comment gets documented more fully, and isn't forgotten about later.
 
-[`@typescript-eslint/ban-comment`'s `descriptionFormat` option](https://typescript-eslint.io/rules/ban-ts-comment#descriptionformat) can be used to enforce comments align to a certain format.
+[`@typescript-eslint/ban-ts-comment`'s `descriptionFormat` option](https://typescript-eslint.io/rules/ban-ts-comment#descriptionformat) can be used to enforce comments align to a certain format.
 Teams can use that to enforce the explanation for a comment directive includes a link to a tracking issue.
 
 For example, given the following ESLint config, comment directives must include a `-- TODO(GH-*)` linking to an issue:
@@ -345,7 +345,7 @@ For example, given the following ESLint config, comment directives must include 
 export default tseslint.config({
   // ...
   rules: {
-    "@typescript-eslint/ban-comment": [
+    "@typescript-eslint/ban-ts-comment": [
       "error",
       {
         descriptionFormat: "^ -- TODO\\(GH-\\d+\\)",
@@ -378,7 +378,7 @@ process("New York City");
 </TabItem>
 </Tabs>
 
-See [typescript-eslint's Getting Started guide](https://typescript-eslint.io/getting-started) to enable `@typescript-eslint/ban-comment` and other recommended rules.
+See [typescript-eslint's Getting Started guide](https://typescript-eslint.io/getting-started) to enable `@typescript-eslint/ban-ts-comment` and other recommended rules.
 
 Equivalent lint rules in other common linters are:
 
@@ -436,7 +436,7 @@ They provide an occasionally-useful escape hatch to write code that the type che
 Try to avoid comment directives if possible, and instead write code that works well with the type checker.
 
 If you must use a comment directive, be sure to choose the appropriate one.
-Consider using a lint rule such as [`@typescript-eslint/ban-comment`](https://typescript-eslint.io/rules/ban-ts-comment) to enforce directives be explained.
+Consider using a lint rule such as [`@typescript-eslint/ban-ts-comment`](https://typescript-eslint.io/rules/ban-ts-comment) to enforce directives be explained.
 
 ---
 
