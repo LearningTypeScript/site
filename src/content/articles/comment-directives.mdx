@@ -9,21 +9,20 @@ import TabItem from "@theme/TabItem";
 
 # Comment Directives
 
-A _comment directive_ is a _comment_ that _directs_ (changes) how a tool operates within a file.
-TypeScript includes several comment directives that can change type checking behavior for a file or on a specific line.
-
-One comment directive sometimes used in TypeScript files is `// @ts-expect-error`, which suppresses type checking for a single line:
+Once in a while in TypeScript code, you may come across a comment that looks something like this:
 
 ```ts twoslash
 // @ts-expect-error
 let value: number = "oops!";
 ```
 
+You may also know that `// @ts-expect-error` which suppresses type checking for a single line.
 Wanting to ignore type errors might seem counterintuitive at first.
 If a project already decided to use TypeScript, why disable type checking?
 
 Rare cases do exist when TypeScript's type checking needs to be suppressed in a small area of code.
-Comment directives can be helpful for those rare cases to get around the type checker.
+A _comment directive_ is a _comment_ that _directs_ (changes) how a tool operates within a file.
+TypeScript includes several comment directives that can change type checking behavior for a file or on a specific line.
 
 This article will explain the kinds of comment directives supported by TypeScript: why they exist, what they do, and how to use them.
 
