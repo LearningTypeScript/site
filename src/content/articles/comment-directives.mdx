@@ -45,7 +45,7 @@ TypeScript provides two comment directives that can ignore a type error on a lin
 `// @ts-expect-error` is a comment directive that tells TypeScript to ignore any type errors on the next line of code.
 It's made to be used when TypeScript would report a type error even though code is written correctly.
 
-Suppose you know a global `process` function exists that should take in a `string` parameter, but its types incorrectly describe it as taking in `number`.
+Suppose you know a global `process` function should take in a `string` parameter, but its types incorrectly describe it as taking in `number`.
 If you were to call `process` with a value of type `string`, TypeScript would report a type error:
 
 ```ts twoslash
