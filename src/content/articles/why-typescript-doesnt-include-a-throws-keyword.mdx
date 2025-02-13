@@ -250,7 +250,7 @@ interface Value {
 }
 
 declare function createValue(): Value;
-declare function readyForValues(): Boolean;
+declare function readyForValues(): boolean;
 
 function getValueMaybe() {
   if (!readyForValues()) {
@@ -277,7 +277,7 @@ TypeScript's type system would then enforce that code handle the `Error` case in
 
 ```ts twoslash
 declare function createValue(): Value;
-declare function readyForValues(): Boolean;
+declare function readyForValues(): boolean;
 
 interface Value {
   /* ... */
