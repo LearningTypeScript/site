@@ -10,13 +10,13 @@ meta: language server, type checking, typescript
 You might hear phrases like _"TypeScript catches my bugs"_ or _"TypeScript lets me write my types"_.
 If you've never worked with TypeScript before, it can seem like the word "TypeScript" refers to a whole collection of features or tools.
 
-That's because _"TypeScript"_ does refer several different tools: four, in fact.
+That's because _"TypeScript"_ can refer to several different tools: four, in fact.
 We'll explore what those four things are in this blog post, as well as why you'd want to use them.
 
 ## 1. Language
 
 _"TypeScript"_ most commonly refers to the TypeScript programming language.
-A programming language describes a set of syntax that describes actions for a computer to take.
+By "programming language", we mean a set of syntax that describes how to write code.
 
 The TypeScript language includes all of JavaScript's syntax, plus new syntax to describe "types": how values in code are expected to behave.
 That's why developers often call TypeScript a _"superset of JavaScript"_ [^1], or _"JavaScript with syntax for types"_.
@@ -30,7 +30,7 @@ function double(value: number) {
 ```
 
 The `: number` characters in that code block are an example of TypeScript-specific types syntax.
-They're a _"type annotation"_ that tells the reader that the `value` parameter is meant to be a number.
+They're a _"type annotation"_ telling the reader that the `value` parameter is meant to be a number.
 Everything else in the code block is valid JavaScript.
 
 ## 2. Type Checker
@@ -42,9 +42,9 @@ A "type checker" is a program that:
 
 The TypeScript type checker is a program that checks JavaScript and/or TypeScript source code.
 It lets you know if the way any value is used seems to not match with the way it was declared or later modified.
-A mismatch between the declared intent of a value with how it's used are typically called a _"type error"_.
+A mismatch between the declared intent of a value with how it's used is typically called a _"type error"_.
 
-For example, providing an argument of one type to a function that declared it takes a different type is a type error:
+For example, providing an argument of one type to a function whose parameter declares a different type is a type error:
 
 ```ts twoslash
 // @errors: 2345
@@ -73,7 +73,7 @@ Compilers for typed languages such as TypeScript generally run type checking as 
 TypeScript provides a compiler with its command-line, `tsc`.
 `tsc` is able to read in TypeScript source files, type check those files, output the equivalent output JavaScript files, and log any type errors it found during type checking.
 
-For example, running `tsc` on a file with a type error might look like:
+Running `tsc` on a file with a type error might look like:
 
 ```plaintext
 $ tsc index.ts
@@ -94,13 +94,15 @@ You can read more about it on [TypeScript Handbook > `tsc` CLI Options](https://
 Language services are tools that allow editors such as VS Code to interact with the language's programs.
 TypeScript's language services allow editors to:
 
-- Compiler TypeScript source files in real-time as you edit them
+- Compile TypeScript source files in real-time as you edit them
 - Indicate types and type errors as you edit code or select values with your cursor
 - Ask TypeScript for automated actions such as finding all references or renames
 
 This screenshot shows VS Code visualizing a type error with a red squiggly and a popup containing the error's message:
 
 ![The aforementioned double("oops!") snippet in VS Code, with a red squiggly under the string, and the assignability type error in a hover message](./assets/type-error-in-editor.webp)
+
+Language services in editors are a powerful advantage for developers working in typed languages such as TypeScript.
 
 ## Why Use TypeScript?
 
@@ -148,7 +150,7 @@ Many TypeScript developers view fully describing a project's types as one of the
 The official [TypeScript Website](https://www.typescriptlang.org) is an excellent introduction to the TypeScript language and tooling.
 Its [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html) includes [_Getting Started_ guides](https://www.typescriptlang.org/docs/handbook/intro.html#get-started) for developers with different areas and levels of experience.
 
-[_Learning TypeScript_ (O'Reilly)](https://www.oreilly.com/library/view/learning-typescript/9781098110321/) is one popular resource for diving into TypeScript.
+[_Learning TypeScript_ (O'Reilly)](https://www.oreilly.com/library/view/learning-typescript/9781098110321) -the book associated with this blog- is a community resource for TypeScript.
 It covers the foundations of TypeScript, how to work with its type system, and the aspects of its type checker and type system used by most projects.
 
 ---
@@ -160,7 +162,7 @@ Ask [@learningtypescript.com](https://bsky.app/profile/learningtypescript.com) o
 
 [^1]:
     TypeScript is not an _exact_ superset of JavaScript.
-    There exist a small set of edge cases where syntax differs between the two.
-    It's exceedingly unlikely you or any developer you know has had development impacted by them.
+    There is a small set of syntax edge cases where the two languages differ.
+    It's exceedingly unlikely to hit those edge cases during development.
 
 [^2]: Gao, Z., Bird, C., & Barr, E. T. (n.d.). _To type or not to type: Quantifying detectable bugs in JavaScript_. Retrieved from <https://www.microsoft.com/en-us/research/wp-content/uploads/2017/09/gao2017javascript.pdf>.
