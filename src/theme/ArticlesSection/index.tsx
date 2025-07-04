@@ -55,14 +55,11 @@ export const ArticlesSection = () => {
         description="Top tips and tricks for why TypeScript behaves the way it does, and how you can work effectively with it."
         heading="Articles"
         link={{
-          children:
-            articles.length === 1
-              ? "See all articles"
-              : `See all ${articles.length} articles`,
+          children: `See all ${articles.length} articles`,
           href: "/articles",
         }}
       >
-        {articles.map((article) => (
+        {articles.slice(0, 3).map((article) => (
           <Card
             className={styles.card}
             description={article.description}
